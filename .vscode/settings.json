@@ -1,0 +1,19 @@
+{
+	"eslint.format.enable": true,
+	"editor.formatOnSave": true,
+	"eslint.validate": ["typescript", "vue"],
+	"editor.codeActionsOnSave": {
+		"source.fixAll": true,
+		"source.fixAll.eslint": true,
+		"source.organizeImports": true
+	},
+	"editor.defaultFormatter": "esbenp.prettier-vscode",
+	"editor.fontLigatures": true,
+	"editor.fontSize": 15,
+	"[vue]": {
+		"editor.defaultFormatter": "esbenp.prettier-vscode"
+	},
+	"[typescript]": {
+		"editor.defaultFormatter": "esbenp.prettier-vscode"
+	}
+}
