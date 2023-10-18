@@ -9,6 +9,7 @@ import { router } from './router'
 
 import '@ui-kit/kmf-styles/dist/index.css'
 import '@ui-kit/ui-kit/dist/style.css'
+import { i18nPlugin } from './i18n'
 import './style.css'
 
 const pinia = createPinia()
@@ -24,6 +25,7 @@ if (isLocal) {
 	// Plugins
 	app.use(pinia)
 	app.use(router)
+	app.use(i18nPlugin)
 
 	// Mount
 	app.component('VOtpInput', VOtpInput)
@@ -39,6 +41,7 @@ if (isLocal) {
 		handleInstance: (app) => {
 			app.use(pinia)
 			app.use(router)
+			app.use(i18nPlugin)
 		}
 	})
 }
