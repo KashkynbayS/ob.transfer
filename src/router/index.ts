@@ -14,11 +14,23 @@ router.addRoute({
 		}
 	},
 	children: [
-		// {
-		// 	path: '',
-		// 	name: 'TempMain',
-		// 	component: () => import('@/views/MainTempPage.vue')
-		// }
+		{
+			path: '/:accountId',
+			name: 'Internal',
+			component: () => import('@/views/Internal/Internal.vue'),
+			children: [
+				{
+					path: 'phone',
+					name: 'InternalPhone',
+					component: () => import('@/views/Internal/InternalPhone.vue')
+				},
+				{
+					path: 'account',
+					name: 'InternalAccount',
+					component: () => import('@/views/Internal/InternalIban.vue')
+				}
+			]
+		}
 	]
 })
 
