@@ -15,7 +15,12 @@ router.addRoute({
 	},
 	children: [
 		{
-			path: '/:accountId',
+			path: '',
+			name: 'TempMain',
+			component: () => import('@/views/MainTempPage.vue')
+		},
+		{
+			path: 'internal',
 			name: 'Internal',
 			component: () => import('@/views/Internal/Internal.vue'),
 			children: [
@@ -30,6 +35,11 @@ router.addRoute({
 					component: () => import('@/views/Internal/InternalIban.vue')
 				}
 			]
+		},
+		{
+			path: 'own',
+			name: 'Own',
+			component: () => import('@/views/Own.vue')
 		}
 	]
 })
