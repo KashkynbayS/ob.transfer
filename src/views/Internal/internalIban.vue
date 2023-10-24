@@ -2,8 +2,11 @@
 import KztIcon from '@ui-kit/kmf-icons/finance/currencies/kzt.svg'
 import { Button, Input, Modal } from '@ui-kit/ui-kit'
 import { ModalAction } from '@ui-kit/ui-kit/dist/ui/components/modal/types'
+import { toTypedSchema } from '@vee-validate/yup'
+import { useForm } from 'vee-validate'
 import { reactive, ref } from 'vue'
 import { onBeforeRouteLeave, useRouter } from 'vue-router'
+import * as yup from 'yup'
 
 // Modal
 const modal = ref<InstanceType<typeof Modal> | null>(null)
@@ -27,16 +30,32 @@ const actions = reactive<ModalAction[]>([
 	}
 ])
 
-const formModel = ref({
-	accountFromModel: '',
-	accountToModel: '',
-	recieverNameModel: '',
-	sumModel: ''
+const schema = toTypedSchema(
+	yup.object({
+		accountFromModel: yup.string().required(),
+		accountToModel: yup.string().required(),
+		recieverNameModel: yup.string().required(),
+		sumModel: yup.number().required().min(100).max(1000)
+	})
+)
+const { errors, values, defineInputBinds, handleSubmit } = useForm({
+	validationSchema: schema
+})
+
+// Define fields
+const accountFromModel = defineInputBinds('accountFromModel')
+const accountToModel = defineInputBinds('accountToModel')
+const recieverNameModel = defineInputBinds('recieverNameModel')
+const sumModel = defineInputBinds('sumModel')
+
+// Submit handler
+const onSubmit = handleSubmit((values) => {
+	console.log(values)
 })
 
 // Guard
 onBeforeRouteLeave((to, from, next) => {
-	const { accountFromModel, accountToModel, recieverNameModel, sumModel } = formModel.value
+	const { accountFromModel, accountToModel, recieverNameModel, sumModel } = values
 	const isFormDirty = accountFromModel || accountToModel || recieverNameModel || sumModel
 	destPath = to.fullPath
 
@@ -49,10 +68,11 @@ onBeforeRouteLeave((to, from, next) => {
 </script>
 
 <template>
-	<form class="internal-iban-form">
+	<form class="internal-iban-form" @submit="onSubmit">
 		<div class="internal-iban-form-top">
 			<Input
-				v-model:model-value="formModel.accountFromModel"
+				:invalid="!!errors.accountFromModel"
+				v-bind="accountFromModel"
 				class="form-field"
 				:label="$t('INTERNAL.IBAN.FORM.ACCOUNT_FROM')"
 			>
@@ -60,25 +80,27 @@ onBeforeRouteLeave((to, from, next) => {
 					<KztIcon />
 				</template>
 			</Input>
-
 			<Input
-				v-model:model-value="formModel.accountToModel"
+				:invalid="!!errors.accountToModel"
+				v-bind="accountToModel"
 				class="form-field"
 				:label="$t('INTERNAL.IBAN.FORM.ACCOUNT_TO')"
 			/>
 			<Input
-				v-model:model-value="formModel.recieverNameModel"
+				:invalid="!!errors.recieverNameModel"
+				v-bind="recieverNameModel"
 				class="form-field"
 				:label="$t('INTERNAL.IBAN.FORM.RECIEVER_NAME')"
 			/>
-			<Input v-model:model-value="formModel.sumModel" class="form-field" :label="$t('INTERNAL.IBAN.FORM.SUM')" />
+			<Input :invalid="!!errors.sumModel" v-bind="sumModel" class="form-field" :label="$t('INTERNAL.IBAN.FORM.SUM')" />
+			<span>{{ errors.sumModel }}</span>
 		</div>
 		<div class="internal-iban-form-bottom">
 			<Button type="primary"> {{ $t('INTERNAL.IBAN.FORM.SUBMIT') }} </Button>
 		</div>
 	</form>
 
-	<Modal ref="modal" v-bind="{ asd: 'asdasd' }" :actions="actions" close-on-outline-click>
+	<Modal ref="modal" :actions="actions" close-on-outline-click>
 		<template #title>{{ $t('INTERNAL.MODAL.LEAVE_WHEN_FORM_IS_DIRTY.TITLE') }}</template>
 		<template #body>{{ $t('INTERNAL.MODAL.LEAVE_WHEN_FORM_IS_DIRTY.SUBTITLE') }}</template>
 	</Modal>
