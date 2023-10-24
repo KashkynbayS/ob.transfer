@@ -4,6 +4,14 @@ export const INTERNAL = {
 		PHONE: 'По номеру',
 		IBAN: 'По счету'
 	},
+	PHONE: {
+		FORM: {
+			ACCOUNT_FROM: 'Счёт KZT',
+			PHONE_NUMBER: 'Номер телефона',
+			SUM: 'Сумма',
+			SUBMIT: 'Отправить'
+		}
+	},
 	IBAN: {
 		FORM: {
 			ACCOUNT_FROM: 'Счёт KZT',
