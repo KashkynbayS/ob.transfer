@@ -5,12 +5,6 @@ import sharp from 'sharp'
 const OUTPUT_DIR = './output'
 const INPUT_DIR = './src/assets/images'
 
-if (fs.existsSync(OUTPUT_DIR)) {
-	fs.rmSync(OUTPUT_DIR, { recursive: true, force: true })
-}
-
-fs.mkdirSync(OUTPUT_DIR)
-
 let imgs = []
 const convertToWebp = (img) => {
 	const imgName = path.parse(img).name
@@ -18,9 +12,17 @@ const convertToWebp = (img) => {
 }
 
 fs.readdir(INPUT_DIR, (err, files) => {
-	imgs = files.filter((file) => {
-		const ext = path.extname(file).toLowerCase()
-		return ext === '.png' || ext === '.jpg' || ext === '.jpeg'
-	})
-	imgs.forEach((img, i) => convertToWebp(img, i))
+	if (files) {
+		if (fs.existsSync(OUTPUT_DIR)) {
+			fs.rmSync(OUTPUT_DIR, { recursive: true, force: true })
+		}
+
+		fs.mkdirSync(OUTPUT_DIR)
+
+		imgs = files.filter((file) => {
+			const ext = path.extname(file).toLowerCase()
+			return ext === '.png'
+		})
+		imgs.forEach((img, i) => convertToWebp(img, i))
+	}
 })
