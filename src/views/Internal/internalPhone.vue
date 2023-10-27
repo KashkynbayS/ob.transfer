@@ -127,7 +127,7 @@ const contactBottomSheetRef = ref<InstanceType<typeof BottomSheet> | null>(null)
 	</Modal>
 </template>
 
-<style scoped lang="scss">
+<style lang="scss">
 .internal-phone-form {
 	box-sizing: content-box;
 	padding: var(--space-4) var(--space-4) 0 var(--space-4);

@@ -73,9 +73,13 @@ onBeforeRouteLeave((to, from, next) => {
 	<form class="internal-iban-form" @submit="onSubmit">
 		<div class="internal-iban-form-top">
 			<Input
+<<<<<<< HEAD
 				id="internalIbanInput"
 				:invalid="!!errors.accountFromModel"
+=======
+>>>>>>> e9d7241 (fixed styles)
 				v-bind="accountFromModel"
+				:invalid="!!errors.accountFromModel"
 				class="form-field"
 				:label="$t('INTERNAL.IBAN.FORM.ACCOUNT_FROM')"
 			>
@@ -84,8 +88,8 @@ onBeforeRouteLeave((to, from, next) => {
 				</template>
 			</Input>
 			<Input
-				:invalid="!!errors.accountToModel"
 				v-bind="accountToModel"
+				:invalid="!!errors.accountToModel"
 				class="form-field"
 				:label="$t('INTERNAL.IBAN.FORM.ACCOUNT_TO')"
 			/>
@@ -109,7 +113,10 @@ onBeforeRouteLeave((to, from, next) => {
 	</Modal>
 </template>
 
-<style scoped lang="scss">
+<style lang="scss">
+.segment-picker__item {
+	width: 50%;
+}
 .internal-iban-form {
 	box-sizing: content-box;
 	padding: var(--space-4) var(--space-4) 0 var(--space-4);
