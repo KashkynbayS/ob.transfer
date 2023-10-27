@@ -12,14 +12,14 @@ import * as yup from 'yup'
 const modal = ref<InstanceType<typeof Modal> | null>(null)
 const router = useRouter()
 let destPath = ''
-let isLeaveConfiirmed = false
+let isLeaveConfirmed = false
 const actions = reactive<ModalAction[]>([
 	{
 		mode: 'primary',
 		title: 'Перейти',
 		autoClose: true,
 		action: () => {
-			isLeaveConfiirmed = true
+			isLeaveConfirmed = true
 			router.push(destPath)
 		}
 	},
@@ -59,7 +59,7 @@ onBeforeRouteLeave((to, from, next) => {
 	const isFormDirty = accountFromModel || accountToModel || recieverNameModel || sumModel
 	destPath = to.fullPath
 
-	if (!isFormDirty || isLeaveConfiirmed) {
+	if (!isFormDirty || isLeaveConfirmed) {
 		next(true)
 	}
 
