@@ -11,7 +11,8 @@
 		"build:prod": "vue-tsc && vite build --mode master",
 		"preview": "vite preview",
 		"lint": "eslint --ext .js,.ts,.vue --ignore-path .gitignore --fix src",
-		"format": "prettier --write src/"
+		"format": "prettier --write src/",
+		"update": "npm i @ui-kit/kmf-icons @ui-kit/kmf-styles @ui-kit/ui-kit"
 	},
 	"dependencies": {
 		"@ui-kit/kmf-icons": "^0.1.3",

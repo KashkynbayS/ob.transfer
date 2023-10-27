@@ -19,7 +19,7 @@ const props = defineProps<{
 .page-template {
 	display: flex;
 	flex-direction: column;
-	height: 100vh;
+	height: 100dvh;
 
 	&__main {
 		overflow-y: auto;
@@ -31,7 +31,7 @@ const props = defineProps<{
 		align-items: center;
 
 		&:not(.page-template__main--no-paddings) {
-			padding: var(--space-18) var(--space-4) 0 var(--space-4);
+			padding: 0 var(--space-4) 0 var(--space-4);
 		}
 	}
 
