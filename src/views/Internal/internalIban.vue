@@ -55,6 +55,8 @@ const onSubmit = handleSubmit((values) => {
 
 // Guard
 onBeforeRouteLeave((to, from, next) => {
+	console.log(from)
+
 	const { accountFromModel, accountToModel, recieverNameModel, sumModel } = values
 	const isFormDirty = accountFromModel || accountToModel || recieverNameModel || sumModel
 	destPath = to.fullPath
@@ -71,6 +73,7 @@ onBeforeRouteLeave((to, from, next) => {
 	<form class="internal-iban-form" @submit="onSubmit">
 		<div class="internal-iban-form-top">
 			<Input
+				id="internalIbanInput"
 				:invalid="!!errors.accountFromModel"
 				v-bind="accountFromModel"
 				class="form-field"

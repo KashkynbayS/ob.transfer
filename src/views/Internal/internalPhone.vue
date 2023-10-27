@@ -6,7 +6,6 @@ import { ModalAction } from '@ui-kit/ui-kit/dist/ui/components/modal/types'
 import { computed, reactive, ref } from 'vue'
 import { onBeforeRouteLeave, useRouter } from 'vue-router'
 
-
 // Modal
 const modal = ref<InstanceType<typeof Modal> | null>(null)
 const router = useRouter()
@@ -37,6 +36,7 @@ const formModel = ref({
 
 // Guard
 onBeforeRouteLeave((to, from, next) => {
+	console.log(from)
 	const { accountFromModel, phoneNumber, sumModel } = formModel.value
 	const isFormDirty = accountFromModel || phoneNumber || sumModel
 	destPath = to.fullPath
@@ -54,18 +54,18 @@ const contact = reactive({
 	value: '',
 	search: '',
 	list: [
-		{name: 'Sultan', phoneNumber: 87053811230},
-		{name: 'Sultan', phoneNumber: 87053811230},
-		{name: 'Sultan', phoneNumber: 87053811230},
-		{name: 'Sultan', phoneNumber: 87053811230},
-		{name: 'Sultan', phoneNumber: 87053811230},
-		{name: 'Sultan', phoneNumber: 87053811230},
-		{name: 'Sultan', phoneNumber: 87053811230},
-		{name: 'Sultan', phoneNumber: 87053811230},
-		{name: 'Sultan', phoneNumber: 87053811230},
-		{name: 'Sultan', phoneNumber: 87053811230},
-		{name: 'Sultan', phoneNumber: 87053811230},
-		{name: 'Yernar', phoneNumber: 87053811230},
+		{ name: 'Sultan', phoneNumber: 87053811230 },
+		{ name: 'Sultan', phoneNumber: 87053811230 },
+		{ name: 'Sultan', phoneNumber: 87053811230 },
+		{ name: 'Sultan', phoneNumber: 87053811230 },
+		{ name: 'Sultan', phoneNumber: 87053811230 },
+		{ name: 'Sultan', phoneNumber: 87053811230 },
+		{ name: 'Sultan', phoneNumber: 87053811230 },
+		{ name: 'Sultan', phoneNumber: 87053811230 },
+		{ name: 'Sultan', phoneNumber: 87053811230 },
+		{ name: 'Sultan', phoneNumber: 87053811230 },
+		{ name: 'Sultan', phoneNumber: 87053811230 },
+		{ name: 'Yernar', phoneNumber: 87053811230 }
 	]
 })
 
@@ -74,7 +74,6 @@ const filteredContactList = computed(() =>
 )
 
 const contactBottomSheetRef = ref<InstanceType<typeof BottomSheet> | null>(null)
-
 </script>
 
 <template>
@@ -94,9 +93,9 @@ const contactBottomSheetRef = ref<InstanceType<typeof BottomSheet> | null>(null)
 				v-model:model-value="formModel.phoneNumber"
 				class="form-field"
 				:label="$t('INTERNAL.PHONE.FORM.PHONE_NUMBER')"
-				>
+			>
 				<template #append>
-					<User @click="contactBottomSheetRef?.open()"/>
+					<User @click="contactBottomSheetRef?.open()" />
 				</template>
 			</Input>
 
@@ -121,7 +120,6 @@ const contactBottomSheetRef = ref<InstanceType<typeof BottomSheet> | null>(null)
 			</div>
 		</template>
 	</BottomSheet>
-
 
 	<Modal ref="modal" v-bind="{ asd: 'asdasd' }" :actions="actions" close-on-outline-click>
 		<template #title>{{ $t('INTERNAL.MODAL.LEAVE_WHEN_FORM_IS_DIRTY.TITLE') }}</template>

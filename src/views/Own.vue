@@ -11,9 +11,11 @@ import AccountDropdown from '@/components/AccountDropdown.vue'
 import { ACCOUNTS_GROUPS } from '@/mocks/own'
 
 const form = reactive({
-	from: null,
-	to: null,
-	amount: ''
+	from: undefined,
+	to: undefined,
+	amount: '',
+	writeOffAmount: '',
+	enrollmentAmount: ''
 })
 </script>
 
@@ -39,10 +41,10 @@ const form = reactive({
 				:disabled="form.from"
 			/>
 
-			<Input v-model="form.writeOffAmount" :label="$t('OWN.FORM.WRITE_OFF_AMOUNT')" />
-			<Input v-model="form.enrollmentAmount" :label="$t('OWN.FORM.ENROLLMENT_AMOUNT')" />
+			<Input id="writeOffAmount" v-model="form.writeOffAmount" :label="$t('OWN.FORM.WRITE_OFF_AMOUNT')" />
+			<Input id="enrollmentAmount" v-model="form.enrollmentAmount" :label="$t('OWN.FORM.ENROLLMENT_AMOUNT')" />
 
-			<Button type="primary"> {{ $t('OWN.FORM.SUBMIT') }} </Button>
+			<Button id="ownSubmit" type="primary"> {{ $t('OWN.FORM.SUBMIT') }} </Button>
 		</form>
 		{{ form }}
 	</PageTemplate>

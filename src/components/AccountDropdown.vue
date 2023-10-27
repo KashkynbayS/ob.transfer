@@ -27,7 +27,7 @@ const emit = defineEmits<{
 	(e: 'update:modelValue', val: Account): void
 }>()
 
-const selected = ref<Account | null>(props.value || null)
+const selected = ref<Account | null>(props.modelValue || null)
 const accountBottomSheetRef = ref<InstanceType<typeof BottomSheet> | null>(null)
 
 const view = computed(() => {
@@ -50,14 +50,14 @@ const onSelect = (item: Account) => {
 
 <template>
 	<div class="accounts">
-		<Dropdown :id="props.id" :value="view.amount" :label="view.label" @on-focus="accountBottomSheetRef?.open()" />
+		<Dropdown :id="props.id || ''" :value="view.amount" :label="view.label" @on-focus="accountBottomSheetRef?.open()" />
 
 		<BottomSheet ref="accountBottomSheetRef">
 			<template #title>
 				<h4>{{ props.label }}</h4>
 			</template>
 			<template #content>
-				<CellGroup v-for="group in props.accountsGroups" :key="group.key" class="group">
+				<CellGroup v-for="group in props.accountsGroups" :key="group.id" class="group">
 					<CellGroupHeader class="header">
 						<template #title>
 							<strong class="text-content text-low-contrast text-semibold">{{ group.title }}</strong>
@@ -66,7 +66,7 @@ const onSelect = (item: Account) => {
 
 					<Cell
 						v-for="item in group.list"
-						:key="item.key"
+						:key="item.id"
 						left-bg="#6E757C"
 						:class="item.id === props.disabled?.id ? 'cell--disabled' : ''"
 						@click="onSelect(item)"
