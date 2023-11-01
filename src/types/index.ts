@@ -23,3 +23,14 @@ export interface AccountsGroup {
 	id: string
 	list: Account[]
 }
+
+export interface Rate {
+	from: {
+		currency: CURRENCY
+		amount: number
+	}
+	to: {
+		currency: CURRENCY
+		amount: number
+	}
+}
