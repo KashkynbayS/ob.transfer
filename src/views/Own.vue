@@ -5,8 +5,8 @@ import { Button, Input } from '@ui-kit/ui-kit'
 
 import PageTemplate from '@/layouts/PageTemplate.vue'
 
-import AppNavbar from '@/components/AppNavbar.vue'
 import AccountDropdown from '@/components/AccountDropdown.vue'
+import AppNavbar from '@/components/AppNavbar.vue'
 
 import { ACCOUNTS_GROUPS } from '@/mocks/own'
 

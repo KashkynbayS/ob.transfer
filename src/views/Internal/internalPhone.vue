@@ -35,8 +35,7 @@ const formModel = ref({
 })
 
 // Guard
-onBeforeRouteLeave((to, from, next) => {
-	console.log(from)
+onBeforeRouteLeave((to, _, next) => {
 	const { accountFromModel, phoneNumber, sumModel } = formModel.value
 	const isFormDirty = accountFromModel || phoneNumber || sumModel
 	destPath = to.fullPath
@@ -80,6 +79,7 @@ const contactBottomSheetRef = ref<InstanceType<typeof BottomSheet> | null>(null)
 	<form class="internal-phone-form">
 		<div class="internal-phone-form-top">
 			<Input
+				id="123"
 				v-model:model-value="formModel.accountFromModel"
 				class="form-field"
 				:label="$t('INTERNAL.PHONE.FORM.ACCOUNT_FROM')"
@@ -90,6 +90,7 @@ const contactBottomSheetRef = ref<InstanceType<typeof BottomSheet> | null>(null)
 			</Input>
 
 			<Input
+				id="123"
 				v-model:model-value="formModel.phoneNumber"
 				class="form-field"
 				:label="$t('INTERNAL.PHONE.FORM.PHONE_NUMBER')"
@@ -99,10 +100,15 @@ const contactBottomSheetRef = ref<InstanceType<typeof BottomSheet> | null>(null)
 				</template>
 			</Input>
 
-			<Input v-model:model-value="formModel.sumModel" class="form-field" :label="$t('INTERNAL.PHONE.FORM.SUM')" />
+			<Input
+				id="123"
+				v-model:model-value="formModel.sumModel"
+				class="form-field"
+				:label="$t('INTERNAL.PHONE.FORM.SUM')"
+			/>
 		</div>
 		<div class="internal-phone-form-bottom">
-			<Button type="primary"> {{ $t('INTERNAL.PHONE.FORM.SUBMIT') }} </Button>
+			<Button id="123" type="primary"> {{ $t('INTERNAL.PHONE.FORM.SUBMIT') }} </Button>
 		</div>
 	</form>
 

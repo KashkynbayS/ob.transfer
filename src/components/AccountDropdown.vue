@@ -1,13 +1,13 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { computed, ref } from 'vue'
 
-import { Dropdown, BottomSheet, Cell, CellGroup, CellGroupHeader } from '@ui-kit/ui-kit'
+import { BottomSheet, Cell, CellGroup, CellGroupHeader, Dropdown } from '@ui-kit/ui-kit'
 
 import KztIcon from '@ui-kit/kmf-icons/finance/currencies/kzt.svg'
 import UsdIcon from '@ui-kit/kmf-icons/finance/currencies/usd.svg'
 import CheckIcon from '@ui-kit/kmf-icons/interface/controls/check-mark.svg'
 
-import { AccountsGroup, Account, CURRENCY } from '@/types'
+import { Account, AccountsGroup, CURRENCY } from '@/types'
 import { maskAmount, maskIban } from '@/utils'
 
 const CURRENCY_ICON = {
@@ -19,8 +19,9 @@ const props = defineProps<{
 	id?: string
 	label?: string
 	accountsGroups?: AccountsGroup[]
-	modelValue?: Account
-	disabled?: Account
+	modelValue?: Account | null
+	disabled?: Account | null
+	value?: Account | undefined | null
 }>()
 
 const emit = defineEmits<{

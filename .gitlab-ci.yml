@@ -86,7 +86,7 @@ build:
     - master
   before_script:
     - mv ./config/.env.* ./
-    - apk add --no-cache --update nodejs npm git
+    - apk add --no-cache --update nodejs npm git curl jq
     - npm i sharp
     - npm i fs
     - npm i path
@@ -104,9 +104,12 @@ build:
     - sed -i "s/cicd_app_version/$VERSION/" ./Dockerfile
     - if grep -q "cicd_app_version" ./Dockerfile; then echo "Replacement check failed!"; exit 1; else echo "Replacement check success!"; fi
     - docker image ls
-    - docker build -t $REGISTRY/$REGISTRYPATH/$SERVICE_NAME:$CI_COMMIT_BRANCH-latest -t $REGISTRY/$REGISTRYPATH/$SERVICE_NAME:v.$CI_PIPELINE_IID .
+    - docker build -t $REGISTRY/$REGISTRYPATH/$SERVICE_NAME:$CI_COMMIT_BRANCH-v.$CI_PIPELINE_IID -t $REGISTRY/$REGISTRYPATH/$SERVICE_NAME:v.$CI_PIPELINE_IID .
     - docker login -u $DOCKER_REGISTRY_USER -p $DOCKER_REGISTRY_PASSWORD https://$REGISTRY/
     - docker push --all-tags $REGISTRY/$REGISTRYPATH/$SERVICE_NAME
+  after_script:
+    - curl -sX GET "https://$REGISTRY/service/rest/v1/search?repository=docker-local&name=$REGISTRYPATH/$SERVICE_NAME&version=$CI_COMMIT_BRANCH-v.*" | jq -r '.items[] | select(.version != "'"$CI_COMMIT_BRANCH-v.$CI_PIPELINE_IID"'") | .id' >> id.txt
+    - if grep -q . id.txt; then for id in $(cat id.txt); do if [[ $(curl --silent -u $DOCKER_REGISTRY_USER:$DOCKER_REGISTRY_PASSWORD -X DELETE "https://registry.kmf.kz/service/rest/v1/components/$id" --write-out '%{http_code}') == 204 ]]; then echo "id $id deleted"; else echo "error while deleting tag"; exit 1; fi; done ; fi
 
 setimage:
   stage: setimage
@@ -120,7 +123,7 @@ setimage:
     - curl -X GET --silent "https://gitlab.kmf.kz/api/v4/projects/$ENVID/repository/files/deployment.$CI_COMMIT_BRANCH.yml/raw?ref=master" --header "PRIVATE-TOKEN:$BBUSER_TOKEN" -o deployment.$CI_COMMIT_BRANCH.yml
     - cat deployment.$CI_COMMIT_BRANCH.yml
     - |
-      sed -i 's/image:.*$/'"image: $REGISTRY\/$REGISTRYPATH\/$SERVICE_NAME:v.$CI_PIPELINE_IID"'/g' deployment.$CI_COMMIT_BRANCH.yml
+      sed -i 's/image:.*$/'"image: $REGISTRY\/$REGISTRYPATH\/$SERVICE_NAME:$CI_COMMIT_BRANCH-v.$CI_PIPELINE_IID"'/g' deployment.$CI_COMMIT_BRANCH.yml
     - cat deployment.$CI_COMMIT_BRANCH.yml
     - curl -X PUT --silent "https://gitlab.kmf.kz/api/v4/projects/$ENVID/repository/files/deployment.$CI_COMMIT_BRANCH.yml?ref=master" --header "PRIVATE-TOKEN:$BBUSER_TOKEN" -F "branch=master" -F "author_email=devops@kmf.kz" -F "author_name=bbuser" -F "content=<deployment.$CI_COMMIT_BRANCH.yml" -F "commit_message=change_image for $CI_COMMIT_BRANCH to v.$CI_PIPELINE_IID"
 
