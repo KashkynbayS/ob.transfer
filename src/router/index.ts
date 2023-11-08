@@ -27,12 +27,12 @@ router.addRoute({
 				{
 					path: 'phone',
 					name: 'InternalPhone',
-					component: () => import('@/views/Internal/InternalPhone.vue')
+					component: () => import('@/views/Internal/internalPhone.vue')
 				},
 				{
 					path: 'account',
 					name: 'InternalAccount',
-					component: () => import('@/views/Internal/InternalIban.vue')
+					component: () => import('@/views/Internal/internalIban.vue')
 				}
 			]
 		},

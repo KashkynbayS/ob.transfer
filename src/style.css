@@ -9,3 +9,8 @@
 .cell-group {
 	margin: var(--space-4) 0;
 }
+
+.bottom-sheet--content {
+	width: 100%;
+}
+
