@@ -68,25 +68,11 @@ const rateHelperArgs = computed(() => {
 	}
 });
 
-
-// const handleWriteOffAmountChange = (event: InputEvent) => {
-// 	if (event.target) {
-// 		updateEnrollmentAmount(event.target.value)
-// 		form.lastUpdated = LAST_UPDATED.WRITE_OFF_AMOUNT
-// 	}
-// }
-
 const handleWriteOffAmountChange = (event: InputEvent) => {
 	const value = (event.target as HTMLInputElement)?.value;
 	value && (updateEnrollmentAmount(value), 
 	form.lastUpdated = LAST_UPDATED.WRITE_OFF_AMOUNT);
 };
-
-
-// const handleEnrollmentAmountChange = (event: InputEvent) => {
-// 	updateWriteOffAmount(event.target.value)
-// 	form.lastUpdated = LAST_UPDATED.ENROLLMENT_AMOUNT
-// }
 
 const handleEnrollmentAmountChange = (event: InputEvent) => {
 	const value = (event.target as HTMLInputElement)?.value;
@@ -96,25 +82,17 @@ const handleEnrollmentAmountChange = (event: InputEvent) => {
 
 const updateEnrollmentAmount = (value = form.writeOffAmount) => {
 	if (rateStore.rate && form.from && rateStore.rate.from.currency === (form.from as Account).currency) {
-		
 		form.enrollmentAmount = (Number(value) / rateStore.rate.from.amount).toString();
-
-		// form.enrollmentAmount = value / rateStore.rate.from.amount
 	} else {
 		form.enrollmentAmount = rateStore.rate ? (Number(value) * rateStore.rate.from.amount).toString() : '';
-
-		// form.enrollmentAmount = value * rateStore.rate.from.amount
-
 	}
 }
 
 const updateWriteOffAmount = (value = form.enrollmentAmount) => {
 	if (rateStore.rate && form.to && rateStore.rate.to.currency === (form.to as Account).currency) {
-		// form.writeOffAmount = value * rateStore.rate.from.amount
 		form.writeOffAmount = (Number(value) * rateStore.rate.from.amount).toString();
 
 	} else {
-		// form.writeOffAmount = value / rateStore.rate.from.amount
 		form.writeOffAmount = rateStore.rate ? (Number(value) / rateStore.rate.from.amount).toString() : '';
 	}
 }
@@ -135,7 +113,6 @@ watchEffect(() => {
 }, [rateStore.rate])
 
 watchEffect(() => {
-	// if (form.from?.currency === form.to?.currency) {
 	if ((form.from as Account | undefined)?.currency === (form.to as Account | undefined)?.currency) {
 		return
 	}
