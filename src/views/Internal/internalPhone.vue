@@ -4,10 +4,10 @@ import TransferDetailsBottomSheet from '@/components/transferDetailsBottomSheet.
 import { ACCOUNTS_GROUPS } from '@/mocks/internal'
 import { useTransferDetailsStore } from '@/stores/transferDetails.ts'
 import { Account } from '@/types'
-import User from '@ui-kit/kmf-icons/interface/users/user.svg'
-import { BottomSheet, Button, Cell, CellGroup, Input, Modal } from '@ui-kit/ui-kit'
+import { Button, Input, Modal } from '@ui-kit/ui-kit'
 import { ModalAction } from '@ui-kit/ui-kit/dist/ui/components/modal/types'
-import { computed, reactive, ref } from 'vue'
+import { SelectContactInput } from '@ui-kit/ui-kit/dist/widgets'
+import { reactive, ref } from 'vue'
 import { onBeforeRouteLeave, useRouter } from 'vue-router'
 import * as Yup from 'yup'
 
@@ -29,18 +29,6 @@ const transferredAmount = 567890; // сумма который был перев
 let ResidualAmount = 1000000 - transferredAmount; // остаток суммы перевода в день  
 
 // Validation
-const schemaPhone = Yup.object().shape({
-	phoneNumber: Yup.string()
-		.test('ownerPhone', 'Вы ввели номер владельца счета', function (value) {
-			return value !== contact.ownerPhone;
-		})
-		.test('phoneExists', 'По номеру телефона не найден клиент', function (value) {
-			const phoneNumberExists = contact.list.some((item) => item.phoneNumber === value);
-			return phoneNumberExists;
-		})
-		
-});
-
 const schemaAmount = Yup.object().shape({
 	amount: Yup.number()
 		.min(100, 'Минимальная сумма перевода 100 ₸')
@@ -59,29 +47,7 @@ const schemaAmount = Yup.object().shape({
 		})
 });
 
-const isPhoneInvalid = ref(false);
 const isAmountInvalid = ref(false);
-
-async function validatePhone() {
-	if (form.phoneNumber.trim() === '') {
-		isPhoneInvalid.value = true;
-		errors.phoneNumber = 'Введите номер телефона';
-		setTimeout(() => {
-			isPhoneInvalid.value = false;
-			errors.phoneNumber = '';
-		}, 2000);
-	}
-	else {
-		try {
-			await schemaPhone.validate(form, { abortEarly: false });
-			isPhoneInvalid.value = false;
-			errors.phoneNumber = '';
-		} catch (validationErrors: any) {
-			isPhoneInvalid.value = true;
-			errors.phoneNumber = validationErrors.errors[0];
-		}
-	}
-}
 
 async function validateAmount() {
 	if (form.amount.trim() === '') {
@@ -104,7 +70,6 @@ async function validateAmount() {
 }
 
 const handleSubmit = () => {
-	validatePhone();
 	validateAmount();
 };
 
@@ -143,25 +108,6 @@ onBeforeRouteLeave((to, _, next) => {
 	modal.value?.open()
 })
 // _________________________________________
-
-const contact = reactive({
-	value: '',
-	search: '',
-	ownerPhone: '87053811230',
-	list: [
-		{ name: 'Yernar', phoneNumber: '87053811231' },
-		{ name: 'Dulat', phoneNumber: '87053811232' },
-		{ name: 'Aibek', phoneNumber: '87053811233' },
-		{ name: 'Dosbol', phoneNumber: '87053811234' },
-		{ name: 'Zeinep', phoneNumber: '87053811235' }
-	]
-})
-
-const filteredContactList = computed(() =>
-	contact.list.filter((item) => item.name?.toLowerCase().includes(contact.search.toLowerCase()))
-)
-
-const contactBottomSheetRef = ref<InstanceType<typeof BottomSheet> | null>(null)
 </script>
 
 <template>
@@ -174,18 +120,7 @@ const contactBottomSheetRef = ref<InstanceType<typeof BottomSheet> | null>(null)
 				:label="$t('OWN.FORM.FROM')"
 			/>
 
-			<Input
-				id="123"
-				v-model="form.phoneNumber"
-				class="form-field"
-				:label="$t('INTERNAL.PHONE.FORM.PHONE_NUMBER')"
-				:invalid="isPhoneInvalid"
-				:helperText="errors.phoneNumber"
-			>
-				<template #append>
-					<User @click="contactBottomSheetRef?.open()" />
-				</template>
-			</Input>
+			<SelectContactInput/>
 
 			<Input
 				id="123"
@@ -201,21 +136,6 @@ const contactBottomSheetRef = ref<InstanceType<typeof BottomSheet> | null>(null)
 			<Button id="123" type="primary" @click="handleSubmit"> {{ $t('INTERNAL.PHONE.FORM.SUBMIT') }} </Button>
 		</div>
 	</form>
-
-	<BottomSheet ref="contactBottomSheetRef">
-		<template #title><h4>Контакты</h4></template>
-		<template #content>
-			<div class="address__bottom-sheet-content">
-				<Input id="contact-search" v-model="contact.search" placeholder="Поиск по названию" type="search" />
-				<CellGroup>
-					<Cell v-for="item in filteredContactList" :key="item.phoneNumber">
-						<template #title>{{ item.name }}</template>
-						<template #subtitle>{{ item.phoneNumber }}</template>
-					</Cell>
-				</CellGroup>
-			</div>
-		</template>
-	</BottomSheet>
 
 	<TransferDetailsBottomSheet />
 
@@ -248,6 +168,5 @@ const contactBottomSheetRef = ref<InstanceType<typeof BottomSheet> | null>(null)
 		}
 	}
 }
-
 </style>
 
