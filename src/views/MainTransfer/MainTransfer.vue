@@ -3,13 +3,13 @@ import AppNavbar from '@/components/AppNavbar.vue';
 import { SegmentedControl } from '@ui-kit/ui-kit';
 import { ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
-type SegnemtType = 'phone' | 'account'
-const segmentedControlValue = ref<SegnemtType>('phone')
+type SegnemtType = 'new' | 'frequent'
+const segmentedControlValue = ref<SegnemtType>('new')
 const router = useRouter()
 
 watch(segmentedControlValue, () => {
 	router.push({
-		name: segmentedControlValue.value === 'phone' ? 'InternalPhone' : 'InternalAccount'
+		name: segmentedControlValue.value === 'new' ? 'New' : 'Frequent'
 	})
 })
 </script>
@@ -17,23 +17,26 @@ watch(segmentedControlValue, () => {
 <template>
 	<AppNavbar>
 		<template #title
-			><h5>{{ $t('INTERNAL.TITLE') }}</h5></template
-		>
+			><h5>{{ $t('TRANSFER.TITLE') }}</h5>
+		</template>
+		
+		<template #label><button class="history" @click="">{{ $t('TRANSFER.HISTORY') }}</button></template>
 	</AppNavbar>
-	<div class="internal">
+	
+	<div class="transfer">
 		<SegmentedControl
 			v-model="segmentedControlValue"
 			:options="[
 				{
-					id: 'phone',
-					value: 'phone',
-					label: $t('INTERNAL.TABS.PHONE'),
+					id: 'new',
+					value: 'new',
+					label: $t('TRANSFER.TABS.NEW'),
 					disabled: false
 				},
 				{
-					id: 'account',
-					value: 'account',
-					label: $t('INTERNAL.TABS.IBAN'),
+					id: 'frequent',
+					value: 'frequent',
+					label: $t('TRANSFER.TABS.FREQUENT'),
 					disabled: false
 				}
 			]"
@@ -43,13 +46,21 @@ watch(segmentedControlValue, () => {
 	<router-view></router-view>
 </template>
 <style lang="scss">
-.internal {
+.transfer {
 	box-sizing: content-box;
 	height: 100%;
 	padding: var(--space-8) var(--space-4) 0 var(--space-4);
-
+ 
 	.segment-picker {
 		width: 100%;
 	}
+}
+
+.navbar__label {
+	padding: 10px var(--space-4);
+}
+
+.history {
+	color: var(--txt-icons-red, #ED1307);
 }
 </style>
