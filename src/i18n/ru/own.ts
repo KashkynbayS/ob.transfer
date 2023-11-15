@@ -8,7 +8,10 @@ export const OWN = {
 		ENROLLMENT_AMOUNT: 'Зачисление в {currency}',
 		SUBMIT: 'Перевести',
 		RATE: 'Курс: {from} = {to}',
-		COMMISSION: 'Комиссия: 0 ₸'
+		COMMISSION: 'Комиссия: 0 ₸',
+		ERRORS: {
+			NOT_ENOUGH_MONEY: 'Недостаточно средств'
+		}
 	},
 	CURRENCIES: {
 		KZT: 'тенге',

@@ -16,62 +16,62 @@ const transferDetailsStore = useTransferDetailsStore()
 const form = reactive({
 	accountFrom: null as Account | null,
 	phoneNumber: '',
-	amount: '',
+	amount: ''
 })
 
 const errors = reactive({
-  accountFrom: '',
-  phoneNumber: '',
-  amount: '',
-});
+	accountFrom: '',
+	phoneNumber: '',
+	amount: ''
+})
 
-const transferredAmount = 567890; // сумма который был переведен в день
-let ResidualAmount = 1000000 - transferredAmount; // остаток суммы перевода в день  
+const transferredAmount = 567890 // сумма который был переведен в день
+const ResidualAmount = 1000000 - transferredAmount // остаток суммы перевода в день
 
 // Validation
 const schemaAmount = Yup.object().shape({
 	amount: Yup.number()
 		.min(100, 'Минимальная сумма перевода 100 ₸')
 		.test('balance', 'Недостаточно средств', function (value) {
-			const selectedAccount = form.accountFrom?.id;
-			const selectedAccountData = ACCOUNTS_GROUPS
-				.flatMap(group => group.list)
-				.find(account => account.id === selectedAccount);
+			const selectedAccount = form.accountFrom?.id
+			const selectedAccountData = ACCOUNTS_GROUPS.flatMap((group) => group.list).find(
+				(account) => account.id === selectedAccount
+			)
 			if (!selectedAccountData) {
-				return true;
+				return true
 			}
-			return value ? value <= selectedAccountData?.amount : false;
+			return value ? value <= selectedAccountData?.amount : false
 		})
 		.test('ResidualAmount', `Остаток суммы перевода в день ${ResidualAmount} ₸`, function (value) {
-			return !value ? false : value <= ResidualAmount;
+			return !value ? false : value <= ResidualAmount
 		})
-});
+})
 
-const isAmountInvalid = ref(false);
+const isAmountInvalid = ref(false)
 
 async function validateAmount() {
 	if (form.amount.trim() === '') {
-		isAmountInvalid.value = true;
-		errors.amount = 'Введите сумму';
+		isAmountInvalid.value = true
+		errors.amount = 'Введите сумму'
 		setTimeout(() => {
-			isAmountInvalid.value = false;
-			errors.amount = '';
-		}, 2000);
+			isAmountInvalid.value = false
+			errors.amount = ''
+		}, 2000)
 	} else {
 		try {
-			await schemaAmount.validate(form, { abortEarly: false });
-			isAmountInvalid.value = false;
-			errors.amount = '';
+			await schemaAmount.validate(form, { abortEarly: false })
+			isAmountInvalid.value = false
+			errors.amount = ''
 		} catch (validationErrors: any) {
-			isAmountInvalid.value = true;
-			errors.amount = validationErrors.errors[0];
+			isAmountInvalid.value = true
+			errors.amount = validationErrors.errors[0]
 		}
 	}
 }
 
 const handleSubmit = () => {
-	validateAmount();
-};
+	validateAmount()
+}
 
 // Modal
 const modal = ref<InstanceType<typeof Modal> | null>(null)
@@ -115,12 +115,12 @@ onBeforeRouteLeave((to, _, next) => {
 		<div class="internal-phone-form-top">
 			<AccountDropdown
 				id="from"
-				v-model="(form.accountFrom as Account | null | undefined)"
+				v-model="form.accountFrom as Account | null | undefined"
 				:accounts-groups="ACCOUNTS_GROUPS"
 				:label="$t('OWN.FORM.FROM')"
 			/>
 
-			<SelectContactInput/>
+			<SelectContactInput />
 
 			<Input
 				id="123"
@@ -128,11 +128,17 @@ onBeforeRouteLeave((to, _, next) => {
 				class="form-field"
 				:label="$t('INTERNAL.PHONE.FORM.SUM')"
 				:invalid="isAmountInvalid"
-				:helperText="errors.amount"
+				:helper-text="errors.amount"
 			/>
 		</div>
 		<div class="internal-phone-form-bottom">
-			<Button id="123" type="primary" @click="transferDetailsStore.openBottomSheet()" style="margin-bottom: var(--space-1)">Детали</Button>
+			<Button
+				id="123"
+				type="primary"
+				style="margin-bottom: var(--space-1)"
+				@click="transferDetailsStore.openBottomSheet()"
+				>Детали</Button
+			>
 			<Button id="123" type="primary" @click="handleSubmit"> {{ $t('INTERNAL.PHONE.FORM.SUBMIT') }} </Button>
 		</div>
 	</form>
@@ -169,4 +175,3 @@ onBeforeRouteLeave((to, _, next) => {
 	}
 }
 </style>
-

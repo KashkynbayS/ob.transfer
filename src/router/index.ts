@@ -40,6 +40,11 @@ router.addRoute({
 			path: 'own',
 			name: 'Own',
 			component: () => import('@/views/Own.vue')
+		},
+		{
+			path: 'success',
+			name: 'Success',
+			component: () => import('@/views/Success.vue')
 		}
 	]
 })
