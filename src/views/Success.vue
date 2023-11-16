@@ -1,6 +1,18 @@
 <script setup lang="ts">
-import PageTemplate from '@/layouts/PageTemplate.vue'
 import { Button } from '@ui-kit/ui-kit'
+
+import PageTemplate from '@/layouts/PageTemplate.vue'
+import { useSuccessStore } from '@/stores/success'
+import { watch } from 'vue'
+
+const successStore = useSuccessStore()
+
+watch(
+	() => successStore,
+	(store) => {
+		console.log(store)
+	}
+)
 </script>
 
 <template>

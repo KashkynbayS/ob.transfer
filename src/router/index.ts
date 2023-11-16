@@ -44,6 +44,7 @@ router.addRoute({
 		{
 			path: 'success',
 			name: 'Success',
+			props: true,
 			component: () => import('@/views/Success.vue')
 		}
 	]

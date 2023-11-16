@@ -1,7 +1,5 @@
 <script setup lang="ts">
-import { computed, ref, watchEffect } from 'vue'
-
-import { object, string, ValidationError } from 'yup'
+import { computed, ref, watch, watchEffect } from 'vue'
 
 import { Button, Input } from '@ui-kit/ui-kit'
 
@@ -13,35 +11,20 @@ import AppNavbar from '@/components/AppNavbar.vue'
 import { ACCOUNTS_GROUPS } from '@/mocks/own'
 
 import { CURRENCY_SYMBOL } from '@/constants'
-import { LAST_UPDATED, OwnForm } from '@/types'
+import { CURRENCY, LAST_UPDATED, OwnForm } from '@/types'
 
+import { OWN_FORM_STATE, useOwnStore } from '@/stores/own.ts'
 import { useRateStore } from '@/stores/rate.ts'
+import { useSuccessStore } from '@/stores/success.ts'
+
 import { extractCurrencyFromAmount } from '@/utils/currencies'
+import { useRouter } from 'vue-router'
 
-const formSchema = object<{
-	amount: string
-	writeOffAmount: string
-}>({
-	amount: string().test('amount', 'OWN.FORM.ERRORS.NOT_ENOUGH_MONEY', (value) => {
-		if (!form.value.from || !value) {
-			return false
-		}
-		return form.value.from?.amount >= Number(value)
-	}),
-	writeOffAmount: string().test('writeOffAmount', 'OWN.FORM.ERRORS.NOT_ENOUGH_MONEY', (value) => {
-		if (!form.value.from || !value) {
-			return false
-		}
-		return form.value.from?.amount >= Number(value)
-	})
-})
-
+const ownStore = useOwnStore()
 const rateStore = useRateStore()
+const successStore = useSuccessStore()
 
-const errors = ref({
-	amount: '',
-	writeOffAmount: ''
-})
+const router = useRouter()
 
 const form = ref<OwnForm>({
 	from: undefined,
@@ -91,36 +74,24 @@ const rateHelperArgs = computed(() => {
 })
 
 const handleWriteOffAmountChange = (event: InputEvent) => {
+	ownStore.clearErrors()
+
 	const target = event.target as HTMLInputElement
 	updateEnrollmentAmount(target.value)
 	form.value.lastUpdated = LAST_UPDATED.WRITE_OFF_AMOUNT
 }
 
 const handleEnrollmentAmountChange = (event: InputEvent) => {
+	ownStore.clearErrors()
+
 	const target = event.target as HTMLInputElement
 	updateWriteOffAmount(target.value)
 	form.value.lastUpdated = LAST_UPDATED.ENROLLMENT_AMOUNT
 }
 
-const handleSubmit = (e: Event) => {
+const handleSubmit = (e: Event | null = null) => {
 	e?.preventDefault()
-
-	formSchema
-		.validate(form, { abortEarly: false })
-		.then(() => {
-			console.log('valid')
-		})
-		.catch((err) => {
-			const validationErrors = err as ValidationError
-
-			errors.value = validationErrors.inner.reduce(
-				(acc, e) => {
-					acc[e.path as keyof typeof acc] = e.message
-					return acc
-				},
-				{ ...errors.value }
-			)
-		})
+	ownStore.validate(form.value)
 }
 
 const updateEnrollmentAmount = (value = form.value.writeOffAmount) => {
@@ -128,11 +99,22 @@ const updateEnrollmentAmount = (value = form.value.writeOffAmount) => {
 		return
 	}
 
-	if (rateStore.rate.from.currency === form.value.from.currency) {
-		form.value.enrollmentAmount = (Number(value) / rateStore.rate.from.amount).toString()
-	} else {
-		form.value.enrollmentAmount = (Number(value) * rateStore.rate.from.amount).toString()
+	const enteredAmount = Number(value)
+
+	if (isNaN(enteredAmount)) {
+		return
 	}
+
+	const rateAmount = rateStore.rate.from.amount
+	let res
+
+	if (rateStore.rate.from.currency === form.value.from.currency) {
+		res = enteredAmount / rateAmount
+	} else {
+		res = enteredAmount * rateAmount
+	}
+
+	form.value.enrollmentAmount = res.toString()
 }
 
 const updateWriteOffAmount = (value = form.value.enrollmentAmount) => {
@@ -140,11 +122,22 @@ const updateWriteOffAmount = (value = form.value.enrollmentAmount) => {
 		return
 	}
 
-	if (rateStore.rate.to.currency === form.value.to.currency) {
-		form.value.writeOffAmount = (Number(value) * rateStore.rate.from.amount).toString()
-	} else {
-		form.value.writeOffAmount = (Number(value) / rateStore.rate.from.amount).toString()
+	const numbered = Number(value)
+
+	if (isNaN(numbered)) {
+		return
 	}
+
+	const rateAmount = rateStore.rate.from.amount
+	let res
+
+	if (rateStore.rate.to.currency === form.value.to.currency) {
+		res = numbered * rateAmount
+	} else {
+		res = numbered / rateAmount
+	}
+
+	form.value.writeOffAmount = res.toString()
 }
 
 watchEffect(() => {
@@ -169,6 +162,36 @@ watchEffect(() => {
 
 	rateStore.fetchRate()
 })
+
+watch(
+	() => ownStore.state,
+	(state) => {
+		switch (state) {
+			case OWN_FORM_STATE.SUCCESS:
+				successStore.setDetails(Number(form.value.amount), form.value.from?.currency || CURRENCY.KZT, [
+					{ name: 'Сумма списания', value: '100 $' },
+					{ name: 'Статус', value: 'Исполнено', colored: true },
+					{ name: 'Номер квитанции', value: '56789900' },
+					{ name: 'Счет списания', value: 'KZ****4893' },
+					{ name: 'Счет зачисления', value: 'KZ****4893' },
+					{ name: 'Дата', value: '11.04.2023' }
+				])
+				router.push('Success')
+				break
+
+			case OWN_FORM_STATE.ERROR:
+				router.push('Error')
+				break
+
+			case OWN_FORM_STATE.INITIAL:
+			default:
+				break
+		}
+		if (state) {
+			console.log(state)
+		}
+	}
+)
 </script>
 
 <template>
@@ -186,6 +209,7 @@ watchEffect(() => {
 				:accounts-groups="ACCOUNTS_GROUPS"
 				:label="$t('OWN.FORM.FROM')"
 				:disabled="form.to"
+				@update:model-value="ownStore.clearErrors()"
 			/>
 			<AccountDropdown
 				id="to"
@@ -193,15 +217,16 @@ watchEffect(() => {
 				:accounts-groups="ACCOUNTS_GROUPS"
 				:label="$t('OWN.FORM.TO')"
 				:disabled="form.from"
+				@update:model-value="ownStore.clearErrors()"
 			/>
 
 			<template v-if="hasDifferentCurrencies">
 				<Input
 					id="writeOffAmount"
 					v-model="form.writeOffAmount"
-					:invalid="!!errors.writeOffAmount"
+					:invalid="!!ownStore.errors.writeOffAmount"
 					:label="$t('OWN.FORM.WRITE_OFF_AMOUNT', { currency: $t(writeOffCurrency) })"
-					:helper-text="errors.writeOffAmount ? $t(errors.writeOffAmount) : ''"
+					:helper-text="ownStore.errors.writeOffAmount ? $t(ownStore.errors.writeOffAmount) : ''"
 					@input="handleWriteOffAmountChange"
 				/>
 				<Input
@@ -217,13 +242,16 @@ watchEffect(() => {
 				<Input
 					id="amount"
 					v-model="form.amount"
-					:invalid="!!errors.amount"
+					:invalid="!!ownStore.errors.amount"
 					:label="$t('OWN.FORM.AMOUNT')"
-					:helper-text="!!errors.amount ? $t(errors.amount) : $t('OWN.FORM.COMMISSION', rateHelperArgs)"
+					:helper-text="
+						!!ownStore.errors.amount ? $t(ownStore.errors.amount) : $t('OWN.FORM.COMMISSION', rateHelperArgs)
+					"
+					@on-input="ownStore.clearErrors()"
 				/>
 			</template>
 
-			<Button id="ownSubmit" class="form__submit" type="primary" attr-type="submit">
+			<Button id="ownSubmit" class="form__submit" type="primary" attr-type="submit" @click="handleSubmit">
 				{{ $t('OWN.FORM.SUBMIT') }}
 			</Button>
 		</form>
