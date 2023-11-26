@@ -1,45 +1,22 @@
 import { defineStore } from 'pinia'
-import { object, string, ValidationError } from 'yup'
+import { object } from 'yup'
 
 import { OwnService } from '@/services/own.service'
 
-import { Account } from '@/types/account'
+import { FORM_STATE, FormStore } from '@/types/form'
 import { OwnForm } from '@/types/own'
+import { extractValidationErrors, validateAmountFromAccount } from '@/utils/validators'
 
-export enum OWN_FORM_STATE {
-	INITIAL = 'initial',
-	LOADING = 'loading',
-	SUCCESS = 'success',
-	ERROR = 'error'
-}
-
-export interface OwnStore {
-	errors: Record<string, string>
-	state: OWN_FORM_STATE
-}
-
-const validateAmount = (value: string | undefined, fromAccount: Account) => {
-	if (!fromAccount || !value) {
-		return true
-	}
-
-	return fromAccount.amount >= Number(value)
-}
+export interface OwnStore extends FormStore {}
 
 const formSchema = object({
-	amount: string().test('amount', 'OWN.FORM.ERRORS.NOT_ENOUGH_MONEY', function (value) {
-		const { fromAccount } = this.options.context as { fromAccount: Account }
-		return validateAmount(value, fromAccount)
-	}),
-	writeOffAmount: string().test('writeOffAmount', 'OWN.FORM.ERRORS.NOT_ENOUGH_MONEY', function (value) {
-		const { fromAccount } = this.options.context as { fromAccount: Account }
-		return validateAmount(value, fromAccount)
-	})
+	amount: validateAmountFromAccount('amount', 'OWN.FORM.ERRORS.NOT_ENOUGH_MONEY'),
+	writeOffAmount: validateAmountFromAccount('writeOffAmount', 'OWN.FORM.ERRORS.NOT_ENOUGH_MONEY')
 })
 
 export const useOwnStore = defineStore('own', {
 	state: (): OwnStore => ({
-		state: OWN_FORM_STATE.INITIAL,
+		state: FORM_STATE.INITIAL,
 		errors: {
 			amount: '',
 			writeOffAmount: ''
@@ -49,15 +26,15 @@ export const useOwnStore = defineStore('own', {
 		submitForm(form: OwnForm) {
 			OwnService.transferOwn(form)
 				.then(() => {
-					this.state = OWN_FORM_STATE.SUCCESS
+					this.state = FORM_STATE.SUCCESS
 				})
 				.catch(() => {
-					this.state = OWN_FORM_STATE.ERROR
+					this.state = FORM_STATE.ERROR
 				})
 		},
 		validate(form: OwnForm) {
 			this.clearErrors()
-			this.state = OWN_FORM_STATE.LOADING
+			this.state = FORM_STATE.LOADING
 
 			formSchema
 				.validate(form, { abortEarly: false, context: { fromAccount: form.from } })
@@ -65,16 +42,8 @@ export const useOwnStore = defineStore('own', {
 					this.submitForm(form)
 				})
 				.catch((err) => {
-					this.state = OWN_FORM_STATE.INITIAL
-					const validationErrors = err as ValidationError
-
-					this.errors = validationErrors.inner.reduce(
-						(acc, e) => {
-							acc[e.path as keyof typeof acc] = e.message
-							return acc
-						},
-						{ ...this.errors }
-					)
+					this.state = FORM_STATE.INITIAL
+					this.errors = extractValidationErrors(this.errors, err)
 				})
 		},
 		clearErrors() {

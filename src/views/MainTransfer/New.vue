@@ -1,14 +1,10 @@
 <script setup lang="ts">
-
-import { Cell, CellGroup } from '@ui-kit/ui-kit';
-
-import { useRouter } from 'vue-router';
-
-import TransAnotherAccaunts from '@/assets/icons/transAnotherAccaunts.svg';
-import TransBetweenMyAccaunts from '@/assets/icons/transBetweenMyAccaunts.svg';
-import ArrowRightIcon from '@ui-kit/kmf-icons/arrows/large/arrowRight.svg';
-import KMFSemifilled from '@ui-kit/kmf-icons/logos/kmf-semifilled.svg';
-
+import TransAnotherAccaunts from '@/assets/icons/transAnotherAccaunts.svg'
+import TransBetweenMyAccaunts from '@/assets/icons/transBetweenMyAccaunts.svg'
+import ArrowRightIcon from '@ui-kit/kmf-icons/arrows/large/arrowRight.svg'
+import KMFSemifilled from '@ui-kit/kmf-icons/logos/kmf-semifilled.svg'
+import { Cell, CellGroup } from '@ui-kit/ui-kit'
+import { useRouter } from 'vue-router'
 const router = useRouter()
 
 const transferTypes = [
@@ -28,32 +24,29 @@ const transferTypes = [
 		leftIcon: TransAnotherAccaunts,
 		title: 'TRANSFER.OTHER.TITLE',
 		subTitle: 'TRANSFER.OTHER.SUBTITLE',
-		link: '/other'
+		link: '/external'
 	}
 ]
 </script>
 
 <template>
 	<CellGroup>
-		<cell 
-			left-type="img" 
-			:left-bg="'var(--bg-dark)'" 
+		<Cell
+			v-for="item in transferTypes"
+			:key="item.title"
+			left-type="img"
+			:left-bg="'var(--bg-dark)'"
 			:left-color="'var(--accent-primary)'"
-			
-			v-for="item in transferTypes" 
-			:key="item.title" 
 			@click="router.push(item.link)"
-			>
-				<template #left> <Component :is="item.leftIcon"  /> </template>
-				<template #title> {{ $t(item.title) }} </template>
-				<template #subtitle>{{ $t(item.subTitle) }}</template>
-				<template #right-button>
-					<ArrowRightIcon />
-				</template>
-		</cell>
+		>
+			<template #left> <Component :is="item.leftIcon" /> </template>
+			<template #title> {{ $t(item.title) }} </template>
+			<template #subtitle>{{ $t(item.subTitle) }}</template>
+			<template #right-button>
+				<ArrowRightIcon />
+			</template>
+		</Cell>
 	</CellGroup>
 </template>
 
-<style scoped lang="scss">
-</style>
-
+<style scoped lang="scss"></style>

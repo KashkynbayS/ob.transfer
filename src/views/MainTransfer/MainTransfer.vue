@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import AppNavbar from '@/components/AppNavbar.vue';
-import { SegmentedControl } from '@ui-kit/ui-kit';
-import { ref, watch } from 'vue';
-import { useRouter } from 'vue-router';
+import AppNavbar from '@/components/AppNavbar.vue'
+import { SegmentedControl } from '@ui-kit/ui-kit'
+import { ref, watch } from 'vue'
+import { useRouter } from 'vue-router'
 type SegnemtType = 'new' | 'frequent'
 const segmentedControlValue = ref<SegnemtType>('new')
 const router = useRouter()
@@ -16,13 +16,15 @@ watch(segmentedControlValue, () => {
 
 <template>
 	<AppNavbar>
-		<template #title
-			><h5>{{ $t('TRANSFER.TITLE') }}</h5>
+		<template #title>
+			<h5>{{ $t('TRANSFER.TITLE') }}</h5>
 		</template>
-		
-		<template #label><button class="history" @click="">{{ $t('TRANSFER.HISTORY') }}</button></template>
+
+		<template #label>
+			<button class="history">{{ $t('TRANSFER.HISTORY') }}</button>
+		</template>
 	</AppNavbar>
-	
+
 	<div class="transfer">
 		<SegmentedControl
 			v-model="segmentedControlValue"
@@ -50,7 +52,7 @@ watch(segmentedControlValue, () => {
 	box-sizing: content-box;
 	height: 100%;
 	padding: var(--space-8) var(--space-4) 0 var(--space-4);
- 
+
 	.segment-picker {
 		width: 100%;
 	}
@@ -61,6 +63,6 @@ watch(segmentedControlValue, () => {
 }
 
 .history {
-	color: var(--txt-icons-red, #ED1307);
+	color: var(--txt-icons-red, #ed1307);
 }
 </style>

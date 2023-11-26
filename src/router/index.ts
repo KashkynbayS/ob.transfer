@@ -56,6 +56,11 @@ router.addRoute({
 			component: () => import('@/views/Own.vue')
 		},
 		{
+			path: 'external',
+			name: 'External',
+			component: () => import('@/views/External.vue')
+		},
+		{
 			path: 'success',
 			name: 'Success',
 			props: true,

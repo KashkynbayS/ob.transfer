@@ -14,3 +14,6 @@
 	width: 100%;
 }
 
+.segment-picker__item {
+	font-weight: var(--font-weight-semibold);
+}

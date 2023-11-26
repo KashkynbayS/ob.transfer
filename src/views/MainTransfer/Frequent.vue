@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { Cell, CellGroup } from '@ui-kit/ui-kit';
+import { Cell, CellGroup } from '@ui-kit/ui-kit'
 
-import { useRouter } from 'vue-router';
+import { useRouter } from 'vue-router'
 
-import Transfers from '@ui-kit/kmf-icons/finance/transfers/transfers.svg';
+import Transfers from '@ui-kit/kmf-icons/finance/transfers/transfers.svg'
 
 const router = useRouter()
 
@@ -37,21 +37,19 @@ const frequents = [
 
 <template>
 	<CellGroup>
-		<cell 
-			left-type="img" 
-			:left-bg="'var(--bg-dark)'" 
+		<Cell
+			v-for="item in frequents"
+			:key="item.title"
+			left-type="img"
+			:left-bg="'var(--bg-dark)'"
 			:left-color="'var(--accent-primary)'"
-			
-			v-for="item in frequents" 
-			:key="item.title" 
 			@click="router.push(item.link)"
-			>
-				<template #left> <Component :is="item.leftIcon" /> </template>
-				<template #title> {{ item.title }} </template>
-				<template #subtitle>{{ item.subTitle }}</template>
-		</cell>
+		>
+			<template #left> <Component :is="item.leftIcon" /> </template>
+			<template #title> {{ item.title }} </template>
+			<template #subtitle>{{ item.subTitle }}</template>
+		</Cell>
 	</CellGroup>
 </template>
 
-<style scoped lang="scss">
-</style>
+<style scoped lang="scss"></style>
