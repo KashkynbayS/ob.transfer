@@ -92,7 +92,6 @@ build:
     - npm i fs
     - npm i path
     - node ./converter/converter.js
-    - rm -r ./src/assets/images/*
     - npm install --save-dev --save-exact prettier -f
     - npx prettier --write "{,!(node_modules)/**/}*.{ts,tsx,vue}"
   script:
