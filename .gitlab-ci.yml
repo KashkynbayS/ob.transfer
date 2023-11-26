@@ -47,6 +47,7 @@ node_lint:
     - dev
   image: node:18.16.0
   script:
+    - npm i
     - npm root -g
     - npm install -g eslint
     - npm install eslint-plugin-prettier
@@ -92,8 +93,6 @@ build:
     - npm i path
     - node ./converter/converter.js
     - rm -r ./src/assets/images/*
-    - mv ./output/* ./src/assets/images
-    - rm -r ./output
     - npm install --save-dev --save-exact prettier -f
     - npx prettier --write "{,!(node_modules)/**/}*.{ts,tsx,vue}"
   script:
