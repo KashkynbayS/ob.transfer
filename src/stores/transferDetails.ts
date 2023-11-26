@@ -15,7 +15,7 @@ export const useTransferDetailsStore = defineStore('transferDetails', {
 			{
 				key: 'Статус',
 				value: 'Исполнен',
-                status: true
+				status: true
 			},
 			{
 				key: 'Номер квитанции',

@@ -115,7 +115,7 @@ onBeforeRouteLeave((to, _, next) => {
 		<div class="internal-phone-form-top">
 			<AccountDropdown
 				id="from"
-				v-model="form.accountFrom as Account | null | undefined"
+				v-model="form.accountFrom"
 				:accounts-groups="ACCOUNTS_GROUPS"
 				:label="$t('OWN.FORM.FROM')"
 			/>

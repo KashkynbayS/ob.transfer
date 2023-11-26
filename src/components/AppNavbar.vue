@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import ArrowLeft from '@ui-kit/kmf-icons/arrows/large/arrowLeft.svg';
-import { Navbar } from '@ui-kit/ui-kit';
-import { useSlots } from 'vue';
-import { useRouter } from 'vue-router';
+import ArrowLeft from '@ui-kit/kmf-icons/arrows/large/arrowLeft.svg'
+import { Navbar } from '@ui-kit/ui-kit'
+import { useSlots } from 'vue'
+import { useRouter } from 'vue-router'
 
 const router = useRouter()
 
