@@ -1,16 +1,16 @@
 variables:
-  SERVICE_NAME: 'ob.transfer.ui'
+  SERVICE_NAME: "ob.transfer.ui"
   GIT_CLEAN_FLAGS: none
-  NAMESPACE: 'onbank'
-  DEPLOYMENT: 'transfer-ui'
-  ENVID: '1674'
-  REGISTRYPATH: 'web'
-  REGISTRY: 'registry.kmf.kz'
+  NAMESPACE: "onbank"
+  DEPLOYMENT: "transfer-ui"
+  ENVID: "1674"
+  REGISTRYPATH: "web"
+  REGISTRY: "registry.kmf.kz"
   GIT_DEPTH: 200
 
 services:
   - name: docker:dind
-    command: ['--registry-mirror', 'https://registry.kmf.kz']
+    command: ["--registry-mirror", "https://registry.kmf.kz"]
     alias: docker
 
 stages:
