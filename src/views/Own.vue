@@ -13,10 +13,11 @@ import { ACCOUNTS_GROUPS } from '@/mocks/own'
 import { CURRENCY_SYMBOL } from '@/constants'
 import { CURRENCY, LAST_UPDATED, OwnForm } from '@/types'
 
-import { OWN_FORM_STATE, useOwnStore } from '@/stores/own.ts'
+import { useOwnStore } from '@/stores/own.ts'
 import { useRateStore } from '@/stores/rate.ts'
 import { useSuccessStore } from '@/stores/success.ts'
 
+import { FORM_STATE } from '@/types/form'
 import { extractCurrencyFromAmount } from '@/utils/currencies'
 import { useRouter } from 'vue-router'
 
@@ -167,7 +168,7 @@ watch(
 	() => ownStore.state,
 	(state) => {
 		switch (state) {
-			case OWN_FORM_STATE.SUCCESS:
+			case FORM_STATE.SUCCESS:
 				successStore.setDetails(Number(form.value.amount), form.value.from?.currency || CURRENCY.KZT, [
 					{ name: 'Сумма списания', value: '100 $' },
 					{ name: 'Статус', value: 'Исполнено', colored: true },
@@ -179,11 +180,11 @@ watch(
 				router.push('Success')
 				break
 
-			case OWN_FORM_STATE.ERROR:
+			case FORM_STATE.ERROR:
 				router.push('Error')
 				break
 
-			case OWN_FORM_STATE.INITIAL:
+			case FORM_STATE.INITIAL:
 			default:
 				break
 		}
