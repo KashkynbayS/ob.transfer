@@ -83,7 +83,7 @@ onMounted(() => {
 				:label="$t('OWN.FORM.TO')"
 			/>
 			<IbanInput
-				id="123"
+				id="recieverNameModel"
 				v-model:model-value="form.accountTo"
 				:invalid="!!form.accountTo"
 				class="form-field"
@@ -97,13 +97,12 @@ onMounted(() => {
 				:label="$t('INTERNAL.IBAN.FORM.RECIEVER_NAME')"
 			/>
 			<CurrencyInput
-				id="123"
+				id="amount"
 				v-model:model-value="form.amount"
 				:invalid="!!form.amount"
 				class="form-field"
 				:label="$t('INTERNAL.IBAN.FORM.SUM')"
 			/>
-			<span>{{ form.amount }}</span>
 		</div>
 		<div class="internal-iban-form-bottom">
 			<Button id="internal-iban-submit" type="primary" @click="handleSubmit">
