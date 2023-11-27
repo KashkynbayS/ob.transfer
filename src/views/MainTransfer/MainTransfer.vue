@@ -1,10 +1,15 @@
 <script setup lang="ts">
-import AppNavbar from '@/components/AppNavbar.vue'
-import { SegmentedControl } from '@ui-kit/ui-kit'
-import { ref, watch } from 'vue'
-import { useRouter } from 'vue-router'
+import { ref, watch } from 'vue';
+
+import { useRouter } from 'vue-router';
+
+import { SegmentedControl } from '@ui-kit/ui-kit';
+
+import AppNavbar from '@/components/AppNavbar.vue';
+
 type SegnemtType = 'new' | 'frequent'
 const segmentedControlValue = ref<SegnemtType>('new')
+
 const router = useRouter()
 
 watch(segmentedControlValue, () => {

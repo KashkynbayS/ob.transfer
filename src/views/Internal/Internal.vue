@@ -1,8 +1,12 @@
 <script setup lang="ts">
-import AppNavbar from '@/components/AppNavbar.vue'
-import { SegmentedControl } from '@ui-kit/ui-kit'
-import { ref, watch } from 'vue'
-import { useRouter } from 'vue-router'
+import { ref, watch } from 'vue';
+
+import { useRouter } from 'vue-router';
+
+import { SegmentedControl } from '@ui-kit/ui-kit';
+
+import AppNavbar from '@/components/AppNavbar.vue';
+
 type SegnemtType = 'phone' | 'account'
 const segmentedControlValue = ref<SegnemtType>('phone')
 const router = useRouter()
@@ -16,9 +20,7 @@ watch(segmentedControlValue, () => {
 
 <template>
 	<AppNavbar>
-		<template #title
-			><h5>{{ $t('INTERNAL.TITLE') }}</h5></template
-		>
+		<template #title><h5>{{ $t('INTERNAL.TITLE') }}</h5></template>
 	</AppNavbar>
 	<div class="internal">
 		<SegmentedControl

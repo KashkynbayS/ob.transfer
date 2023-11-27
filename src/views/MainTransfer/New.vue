@@ -1,10 +1,14 @@
 <script setup lang="ts">
-import TransAnotherAccaunts from '@/assets/icons/transAnotherAccaunts.svg'
-import TransBetweenMyAccaunts from '@/assets/icons/transBetweenMyAccaunts.svg'
-import ArrowRightIcon from '@ui-kit/kmf-icons/arrows/large/arrowRight.svg'
-import KMFSemifilled from '@ui-kit/kmf-icons/logos/kmf-semifilled.svg'
-import { Cell, CellGroup } from '@ui-kit/ui-kit'
-import { useRouter } from 'vue-router'
+
+import { useRouter } from 'vue-router';
+
+import { Cell, CellGroup } from '@ui-kit/ui-kit';
+
+import TransAnotherAccaunts from '@/assets/icons/transAnotherAccaunts.svg';
+import TransBetweenMyAccaunts from '@/assets/icons/transBetweenMyAccaunts.svg';
+import ArrowRightIcon from '@ui-kit/kmf-icons/arrows/large/arrowRight.svg';
+import KMFSemifilled from '@ui-kit/kmf-icons/logos/kmf-semifilled.svg';
+
 const router = useRouter()
 
 const transferTypes = [

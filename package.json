@@ -19,7 +19,7 @@
 		"@ui-kit/kmf-styles": "0.1.26",
 		"@ui-kit/ui-kit": "^1.0.21",
 		"@vee-validate/yup": "^4.11.8",
-		"axios": "^1.5.0",
+		"axios": "^1.6.2",
 		"pinia": "^2.1.6",
 		"single-spa-vue": "^3.0.0",
 		"vee-validate": "^4.11.8",

@@ -11,5 +11,7 @@ export interface OwnForm {
 	amount: string
 	writeOffAmount: string
 	enrollmentAmount: string
-	lastUpdated: LAST_UPDATED | undefined
+	lastUpdated: LAST_UPDATED | undefined,
+	transferType: string,
+	receiverName: string
 }

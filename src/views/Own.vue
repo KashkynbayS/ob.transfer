@@ -1,5 +1,7 @@
 <script setup lang="ts">
-import { computed, ref, watch, watchEffect } from 'vue'
+import { computed, onMounted, ref, watch, watchEffect } from 'vue'
+
+import { useRouter } from 'vue-router'
 
 import { Button, Input } from '@ui-kit/ui-kit'
 
@@ -15,17 +17,18 @@ import { CURRENCY, LAST_UPDATED, OwnForm } from '@/types'
 
 import { useOwnStore } from '@/stores/own.ts'
 import { useRateStore } from '@/stores/rate.ts'
+
 import { useSuccessStore } from '@/stores/success.ts'
 
+const router = useRouter()
+
+import { addToFrequents } from '@/services/frequentService'
 import { FORM_STATE } from '@/types/form'
 import { extractCurrencyFromAmount } from '@/utils/currencies'
-import { useRouter } from 'vue-router'
 
 const ownStore = useOwnStore()
 const rateStore = useRateStore()
 const successStore = useSuccessStore()
-
-const router = useRouter()
 
 const form = ref<OwnForm>({
 	from: undefined,
@@ -33,7 +36,9 @@ const form = ref<OwnForm>({
 	amount: '',
 	writeOffAmount: '',
 	enrollmentAmount: '',
-	lastUpdated: undefined
+	lastUpdated: undefined,
+	transferType: 'own',
+	receiverName: 'Между своими счетами'
 })
 
 const hasDifferentCurrencies = computed(() => {
@@ -90,9 +95,16 @@ const handleEnrollmentAmountChange = (event: InputEvent) => {
 	form.value.lastUpdated = LAST_UPDATED.ENROLLMENT_AMOUNT
 }
 
-const handleSubmit = (e: Event | null = null) => {
+const handleSubmit = async (e: Event | null = null) => {
 	e?.preventDefault()
 	ownStore.validate(form.value)
+
+	try {
+		await addToFrequents(form.value);
+
+	} catch (error) {
+		console.error('Ошибка при добавлении в избранное:', error);
+  	}
 }
 
 const updateEnrollmentAmount = (value = form.value.writeOffAmount) => {
@@ -193,6 +205,12 @@ watch(
 		}
 	}
 )
+
+onMounted(() => {
+	const queryParams = router.currentRoute.value.query;
+
+	form.value.amount = queryParams.amount as string || '';
+});
 </script>
 
 <template>
