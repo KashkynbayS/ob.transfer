@@ -28,7 +28,7 @@ export default defineConfig({
 	build: {
 		emptyOutDir: true,
 		rollupOptions: {
-			input: ['/src/main.ts'],
+			input: '/src/main.ts',
 			preserveEntrySignatures: 'strict',
 			output: {
 				format: 'system',
