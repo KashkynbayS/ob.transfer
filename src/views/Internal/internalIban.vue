@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import AccountDropdown from '@/components/AccountDropdown.vue'
 import { ACCOUNTS_GROUPS } from '@/mocks/internal'
-import { Button, Input, Modal } from '@ui-kit/ui-kit'
+import { Button, IbanInput, Input, Modal } from '@ui-kit/ui-kit'
 import { ModalAction } from '@ui-kit/ui-kit/dist/ui/components/modal/types'
 import { reactive, ref } from 'vue'
 import { onBeforeRouteLeave, useRouter } from 'vue-router'
@@ -61,28 +61,21 @@ onBeforeRouteLeave((to, _, next) => {
 				:accounts-groups="ACCOUNTS_GROUPS"
 				:label="$t('OWN.FORM.TO')"
 			/>
+			<IbanInput id="iban" v-model="form.accountTo" class="form-field" :label="$t('INTERNAL.IBAN.FORM.ACCOUNT_TO')" />
 			<Input
-				id="123"
-				v-model:model-value="form.accountTo"
-				:invalid="!!form.accountTo"
-				class="form-field"
-				:label="$t('INTERNAL.IBAN.FORM.ACCOUNT_TO')"
-			/>
-			<Input
-				id="123"
+				id="recieverNameModel"
 				v-model:model-value="form.recieverNameModel"
 				:invalid="!!form.recieverNameModel"
 				class="form-field"
 				:label="$t('INTERNAL.IBAN.FORM.RECIEVER_NAME')"
 			/>
 			<Input
-				id="123"
+				id="amount"
 				v-model:model-value="form.amount"
 				:invalid="!!form.amount"
 				class="form-field"
 				:label="$t('INTERNAL.IBAN.FORM.SUM')"
 			/>
-			<span>{{ form.amount }}</span>
 		</div>
 		<div class="internal-iban-form-bottom">
 			<Button id="internal-iban-submit" type="primary" @click="onSubmit">
