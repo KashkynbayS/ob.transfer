@@ -1,27 +1,32 @@
 import vue from '@vitejs/plugin-vue'
+import { fileURLToPath } from 'node:url'
 import { defineConfig } from 'vite'
 import svgLoader from 'vite-svg-loader'
 
 // https://vitejs.dev/config/
 export default defineConfig({
 	plugins: [
-		vue({
-			template: {
-				transformAssetUrls: {
-					base: '/src'
-				}
-			}
-		}),
+		vue(),
 		svgLoader({
-			defaultImport: 'component', // or 'raw'
+			defaultImport: 'component',
 			svgoConfig: {
-				multipass: true
+				multipass: true,
+				plugins: [
+					{
+						name: 'preset-default',
+						params: {
+							overrides: {
+								removeViewBox: false
+							}
+						}
+					}
+				]
 			}
 		})
 	],
 	resolve: {
 		alias: {
-			'@': '/src'
+			'@': fileURLToPath(new URL('./src', import.meta.url))
 		}
 	},
 	base: '/app/bank/transfers',
@@ -38,6 +43,7 @@ export default defineConfig({
 			}
 			// external: ['vue', 'vue-router', 'vue-i18n', 'pinia']
 		},
+		sourcemap: true,
 		target: 'esnext'
 	}
 })
