@@ -40,6 +40,11 @@ router.addRoute({
 			path: 'own',
 			name: 'Own',
 			component: () => import('@/views/Own.vue')
+		},
+		{
+			path: 'history',
+			name: 'History',
+			component: () => import('@/views/History.vue')
 		}
 	]
 })

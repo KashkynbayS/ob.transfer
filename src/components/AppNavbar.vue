@@ -19,6 +19,7 @@ const slots = useSlots()
 			<ArrowLeft class="navbar__back-arrow" />
 		</template>
 		<template v-if="slots.title" #title> <slot name="title" /> </template>
+		<template v-if="slots.right" #label> <slot name="right" /> </template>
 	</Navbar>
 </template>
 

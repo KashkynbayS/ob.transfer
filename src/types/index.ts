@@ -1,4 +1,5 @@
 export * from './formParams.ts'
+export * from './history.ts'
 
 export enum CURRENCY {
 	KZT = 'kzt',
