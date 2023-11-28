@@ -16,11 +16,25 @@ router.addRoute({
 	children: [
 		{
 			path: '',
-			name: 'TempMain',
-			component: () => import('@/views/MainTempPage.vue')
+			redirect: 'new',
+			name: 'MainTransfer',
+			component: () => import('@/views/MainTransfer/MainTransfer.vue'),
+			children: [
+				{
+					path: 'new',
+					name: 'New',
+					component: () => import('@/views/MainTransfer/New.vue')
+				},
+				{
+					path: 'frequent',
+					name: 'Frequent',
+					component: () => import('@/views/MainTransfer/Frequent.vue')
+				}
+			]
 		},
 		{
 			path: 'internal',
+			redirect: 'internal/phone',
 			name: 'Internal',
 			component: () => import('@/views/Internal/Internal.vue'),
 			children: [
@@ -42,9 +56,15 @@ router.addRoute({
 			component: () => import('@/views/Own.vue')
 		},
 		{
-			path: 'history',
-			name: 'History',
-			component: () => import('@/views/History.vue')
+			path: 'external',
+			name: 'External',
+			component: () => import('@/views/External.vue')
+		},
+		{
+			path: 'success',
+			name: 'Success',
+			props: true,
+			component: () => import('@/views/Success.vue')
 		}
 	]
 })

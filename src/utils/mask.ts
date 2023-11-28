@@ -1,4 +1,5 @@
-import { CURRENCY, CURRENCY_SYMBOL } from '@/types'
+import { CURRENCY_SYMBOL } from '@/constants'
+import { CURRENCY } from '@/types'
 
 export function maskAmount(amount: number | null = null, currency: CURRENCY = CURRENCY.KZT) {
 	const amountString = amount?.toLocaleString('ru-RU', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) || null

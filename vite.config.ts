@@ -28,15 +28,15 @@ export default defineConfig({
 	build: {
 		emptyOutDir: true,
 		rollupOptions: {
-			input: ['/src/main.ts'],
+			input: '/src/main.ts',
 			preserveEntrySignatures: 'strict',
 			output: {
 				format: 'system',
 				assetFileNames: 'assets/[name].[ext]',
 				chunkFileNames: 'chunks/[name].js',
 				entryFileNames: '[name].js'
-			},
-			external: ['vue', 'vue-router', 'vue-i18n', 'pinia']
+			}
+			// external: ['vue', 'vue-router', 'vue-i18n', 'pinia']
 		},
 		target: 'esnext'
 	}

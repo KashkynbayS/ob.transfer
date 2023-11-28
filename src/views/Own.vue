@@ -1,5 +1,7 @@
 <script setup lang="ts">
-import { computed, reactive, watchEffect } from 'vue'
+import { computed, onMounted, ref, watch, watchEffect } from 'vue'
+
+import { useRouter } from 'vue-router'
 
 import { Button, Input } from '@ui-kit/ui-kit'
 
@@ -10,95 +12,149 @@ import AppNavbar from '@/components/AppNavbar.vue'
 
 import { ACCOUNTS_GROUPS } from '@/mocks/own'
 
-import { Account, CURRENCY, CURRENCY_SYMBOL } from '@/types'
+import { CURRENCY_SYMBOL } from '@/constants'
+import { CURRENCY, LAST_UPDATED, OwnForm } from '@/types'
 
+import { useOwnStore } from '@/stores/own.ts'
 import { useRateStore } from '@/stores/rate.ts'
 
-enum LAST_UPDATED {
-	WRITE_OFF_AMOUNT = 'writeOffAmount',
-	ENROLLMENT_AMOUNT = 'enrollmentAmount'
-}
+import { useSuccessStore } from '@/stores/success.ts'
 
-const currencies = {
-	[CURRENCY.KZT]: 'OWN.CURRENCIES.KZT',
-	[CURRENCY.USD]: 'OWN.CURRENCIES.USD'
-}
+const router = useRouter()
 
+import { addToFrequents } from '@/services/frequentService'
+import { FORM_STATE } from '@/types/form'
+import { extractCurrencyFromAmount } from '@/utils/currencies'
+
+const ownStore = useOwnStore()
 const rateStore = useRateStore()
+const successStore = useSuccessStore()
 
-const form = reactive({
+const form = ref<OwnForm>({
 	from: undefined,
 	to: undefined,
 	amount: '',
 	writeOffAmount: '',
 	enrollmentAmount: '',
-	lastUpdated: ''
+	lastUpdated: undefined,
+	transferType: 'own',
+	receiverName: 'Между своими счетами'
 })
-
-function extractCurrencyFromAmount(account: Account) {
-	return account ? currencies[account.currency] : ''
-}
 
 const hasDifferentCurrencies = computed(() => {
-	if (!form.from || !form.to) {
+	if (!form.value.from || !form.value.to) {
 		return false
 	}
-	const fromCurrency = (form.from as Account)?.currency;
-  	const toCurrency = (form.to as Account)?.currency;
 
-  	return (fromCurrency && toCurrency) !== undefined && fromCurrency !== toCurrency;
+	return form.value.from.currency !== form.value.to.currency
 })
 
-const writeOffCurrency = computed(() => form.from ? extractCurrencyFromAmount(form.from) : '')
-const enrollmentCurrency = computed(() => form.to ? extractCurrencyFromAmount(form.to) : '')
+const writeOffCurrency = computed(() => extractCurrencyFromAmount(form.value.from))
+const enrollmentCurrency = computed(() => extractCurrencyFromAmount(form.value.to))
 const rateHelperArgs = computed(() => {
-  const rate = rateStore.rate;
-  if (!rate) {
-    return { from: '', to: '' };
-  }
-  const { from, to } = rate;
-  return from.amount < to.amount
-    ? { 
-		from: `${from.amount} ${CURRENCY_SYMBOL[from.currency]}`, 
-		to: `${to.amount} ${CURRENCY_SYMBOL[to.currency]}` 
+	if (!rateStore.rate) {
+		return {
+			from: '',
+			to: ''
+		}
 	}
-    : { 
-		to: `${from.amount} ${CURRENCY_SYMBOL[from.currency]}`, 
-		from: `${to.amount} ${CURRENCY_SYMBOL[to.currency]}` 
+
+	const { from, to } = rateStore.rate
+
+	if (!from || !to) {
+		return {
+			from: '',
+			to: ''
+		}
 	}
-});
+
+	return from.amount < to.amount
+		? {
+				from: `${from.amount} ${CURRENCY_SYMBOL[from.currency]}`,
+				to: `${to.amount} ${CURRENCY_SYMBOL[to.currency]}`
+		  }
+		: {
+				to: `${from.amount} ${CURRENCY_SYMBOL[from.currency]}`,
+				from: `${to.amount} ${CURRENCY_SYMBOL[to.currency]}`
+		  }
+})
 
 const handleWriteOffAmountChange = (event: InputEvent) => {
-	const value = (event.target as HTMLInputElement)?.value;
-	value && (updateEnrollmentAmount(value), 
-	form.lastUpdated = LAST_UPDATED.WRITE_OFF_AMOUNT);
-};
+	ownStore.clearErrors()
 
-const handleEnrollmentAmountChange = (event: InputEvent) => {
-	const value = (event.target as HTMLInputElement)?.value;
-	value && (updateWriteOffAmount(value), 
-	form.lastUpdated = LAST_UPDATED.ENROLLMENT_AMOUNT);
-};
-
-const updateEnrollmentAmount = (value = form.writeOffAmount) => {
-	if (rateStore.rate && form.from && rateStore.rate.from.currency === (form.from as Account).currency) {
-		form.enrollmentAmount = (Number(value) / rateStore.rate.from.amount).toString();
-	} else {
-		form.enrollmentAmount = rateStore.rate ? (Number(value) * rateStore.rate.from.amount).toString() : '';
-	}
+	const target = event.target as HTMLInputElement
+	updateEnrollmentAmount(target.value)
+	form.value.lastUpdated = LAST_UPDATED.WRITE_OFF_AMOUNT
 }
 
-const updateWriteOffAmount = (value = form.enrollmentAmount) => {
-	if (rateStore.rate && form.to && rateStore.rate.to.currency === (form.to as Account).currency) {
-		form.writeOffAmount = (Number(value) * rateStore.rate.from.amount).toString();
+const handleEnrollmentAmountChange = (event: InputEvent) => {
+	ownStore.clearErrors()
 
-	} else {
-		form.writeOffAmount = rateStore.rate ? (Number(value) / rateStore.rate.from.amount).toString() : '';
+	const target = event.target as HTMLInputElement
+	updateWriteOffAmount(target.value)
+	form.value.lastUpdated = LAST_UPDATED.ENROLLMENT_AMOUNT
+}
+
+const handleSubmit = async (e: Event | null = null) => {
+	e?.preventDefault()
+	ownStore.validate(form.value)
+
+	try {
+		await addToFrequents(form.value);
+
+	} catch (error) {
+		console.error('Ошибка при добавлении в избранное:', error);
+  	}
+}
+
+const updateEnrollmentAmount = (value = form.value.writeOffAmount) => {
+	if (!rateStore.rate || !value || !form.value.from) {
+		return
 	}
+
+	const enteredAmount = Number(value)
+
+	if (isNaN(enteredAmount)) {
+		return
+	}
+
+	const rateAmount = rateStore.rate.from.amount
+	let res
+
+	if (rateStore.rate.from.currency === form.value.from.currency) {
+		res = enteredAmount / rateAmount
+	} else {
+		res = enteredAmount * rateAmount
+	}
+
+	form.value.enrollmentAmount = res.toString()
+}
+
+const updateWriteOffAmount = (value = form.value.enrollmentAmount) => {
+	if (!rateStore.rate || !value || !form.value.to) {
+		return
+	}
+
+	const numbered = Number(value)
+
+	if (isNaN(numbered)) {
+		return
+	}
+
+	const rateAmount = rateStore.rate.from.amount
+	let res
+
+	if (rateStore.rate.to.currency === form.value.to.currency) {
+		res = numbered * rateAmount
+	} else {
+		res = numbered / rateAmount
+	}
+
+	form.value.writeOffAmount = res.toString()
 }
 
 watchEffect(() => {
-	switch (form.lastUpdated) {
+	switch (form.value.lastUpdated) {
 		case LAST_UPDATED.WRITE_OFF_AMOUNT:
 			updateEnrollmentAmount()
 			break
@@ -110,15 +166,51 @@ watchEffect(() => {
 		default:
 			break
 	}
-}, [rateStore.rate])
+})
 
 watchEffect(() => {
-	if ((form.from as Account | undefined)?.currency === (form.to as Account | undefined)?.currency) {
+	if (form.value.from?.currency === form.value.to?.currency) {
 		return
 	}
 
 	rateStore.fetchRate()
-}, [form.from, form.to])
+})
+
+watch(
+	() => ownStore.state,
+	(state) => {
+		switch (state) {
+			case FORM_STATE.SUCCESS:
+				successStore.setDetails(Number(form.value.amount), form.value.from?.currency || CURRENCY.KZT, [
+					{ name: 'Сумма списания', value: '100 $' },
+					{ name: 'Статус', value: 'Исполнено', colored: true },
+					{ name: 'Номер квитанции', value: '56789900' },
+					{ name: 'Счет списания', value: 'KZ****4893' },
+					{ name: 'Счет зачисления', value: 'KZ****4893' },
+					{ name: 'Дата', value: '11.04.2023' }
+				])
+				router.push('Success')
+				break
+
+			case FORM_STATE.ERROR:
+				router.push('Error')
+				break
+
+			case FORM_STATE.INITIAL:
+			default:
+				break
+		}
+		if (state) {
+			console.log(state)
+		}
+	}
+)
+
+onMounted(() => {
+	const queryParams = router.currentRoute.value.query;
+
+	form.value.amount = queryParams.amount as string || '';
+});
 </script>
 
 <template>
@@ -129,13 +221,14 @@ watchEffect(() => {
 			</template>
 		</AppNavbar>
 
-		<form class="form">
+		<form class="form" @submit="handleSubmit">
 			<AccountDropdown
 				id="from"
 				v-model="form.from"
 				:accounts-groups="ACCOUNTS_GROUPS"
 				:label="$t('OWN.FORM.FROM')"
 				:disabled="form.to"
+				@update:model-value="ownStore.clearErrors()"
 			/>
 			<AccountDropdown
 				id="to"
@@ -143,13 +236,16 @@ watchEffect(() => {
 				:accounts-groups="ACCOUNTS_GROUPS"
 				:label="$t('OWN.FORM.TO')"
 				:disabled="form.from"
+				@update:model-value="ownStore.clearErrors()"
 			/>
 
 			<template v-if="hasDifferentCurrencies">
 				<Input
 					id="writeOffAmount"
 					v-model="form.writeOffAmount"
+					:invalid="!!ownStore.errors.writeOffAmount"
 					:label="$t('OWN.FORM.WRITE_OFF_AMOUNT', { currency: $t(writeOffCurrency) })"
+					:helper-text="ownStore.errors.writeOffAmount ? $t(ownStore.errors.writeOffAmount) : ''"
 					@input="handleWriteOffAmountChange"
 				/>
 				<Input
@@ -165,12 +261,18 @@ watchEffect(() => {
 				<Input
 					id="amount"
 					v-model="form.amount"
+					:invalid="!!ownStore.errors.amount"
 					:label="$t('OWN.FORM.AMOUNT')"
-					:helper-text="$t('OWN.FORM.COMMISSION')"
+					:helper-text="
+						!!ownStore.errors.amount ? $t(ownStore.errors.amount) : $t('OWN.FORM.COMMISSION', rateHelperArgs)
+					"
+					@on-input="ownStore.clearErrors()"
 				/>
 			</template>
 
-			<Button id="ownSubmit" class="form__submit" type="primary"> {{ $t('OWN.FORM.SUBMIT') }} </Button>
+			<Button id="ownSubmit" class="form__submit" type="primary" attr-type="submit" @click="handleSubmit">
+				{{ $t('OWN.FORM.SUBMIT') }}
+			</Button>
 		</form>
 	</PageTemplate>
 </template>

@@ -1,10 +1,16 @@
 <script setup lang="ts">
-import AccountDropdown from '@/components/AccountDropdown.vue'
-import { ACCOUNTS_GROUPS } from '@/mocks/internal'
-import { Button, Input, Modal } from '@ui-kit/ui-kit'
-import { ModalAction } from '@ui-kit/ui-kit/dist/ui/components/modal/types'
-import { reactive, ref } from 'vue'
+import { onMounted, reactive, ref } from 'vue'
+
 import { onBeforeRouteLeave, useRouter } from 'vue-router'
+
+import { Button, CurrencyInput, IbanInput, Input, Modal } from '@ui-kit/ui-kit'
+import { ModalAction } from '@ui-kit/ui-kit/dist/ui/components/modal/types'
+
+import AccountDropdown from '@/components/AccountDropdown.vue'
+
+import { addToFrequents } from '@/services/frequentService'
+
+import { ACCOUNTS_GROUPS } from '@/mocks/internal'
 
 // Modal
 const modal = ref<InstanceType<typeof Modal> | null>(null)
@@ -29,19 +35,26 @@ const actions = reactive<ModalAction[]>([
 ])
 
 // Submit handler
-const onSubmit = () => {}
+const handleSubmit = async () => {
+	try {
+		await addToFrequents(form);
+	} catch (error) {
+		console.error('Ошибка при добавлении в избранное:', error);
+  	}
+};
 
 const form = reactive({
 	accountFrom: null,
 	accountTo: '',
-	recieverNameModel: '',
-	amount: ''
+	receiverName: '',
+	amount: '',
+	transferType: 'iban'
 })
 
 // Guard
 onBeforeRouteLeave((to, _, next) => {
-	const { accountFrom, accountTo, recieverNameModel, amount } = form
-	const isFormDirty = accountFrom || accountTo || recieverNameModel || amount
+	const { accountFrom, accountTo, receiverName, amount } = form
+	const isFormDirty = accountFrom || accountTo || receiverName || amount
 	destPath = to.fullPath
 
 	if (!isFormDirty || isLeaveConfirmed) {
@@ -50,10 +63,18 @@ onBeforeRouteLeave((to, _, next) => {
 
 	modal.value?.open()
 })
+
+onMounted(() => {
+	const queryParams = router.currentRoute.value.query;
+
+	form.accountTo = queryParams.to as string || '';
+	form.receiverName = queryParams.receiverName as string || '';
+	form.amount = queryParams.amount as string || '';
+});
 </script>
 
 <template>
-	<form class="internal-iban-form" @submit="onSubmit">
+	<form class="internal-iban-form" @submit="handleSubmit">
 		<div class="internal-iban-form-top">
 			<AccountDropdown
 				v-model="form.accountFrom"
@@ -61,8 +82,8 @@ onBeforeRouteLeave((to, _, next) => {
 				:accounts-groups="ACCOUNTS_GROUPS"
 				:label="$t('OWN.FORM.TO')"
 			/>
-			<Input
-				id="123"
+			<IbanInput
+				id="recieverNameModel"
 				v-model:model-value="form.accountTo"
 				:invalid="!!form.accountTo"
 				class="form-field"
@@ -70,22 +91,21 @@ onBeforeRouteLeave((to, _, next) => {
 			/>
 			<Input
 				id="123"
-				v-model:model-value="form.recieverNameModel"
-				:invalid="!!form.recieverNameModel"
+				v-model:model-value="form.receiverName"
+				:invalid="!!form.receiverName"
 				class="form-field"
 				:label="$t('INTERNAL.IBAN.FORM.RECIEVER_NAME')"
 			/>
-			<Input
-				id="123"
+			<CurrencyInput
+				id="amount"
 				v-model:model-value="form.amount"
 				:invalid="!!form.amount"
 				class="form-field"
 				:label="$t('INTERNAL.IBAN.FORM.SUM')"
 			/>
-			<span>{{ form.amount }}</span>
 		</div>
 		<div class="internal-iban-form-bottom">
-			<Button id="internal-iban-submit" type="primary" @click="onSubmit">
+			<Button id="internal-iban-submit" type="primary" @click="handleSubmit">
 				{{ $t('INTERNAL.IBAN.FORM.SUBMIT') }}
 			</Button>
 		</div>
@@ -114,8 +134,6 @@ onBeforeRouteLeave((to, _, next) => {
 		Button {
 			width: calc(100% - var(--space-4));
 		}
-	}
-	.internal-iban-form-error-message {
 	}
 }
 </style>
