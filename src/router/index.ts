@@ -70,6 +70,11 @@ router.addRoute({
 			path: 'history',
 			name: 'History',
 			component: () => import('@/views/History.vue')
+		},
+		{
+			path: 'details/:transactionId',
+			name: 'TransactionDetails',
+			component: () => import('@/views/Details.vue')
 		}
 	]
 })

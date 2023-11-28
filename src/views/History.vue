@@ -93,8 +93,7 @@ const openDetails = (id: string) => {
 	router.push({
 		name: 'TransactionDetails',
 		params: {
-			transactionId: id,
-			accountId: 'accountId'
+			transactionId: id
 		}
 	})
 }
