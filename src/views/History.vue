@@ -6,8 +6,9 @@ import ArrowRoundIcon from '@/assets/icons/arrow-round.svg'
 import FiltersIcon from '@/assets/icons/filters.svg'
 import { Cell, CellGroup } from '@ui-kit/ui-kit'
 import { useRouter } from 'vue-router'
-import { CURRENCY, CURRENCY_SYMBOL, TransactionGroup, TransactionsType } from '@/types'
+import { CURRENCY, TransactionGroup, TransactionsType } from '@/types'
 import TransactionValue from '@/components/TransactionValue.vue'
+import { CURRENCY_SYMBOL } from '@/constants'
 
 const router = useRouter()
 
@@ -103,7 +104,7 @@ const openDetails = (id: string) => {
 	<div class="history">
 		<AppNavbar>
 			<template #title><h5>История</h5></template>
-			<template #right>
+			<template #label>
 				<button id="history-filters-btn" class="history__filters">
 					<FiltersIcon />
 				</button>

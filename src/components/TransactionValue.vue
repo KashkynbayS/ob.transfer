@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { CURRENCY_SYMBOL, Transaction } from '@/types'
+import { Transaction } from '@/types'
 import TimeIcon from '@/assets/icons/time.svg'
+import { CURRENCY_SYMBOL } from '@/constants'
 
 defineProps<{
 	transaction: Transaction
