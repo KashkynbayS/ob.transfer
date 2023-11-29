@@ -10,18 +10,12 @@ import { ModalAction } from '@ui-kit/ui-kit/dist/ui/components/modal/types'
 import * as Yup from 'yup'
 
 import AccountDropdown from '@/components/AccountDropdown.vue'
-import TransferDetailsBottomSheet from '@/components/transferDetailsBottomSheet.vue'
 
 import { addToFrequents } from '@/services/frequentService'
 
 import { ACCOUNTS_GROUPS } from '@/mocks/internal'
 
 import { Account } from '@/types'
-
-import { useTransferDetailsStore } from '@/stores/transferDetails.ts'
-
-
-const transferDetailsStore = useTransferDetailsStore()
 
 const form = reactive({
 	accountFrom: null as Account | null,
@@ -35,7 +29,7 @@ const form = reactive({
 	phoneNumber: '',
 	receiverName: '',
 	amount: '',
-	transferType: 'phone',
+	transferType: 'phone'
 })
 
 const errors = reactive({
@@ -45,19 +39,19 @@ const errors = reactive({
 })
 
 const transferredAmount = 567890 // сумма который был переведен в день
-let ResidualAmount = 1000000 - transferredAmount // остаток суммы перевода в день
+const ResidualAmount = 1000000 - transferredAmount // остаток суммы перевода в день
 
 // Validation
 const schemaPhone = Yup.object().shape({
 	phoneNumber: Yup.string()
 		.test('ownerPhone', 'Вы ввели номер владельца счета', function (value) {
-			return value !== contact.ownerPhone;
+			return value !== contact.ownerPhone
 		})
 		.test('phoneExists', 'По номеру телефона не найден клиент', function (value) {
-			const phoneNumberExists = contact.list.some((item) => item.phoneNumber === value);
-			return phoneNumberExists;
+			const phoneNumberExists = contact.list.some((item) => item.phoneNumber === value)
+			return phoneNumberExists
 		})
-});
+})
 
 const schemaAmount = Yup.object().shape({
 	amount: Yup.number()
@@ -77,34 +71,33 @@ const schemaAmount = Yup.object().shape({
 		})
 })
 
-const isPhoneInvalid = ref(false);
-const isAmountInvalid = ref(false);
+const isPhoneInvalid = ref(false)
+const isAmountInvalid = ref(false)
 
 async function validatePhone() {
 	if (form.phoneNumber.trim() === '') {
-		isPhoneInvalid.value = true;
-		errors.phoneNumber = 'Введите номер телефона';
+		isPhoneInvalid.value = true
+		errors.phoneNumber = 'Введите номер телефона'
 		setTimeout(() => {
-			isPhoneInvalid.value = false;
-			errors.phoneNumber = '';
-		}, 2000);
-	}
-	else {
+			isPhoneInvalid.value = false
+			errors.phoneNumber = ''
+		}, 2000)
+	} else {
 		try {
-			await schemaPhone.validate(form, { abortEarly: false });
-			isPhoneInvalid.value = false;
-			errors.phoneNumber = '';
+			await schemaPhone.validate(form, { abortEarly: false })
+			isPhoneInvalid.value = false
+			errors.phoneNumber = ''
 		} catch (validationErrors: any) {
-			isPhoneInvalid.value = true;
-			errors.phoneNumber = validationErrors.errors[0];
+			isPhoneInvalid.value = true
+			errors.phoneNumber = validationErrors.errors[0]
 		}
 	}
 }
 
 async function validateAmount() {
 	if (form.amount === '') {
-		isAmountInvalid.value = true;
-		errors.amount = 'Введите сумму';
+		isAmountInvalid.value = true
+		errors.amount = 'Введите сумму'
 		setTimeout(() => {
 			isAmountInvalid.value = false
 			errors.amount = ''
@@ -123,18 +116,16 @@ async function validateAmount() {
 
 const handleSubmit = async () => {
 	try {
-		await validatePhone();
-		await validateAmount();
+		await validatePhone()
+		await validateAmount()
 
 		if (!isPhoneInvalid.value && !isAmountInvalid.value) {
-			await addToFrequents(form);
+			await addToFrequents(form)
 		}
-
 	} catch (error) {
-		console.error('Ошибка при добавлении в избранное:', error);
+		console.error('Ошибка при добавлении в избранное:', error)
 	}
-};
-
+}
 
 // Modal
 const modal = ref<InstanceType<typeof Modal> | null>(null)
@@ -189,37 +180,36 @@ const filteredContactList = computed(() =>
 )
 
 const contactBottomSheetRef = ref<InstanceType<typeof BottomSheet> | null>(null)
-	
+
 function selectContact(contact: any) {
-	form.phoneNumber = contact.phoneNumber;
-	form.receiverName = contact.name;
-	contactBottomSheetRef?.value?.close();
+	form.phoneNumber = contact.phoneNumber
+	form.receiverName = contact.name
+	contactBottomSheetRef?.value?.close()
 }
 
 onMounted(() => {
-	const queryParams = router.currentRoute.value.query;
+	const queryParams = router.currentRoute.value.query
 
 	// form.accountFrom = queryParams.from as Account | null;
 	// form.accountFrom = JSON.parse(queryParams.from) as Account | null;
 
 	if (typeof queryParams.from === 'string') {
 		try {
-			form.accountFrom = JSON.parse(queryParams.from) as Account | null;
+			form.accountFrom = JSON.parse(queryParams.from) as Account | null
 		} catch (error) {
-			console.error('Ошибка при парсинге queryParams.from:', error);
-			form.accountFrom = null;
+			console.error('Ошибка при парсинге queryParams.from:', error)
+			form.accountFrom = null
 		}
 	} else {
-		form.accountFrom = null;
+		form.accountFrom = null
 	}
-	
-	console.log("Получаем: " + form.accountFrom);
-	
 
-	form.phoneNumber = queryParams.to as string || '';
-	form.receiverName = queryParams.receiverName as string || '';
-	form.amount = queryParams.amount as string || '';
-});
+	console.log('Получаем: ' + form.accountFrom)
+
+	form.phoneNumber = (queryParams.to as string) || ''
+	form.receiverName = (queryParams.receiverName as string) || ''
+	form.amount = (queryParams.amount as string) || ''
+})
 
 // _________________________________________
 </script>
@@ -239,10 +229,10 @@ onMounted(() => {
 				class="form-field"
 				:label="$t('INTERNAL.PHONE.FORM.PHONE_NUMBER')"
 				:invalid="isPhoneInvalid"
-				:helperText="errors.phoneNumber"
+				:helper-text="errors.phoneNumber"
 			>
 				<template #append>
-					<div class="receiver-name" v-if="form.receiverName" @click="contactBottomSheetRef?.open()" >
+					<div v-if="form.receiverName" class="receiver-name" @click="contactBottomSheetRef?.open()">
 						{{ form.receiverName }}
 					</div>
 					<div v-else>
@@ -250,7 +240,6 @@ onMounted(() => {
 					</div>
 				</template>
 			</Input>
-
 
 			<CurrencyInput
 				id="123"
@@ -262,13 +251,6 @@ onMounted(() => {
 			/>
 		</div>
 		<div class="internal-phone-form-bottom">
-			<Button
-				id="123"
-				type="primary"
-				style="margin-bottom: var(--space-1)"
-				@click="transferDetailsStore.openBottomSheet()"
-				>Детали</Button
-			>
 			<Button id="123" type="primary" @click="handleSubmit"> {{ $t('INTERNAL.PHONE.FORM.SUBMIT') }} </Button>
 		</div>
 	</form>
@@ -287,8 +269,6 @@ onMounted(() => {
 			</div>
 		</template>
 	</BottomSheet>
-
-	<TransferDetailsBottomSheet />
 
 	<Modal ref="modal" v-bind="{ asd: 'asdasd' }" :actions="actions" close-on-outline-click>
 		<template #title>{{ $t('INTERNAL.MODAL.LEAVE_WHEN_FORM_IS_DIRTY.TITLE') }}</template>
@@ -320,10 +300,3 @@ onMounted(() => {
 	}
 }
 </style>
-
-<style>
-.bottom-sheet--content {
-	height: 80vh;
-}
-</style>
-

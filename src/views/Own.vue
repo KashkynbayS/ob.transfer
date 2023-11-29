@@ -3,7 +3,7 @@ import { computed, onMounted, ref, watch, watchEffect } from 'vue'
 
 import { useRouter } from 'vue-router'
 
-import { Button, Input } from '@ui-kit/ui-kit'
+import { Button, CurrencyInput } from '@ui-kit/ui-kit'
 
 import PageTemplate from '@/layouts/PageTemplate.vue'
 
@@ -100,11 +100,10 @@ const handleSubmit = async (e: Event | null = null) => {
 	ownStore.validate(form.value)
 
 	try {
-		await addToFrequents(form.value);
-
+		await addToFrequents(form.value)
 	} catch (error) {
-		console.error('Ошибка при добавлении в избранное:', error);
-  	}
+		console.error('Ошибка при добавлении в избранное:', error)
+	}
 }
 
 const updateEnrollmentAmount = (value = form.value.writeOffAmount) => {
@@ -207,19 +206,21 @@ watch(
 )
 
 onMounted(() => {
-	const queryParams = router.currentRoute.value.query;
+	const queryParams = router.currentRoute.value.query
 
-	form.value.amount = queryParams.amount as string || '';
-});
+	form.value.amount = (queryParams.amount as string) || ''
+})
 </script>
 
 <template>
-	<PageTemplate>
-		<AppNavbar>
-			<template #title>
-				<h5>{{ $t('OWN.TITLE') }}</h5>
-			</template>
-		</AppNavbar>
+	<PageTemplate :without-paddings="true">
+		<template #header>
+			<AppNavbar>
+				<template #title>
+					<h5>{{ $t('OWN.TITLE') }}</h5>
+				</template>
+			</AppNavbar>
+		</template>
 
 		<form class="form" @submit="handleSubmit">
 			<AccountDropdown
@@ -240,7 +241,7 @@ onMounted(() => {
 			/>
 
 			<template v-if="hasDifferentCurrencies">
-				<Input
+				<CurrencyInput
 					id="writeOffAmount"
 					v-model="form.writeOffAmount"
 					:invalid="!!ownStore.errors.writeOffAmount"
@@ -248,7 +249,7 @@ onMounted(() => {
 					:helper-text="ownStore.errors.writeOffAmount ? $t(ownStore.errors.writeOffAmount) : ''"
 					@input="handleWriteOffAmountChange"
 				/>
-				<Input
+				<CurrencyInput
 					id="enrollmentAmount"
 					v-model="form.enrollmentAmount"
 					:label="$t('OWN.FORM.ENROLLMENT_AMOUNT', { currency: $t(enrollmentCurrency) })"
@@ -258,7 +259,7 @@ onMounted(() => {
 			</template>
 
 			<template v-else>
-				<Input
+				<CurrencyInput
 					id="amount"
 					v-model="form.amount"
 					:invalid="!!ownStore.errors.amount"

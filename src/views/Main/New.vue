@@ -1,13 +1,12 @@
 <script setup lang="ts">
+import { useRouter } from 'vue-router'
 
-import { useRouter } from 'vue-router';
+import { Cell, CellGroup } from '@ui-kit/ui-kit'
 
-import { Cell, CellGroup } from '@ui-kit/ui-kit';
-
-import TransAnotherAccaunts from '@/assets/icons/transAnotherAccaunts.svg';
-import TransBetweenMyAccaunts from '@/assets/icons/transBetweenMyAccaunts.svg';
-import ArrowRightIcon from '@ui-kit/kmf-icons/arrows/large/arrowRight.svg';
-import KMFSemifilled from '@ui-kit/kmf-icons/logos/kmf-semifilled.svg';
+import TransAnotherAccaunts from '@/assets/icons/transAnotherAccaunts.svg'
+import TransBetweenMyAccaunts from '@/assets/icons/transBetweenMyAccaunts.svg'
+import ArrowRightIcon from '@ui-kit/kmf-icons/arrows/large/arrowRight.svg'
+import KMFSemifilled from '@ui-kit/kmf-icons/logos/kmf-semifilled.svg'
 
 const router = useRouter()
 
@@ -34,7 +33,7 @@ const transferTypes = [
 </script>
 
 <template>
-	<CellGroup>
+	<CellGroup class="transfer-types">
 		<Cell
 			v-for="item in transferTypes"
 			:key="item.title"
@@ -53,4 +52,8 @@ const transferTypes = [
 	</CellGroup>
 </template>
 
-<style scoped lang="scss"></style>
+<style scoped lang="scss">
+.transfer-types {
+	margin: 0;
+}
+</style>

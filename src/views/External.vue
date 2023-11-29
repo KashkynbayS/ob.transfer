@@ -72,11 +72,13 @@ const handleSubmit = (e: Event | null = null) => {
 
 <template>
 	<PageTemplate>
-		<AppNavbar>
-			<template #title>
-				<h5>{{ $t('EXTERNAL.TITLE') }}</h5>
-			</template>
-		</AppNavbar>
+		<template #header>
+			<AppNavbar>
+				<template #title>
+					<h5>{{ $t('EXTERNAL.TITLE') }}</h5>
+				</template>
+			</AppNavbar>
+		</template>
 		<form class="form" @submit="handleSubmit">
 			<AccountDropdown
 				id="from"

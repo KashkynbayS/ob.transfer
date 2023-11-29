@@ -37,11 +37,11 @@ const actions = reactive<ModalAction[]>([
 // Submit handler
 const handleSubmit = async () => {
 	try {
-		await addToFrequents(form);
+		await addToFrequents(form)
 	} catch (error) {
-		console.error('Ошибка при добавлении в избранное:', error);
-  	}
-};
+		console.error('Ошибка при добавлении в избранное:', error)
+	}
+}
 
 const form = reactive({
 	accountFrom: null,
@@ -65,12 +65,12 @@ onBeforeRouteLeave((to, _, next) => {
 })
 
 onMounted(() => {
-	const queryParams = router.currentRoute.value.query;
+	const queryParams = router.currentRoute.value.query
 
-	form.accountTo = queryParams.to as string || '';
-	form.receiverName = queryParams.receiverName as string || '';
-	form.amount = queryParams.amount as string || '';
-});
+	form.accountTo = (queryParams.to as string) || ''
+	form.receiverName = (queryParams.receiverName as string) || ''
+	form.amount = (queryParams.amount as string) || ''
+})
 </script>
 
 <template>
