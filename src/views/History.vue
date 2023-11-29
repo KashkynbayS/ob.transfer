@@ -9,6 +9,8 @@ import { useRouter } from 'vue-router'
 import { CURRENCY, TransactionGroup, TransactionsType } from '@/types'
 import TransactionValue from '@/components/TransactionValue.vue'
 import { CURRENCY_SYMBOL } from '@/constants'
+import HistorySettings from '@/components/HistorySettings.vue'
+import { onMounted, ref } from 'vue'
 
 const router = useRouter()
 
@@ -97,6 +99,20 @@ const openDetails = (id: string) => {
 		}
 	})
 }
+
+const settings = ref(false)
+
+const openSettings = () => {
+	settings.value = true
+}
+
+const closeSettings = () => {
+	settings.value = false
+}
+
+onMounted(() => {
+	openSettings()
+})
 </script>
 
 <template>
@@ -104,7 +120,7 @@ const openDetails = (id: string) => {
 		<AppNavbar>
 			<template #title><h5>История</h5></template>
 			<template #label>
-				<button id="history-filters-btn" class="history__filters">
+				<button id="history-filters-btn" class="history__filters" @click="openSettings">
 					<FiltersIcon />
 				</button>
 			</template>
@@ -118,12 +134,12 @@ const openDetails = (id: string) => {
 				v-for="transaction in transactionGroup.list"
 				:key="transaction.id"
 				left-color="var(--low-contrast)"
+				left-type="icon"
+				left-bg="var(--bg-dark)"
 				@click="openDetails(transaction.id)"
 			>
 				<template #left>
-					<div class="history__icon">
-						<Component :is="typeIconMapping[transaction.type]" />
-					</div>
+					<Component :is="typeIconMapping[transaction.type]" />
 				</template>
 				<template #title>{{ typeMapping[transaction.type] }}</template>
 				<template #subtitle>{{ transaction.caption }}</template>
@@ -138,21 +154,13 @@ const openDetails = (id: string) => {
 				</template>
 			</Cell>
 		</CellGroup>
+
+		<HistorySettings :show="settings" @closed="closeSettings" />
 	</div>
 </template>
 
 <style scoped lang="scss">
 .history {
-	&__icon {
-		width: 48px;
-		height: 44px;
-		background-color: var(--bg-dark);
-		border-radius: var(--border-radius-s);
-		display: flex;
-		align-items: center;
-		justify-content: center;
-	}
-
 	&__filters {
 		display: flex;
 	}
