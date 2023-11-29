@@ -26,7 +26,7 @@ watch(segmentedControlValue, () => {
 		</template>
 
 		<template #label>
-			<button class="history-link">{{ $t('TRANSFER.HISTORY') }}</button>
+			<router-link to="/history" class="history-link">{{ $t('TRANSFER.HISTORY') }}</router-link>
 		</template>
 	</AppNavbar>
 

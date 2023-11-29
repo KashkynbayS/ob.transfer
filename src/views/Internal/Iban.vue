@@ -17,6 +17,7 @@ const modal = ref<InstanceType<typeof Modal> | null>(null)
 const router = useRouter()
 let destPath = ''
 let isLeaveConfirmed = false
+
 const actions = reactive<ModalAction[]>([
 	{
 		mode: 'primary',
@@ -34,6 +35,19 @@ const actions = reactive<ModalAction[]>([
 	}
 ])
 
+// Guard
+onBeforeRouteLeave((to, _, next) => {
+	const { accountFrom, accountTo, receiverName, amount } = form
+	const isFormDirty = accountFrom || accountTo || receiverName || amount
+	destPath = to.fullPath
+
+	if (!isFormDirty || isLeaveConfirmed) {
+		next(true)
+	}
+
+	modal.value?.open()
+})
+
 // Submit handler
 const handleSubmit = async () => {
 	try {
@@ -49,19 +63,6 @@ const form = reactive({
 	receiverName: '',
 	amount: '',
 	transferType: 'iban'
-})
-
-// Guard
-onBeforeRouteLeave((to, _, next) => {
-	const { accountFrom, accountTo, receiverName, amount } = form
-	const isFormDirty = accountFrom || accountTo || receiverName || amount
-	destPath = to.fullPath
-
-	if (!isFormDirty || isLeaveConfirmed) {
-		next(true)
-	}
-
-	modal.value?.open()
 })
 
 onMounted(() => {
