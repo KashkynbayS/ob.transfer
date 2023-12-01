@@ -9,7 +9,7 @@ export interface HistorySettings {
 	}
 }
 
-export type HistoryFilter = 'executed' | 'rejected' | 'processing'
+export type HistoryFilter = 'all' | 'executed' | 'rejected' | 'processing'
 
 interface HistorySchema {
 	settings: HistorySettings
