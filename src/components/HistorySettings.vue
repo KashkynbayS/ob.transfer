@@ -12,7 +12,7 @@ const props = defineProps<{
 
 const emit = defineEmits<{
 	(e: 'closed'): void
-	(e: 'apply', v: Filter[]): void
+	(e: 'apply', v: any): void
 }>()
 
 watch(
@@ -38,13 +38,10 @@ function toggleCalendar(value = !showCalendar.value) {
 	showCalendar.value = value
 }
 
-function applyDates() {
-	dates.value = '1.07.23 – 14.08.23'
-	toggleCalendar(false)
-}
-
 function applyFilters() {
-	emit('closed')
+	emit('apply', {
+		filter: filterModel.value
+	})
 }
 
 interface Filter {
@@ -68,6 +65,12 @@ function closeHandler() {
 		toggleCalendar(false)
 	}, 300)
 }
+
+function onDateSelected(value: Date[]) {
+	console.log(value)
+	dates.value = '1.07.23 – 14.08.23'
+	toggleCalendar(false)
+}
 </script>
 
 <template>
@@ -76,8 +79,9 @@ function closeHandler() {
 		<template #content>
 			<div class="settings">
 				<div v-if="showCalendar" class="settings__calendar">
-					<Calendar v-model="dates" />
-					<Button id="settings-apply" class="settings__apply-btn" @click="applyDates">Применить</Button>
+					<Calendar v-model="dates" @on-date-selected="onDateSelected">
+						<template #calendar-title>Применить</template>
+					</Calendar>
 				</div>
 
 				<div v-else class="settings__main">
@@ -115,15 +119,6 @@ function closeHandler() {
 		display: flex;
 		flex-direction: column;
 		gap: var(--space-4);
-	}
-
-	&__calendar {
-		display: flex;
-		flex-direction: column;
-
-		& button {
-			margin: 0 var(--space-4);
-		}
 	}
 
 	&__select-wrapper {
