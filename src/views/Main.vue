@@ -1,20 +1,20 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { ref, watch } from 'vue';
 
-import { useRouter } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router';
 
-import { SegmentedControl } from '@ui-kit/ui-kit'
+import { SegmentedControl } from '@ui-kit/ui-kit';
 
-import AppNavbar from '@/components/AppNavbar.vue'
-
-type SegnemtType = 'new' | 'frequent'
-const segmentedControlValue = ref<SegnemtType>('new')
+import AppNavbar from '@/components/AppNavbar.vue';
 
 const router = useRouter()
+const route = useRoute()
 
-watch(segmentedControlValue, () => {
-	router.push({
-		name: segmentedControlValue.value === 'new' ? 'New' : 'Frequent'
+const page = ref(route.name === 'New' ? 'new' : 'frequent')
+
+watch(page, () => {
+	router.replace({
+		name: page.value === 'new' ? 'New' : 'Frequent'
 	})
 })
 </script>
@@ -32,7 +32,7 @@ watch(segmentedControlValue, () => {
 
 	<div class="transfer-nav">
 		<SegmentedControl
-			v-model="segmentedControlValue"
+			v-model="page"
 			:options="[
 				{
 					id: 'new',
