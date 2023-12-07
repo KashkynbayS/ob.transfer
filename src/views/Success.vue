@@ -3,7 +3,7 @@ import SuccessImage from '@/assets/images/success.svg'
 
 import { Button } from '@ui-kit/ui-kit'
 
-import TransferDetailsBottomSheet from '@/components/transferDetailsBottomSheet.vue'
+import TransferDetailsBottomSheet from '@/components/DetailsBottomSheet.vue'
 import { CURRENCY_SYMBOL } from '@/constants'
 import PageTemplate from '@/layouts/PageTemplate.vue'
 import router from '@/router'
