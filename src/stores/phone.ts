@@ -1,36 +1,34 @@
 import { defineStore } from 'pinia'
 import { object } from 'yup'
-import { IbanForm } from './../types/iban'
+import { PhoneForm } from './../types/phone'
 
-import { IbanService } from '@/services/iban.service'
+import { PhoneService } from '@/services/phone.service'
 import { FORM_STATE, FormStore } from '@/types/form'
 import { extractValidationErrors, validateAmountFromAccount } from '@/utils/validators'
 
-export interface IbanStore extends FormStore {}
+export interface PhoneStore extends FormStore {}
 
 // TODO: Добавить остальную валидацию после внедрения ТЗ и реализации API
 const formSchema = object({
 	amount: validateAmountFromAccount('amount', 'INTERNAL.ERRORS.NOT_ENOUGH_MONEY')
 })
 
-export const useIbanStore = defineStore('iban', {
-	state: (): IbanStore => ({
+export const usePhoneStore = defineStore('phone', {
+	state: (): PhoneStore => ({
 		state: FORM_STATE.INITIAL,
 		errors: {
 			amount: ''
 		}
 	}),
 	actions: {
-		validateAndSubmit(form: IbanForm) {
+		validateAndSubmit(form: PhoneForm) {
 			this.validate(form).then(() => {
 				this.submit(form)
 			})
 		},
-		validate(form: IbanForm) {
+		validate(form: PhoneForm) {
 			this.clearErrors()
 			this.state = FORM_STATE.LOADING
-
-			
 
 			return formSchema
 				.validate(form, { abortEarly: false, context: { fromAccount: form.from } })
@@ -44,8 +42,8 @@ export const useIbanStore = defineStore('iban', {
 					throw err
 				})
 		},
-		submit(form: IbanForm) {
-			IbanService.transfer(form)
+		submit(form: PhoneForm) {
+			PhoneService.transfer(form)
 				.then(() => {
 					this.state = FORM_STATE.SUCCESS
 				})

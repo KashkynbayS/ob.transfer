@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, reactive, ref } from 'vue'
+import { onMounted, reactive, ref, watch } from 'vue'
 
 import { onBeforeRouteLeave, useRouter } from 'vue-router'
 
@@ -12,11 +12,17 @@ import AccountDropdown from '@/components/AccountDropdown.vue'
 
 import { ACCOUNTS_GROUPS } from '@/mocks/internal'
 
-import { useIbanStore } from '@/stores/iban.ts'
+import { CURRENCY_SYMBOL } from '@/constants'
 
+import { useIbanStore } from '@/stores/iban.ts'
+import { useSuccessStore } from '@/stores/success'
+
+import { CURRENCY } from '@/types'
+import { FORM_STATE } from '@/types/form'
 import { IbanForm } from '@/types/iban'
 
 const IbanStore = useIbanStore()
+const successStore = useSuccessStore()
 
 // Modal
 const modal = ref<InstanceType<typeof Modal> | null>(null)
@@ -54,18 +60,6 @@ onBeforeRouteLeave((to1, _, next) => {
 	modal.value?.open()
 })
 
-// Submit handler
-const handleSubmit = async (e: Event | null = null) => {
-	e?.preventDefault()
-	IbanStore.validate(form.value)
-
-	// try {
-	// 	await addToFrequents(form)
-	// } catch (error) {
-	// 	console.error('Ошибка при добавлении в избранное:', error)
-	// }
-}
-
 const form = ref<IbanForm>({
 	from: undefined,
 	to: '',
@@ -81,6 +75,51 @@ onMounted(() => {
 	form.value.receiverName = (queryParams.receiverName as string) || ''
 	form.value.amount = (queryParams.amount as string) || ''
 })
+
+watch(
+	() => IbanStore.state,
+	(state) => {
+		const currency = form.value.from ? form.value.from?.currency : CURRENCY.KZT
+
+		switch (state) {
+			case FORM_STATE.SUCCESS:
+				successStore.setDetails(Number(form.value.amount), currency, [
+					{ name: 'Сумма списания', value: `${form.value.amount} ${CURRENCY_SYMBOL[currency]}` },
+					{ name: 'Статус', value: 'Исполнено', colored: true },
+					{ name: 'Номер квитанции', value: '56789900' },
+					{ name: 'Счет списания', value: 'KZ****4893' },
+					{ name: 'Счет зачисления', value: 'KZ****4893' },
+					{ name: 'Дата', value: '11.04.2023' }
+				])
+				router.push('/Success')
+				break
+
+			case FORM_STATE.ERROR:
+				router.push('Error')
+				break
+
+			case FORM_STATE.INITIAL:
+			default:
+				break
+		}
+
+		if (state) {
+			console.log(state)
+		}
+	}
+)
+
+// Submit handler
+const handleSubmit = async (e: Event | null = null) => {
+	e?.preventDefault()
+	IbanStore.validateAndSubmit(form.value)
+
+	// try {
+	// 	await addToFrequents(form)
+	// } catch (error) {
+	// 	console.error('Ошибка при добавлении в избранное:', error)
+	// }
+}
 </script>
 
 <template>
@@ -112,10 +151,8 @@ onMounted(() => {
 				:invalid="!!IbanStore.errors.amount"
 				class="form-field"
 				:label="$t('INTERNAL.IBAN.FORM.SUM')"
-				:helper-text="
-					IbanStore.errors.amount
-				"
-				@on-input="IbanStore.clearErrors()"
+				:helper-text="IbanStore.errors.amount ? $t(IbanStore.errors.amount) : ''"
+				@update:model-value="IbanStore.clearErrors()"
 			/>
 		</div>
 		<div class="internal-iban-form-bottom">

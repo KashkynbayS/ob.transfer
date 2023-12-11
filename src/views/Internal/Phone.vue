@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, reactive, ref } from 'vue'
+import { computed, reactive, ref, watch } from 'vue'
 
 import { onBeforeRouteLeave, useRouter } from 'vue-router'
 
@@ -7,25 +7,24 @@ import User from '@ui-kit/kmf-icons/interface/users/user.svg'
 import { BottomSheet, Button, Cell, CellGroup, CurrencyInput, Input, Modal } from '@ui-kit/ui-kit'
 import { ModalAction } from '@ui-kit/ui-kit/dist/ui/components/modal/types'
 
-import * as Yup from 'yup'
-
 import AccountDropdown from '@/components/AccountDropdown.vue'
-
-import { addToFrequents } from '@/services/frequentService'
 
 import { ACCOUNTS_GROUPS } from '@/mocks/internal'
 
-import { Account } from '@/types'
+import { CURRENCY_SYMBOL } from '@/constants'
 
-const form = reactive({
-	accountFrom: null as Account | null,
-	// accountFrom: {
-	// 	id: "KZT-deposit",
-	// 	currency: "kzt",
-	// 	title: "Депозит KZT",
-	// 	iban: "KZ123456789012345681",
-	// 	amount: 500
-	// },
+import { usePhoneStore } from '@/stores/phone.ts'
+import { useSuccessStore } from '@/stores/success'
+
+import { CURRENCY } from '@/types'
+import { FORM_STATE } from '@/types/form'
+import { PhoneForm } from '@/types/phone'
+
+const phoneStore = usePhoneStore()
+const successStore = useSuccessStore()
+
+const form = ref<PhoneForm>({
+	from: undefined,
 	phoneNumber: '',
 	receiverName: '',
 	amount: '',
@@ -33,99 +32,12 @@ const form = reactive({
 })
 
 const errors = reactive({
-	accountFrom: '',
+	from: '',
 	phoneNumber: '',
 	amount: ''
 })
 
-const transferredAmount = 567890 // сумма который был переведен в день
-const ResidualAmount = 1000000 - transferredAmount // остаток суммы перевода в день
-
-// Validation
-const schemaPhone = Yup.object().shape({
-	phoneNumber: Yup.string()
-		.test('ownerPhone', 'Вы ввели номер владельца счета', function (value) {
-			return value !== contact.ownerPhone
-		})
-		.test('phoneExists', 'По номеру телефона не найден клиент', function (value) {
-			const phoneNumberExists = contact.list.some((item) => item.phoneNumber === value)
-			return phoneNumberExists
-		})
-})
-
-const schemaAmount = Yup.object().shape({
-	amount: Yup.number()
-		.min(100, 'Минимальная сумма перевода 100 ₸')
-		.test('balance', 'Недостаточно средств', function (value) {
-			const selectedAccount = form.accountFrom?.id
-			const selectedAccountData = ACCOUNTS_GROUPS.flatMap((group) => group.list).find(
-				(account) => account.id === selectedAccount
-			)
-			if (!selectedAccountData) {
-				return true
-			}
-			return value ? value <= selectedAccountData?.amount : false
-		})
-		.test('ResidualAmount', `Остаток суммы перевода в день ${ResidualAmount} ₸`, function (value) {
-			return !value ? false : value <= ResidualAmount
-		})
-})
-
 const isPhoneInvalid = ref(false)
-const isAmountInvalid = ref(false)
-
-async function validatePhone() {
-	if (form.phoneNumber.trim() === '') {
-		isPhoneInvalid.value = true
-		errors.phoneNumber = 'Введите номер телефона'
-		setTimeout(() => {
-			isPhoneInvalid.value = false
-			errors.phoneNumber = ''
-		}, 2000)
-	} else {
-		try {
-			await schemaPhone.validate(form, { abortEarly: false })
-			isPhoneInvalid.value = false
-			errors.phoneNumber = ''
-		} catch (validationErrors: any) {
-			isPhoneInvalid.value = true
-			errors.phoneNumber = validationErrors.errors[0]
-		}
-	}
-}
-
-async function validateAmount() {
-	if (form.amount === '') {
-		isAmountInvalid.value = true
-		errors.amount = 'Введите сумму'
-		setTimeout(() => {
-			isAmountInvalid.value = false
-			errors.amount = ''
-		}, 2000)
-	} else {
-		try {
-			await schemaAmount.validate(form, { abortEarly: false })
-			isAmountInvalid.value = false
-			errors.amount = ''
-		} catch (validationErrors: any) {
-			isAmountInvalid.value = true
-			errors.amount = validationErrors.errors[0]
-		}
-	}
-}
-
-const handleSubmit = async () => {
-	try {
-		await validatePhone()
-		await validateAmount()
-
-		if (!isPhoneInvalid.value && !isAmountInvalid.value) {
-			await addToFrequents(form)
-		}
-	} catch (error) {
-		console.error('Ошибка при добавлении в избранное:', error)
-	}
-}
 
 // Modal
 const modal = ref<InstanceType<typeof Modal> | null>(null)
@@ -151,8 +63,8 @@ const actions = reactive<ModalAction[]>([
 
 // Guard
 onBeforeRouteLeave((to, _, next) => {
-	const { accountFrom, phoneNumber, amount } = form
-	const isFormDirty = accountFrom || phoneNumber || amount
+	const { from, phoneNumber, amount } = form.value
+	const isFormDirty = from || phoneNumber || amount
 	destPath = to.fullPath
 
 	if (!isFormDirty || isLeaveConfiirmed) {
@@ -182,34 +94,48 @@ const filteredContactList = computed(() =>
 const contactBottomSheetRef = ref<InstanceType<typeof BottomSheet> | null>(null)
 
 function selectContact(contact: any) {
-	form.phoneNumber = contact.phoneNumber
-	form.receiverName = contact.name
+	form.value.phoneNumber = contact.phoneNumber
+	form.value.receiverName = contact.name
 	contactBottomSheetRef?.value?.close()
 }
 
-onMounted(() => {
-	const queryParams = router.currentRoute.value.query
+watch(
+	() => phoneStore.state,
+	(state) => {
+		const currency = form.value.from ? form.value.from?.currency : CURRENCY.KZT
 
-	// form.accountFrom = queryParams.from as Account | null;
-	// form.accountFrom = JSON.parse(queryParams.from) as Account | null;
+		switch (state) {
+			case FORM_STATE.SUCCESS:
+				successStore.setDetails(Number(form.value.amount), currency, [
+					{ name: 'Сумма списания', value: `${form.value.amount} ${CURRENCY_SYMBOL[currency]}` },
+					{ name: 'Статус', value: 'Исполнено', colored: true },
+					{ name: 'Номер квитанции', value: '56789900' },
+					{ name: 'Счет списания', value: 'KZ****4893' },
+					{ name: 'Счет зачисления', value: 'KZ****4893' },
+					{ name: 'Дата', value: '11.04.2023' }
+				])
+				router.push('/Success')
+				break
 
-	if (typeof queryParams.from === 'string') {
-		try {
-			form.accountFrom = JSON.parse(queryParams.from) as Account | null
-		} catch (error) {
-			console.error('Ошибка при парсинге queryParams.from:', error)
-			form.accountFrom = null
+			case FORM_STATE.ERROR:
+				router.push('Error')
+				break
+
+			case FORM_STATE.INITIAL:
+			default:
+				break
 		}
-	} else {
-		form.accountFrom = null
+
+		if (state) {
+			console.log(state)
+		}
 	}
+)
 
-	console.log('Получаем: ' + form.accountFrom)
-
-	form.phoneNumber = (queryParams.to as string) || ''
-	form.receiverName = (queryParams.receiverName as string) || ''
-	form.amount = (queryParams.amount as string) || ''
-})
+const handleSubmit = async (e: Event | null = null) => {
+	e?.preventDefault()
+	phoneStore.validateAndSubmit(form.value)
+}
 
 // _________________________________________
 </script>
@@ -219,7 +145,7 @@ onMounted(() => {
 		<div class="internal-phone-form-top">
 			<AccountDropdown
 				id="from"
-				v-model="form.accountFrom"
+				v-model="form.from"
 				:accounts-groups="ACCOUNTS_GROUPS"
 				:label="$t('OWN.FORM.FROM')"
 			/>
@@ -246,8 +172,10 @@ onMounted(() => {
 				v-model="form.amount"
 				class="form-field"
 				:label="$t('INTERNAL.PHONE.FORM.SUM')"
-				:invalid="isAmountInvalid"
-				:helper-text="errors.amount"
+				:invalid="!!phoneStore.errors.amount"
+				:helper-text="phoneStore.errors.amount ? $t(phoneStore.errors.amount) : ''"
+				@on-input="phoneStore.clearErrors()"
+				@update:model-value="phoneStore.clearErrors()"
 			/>
 		</div>
 		<div class="internal-phone-form-bottom">

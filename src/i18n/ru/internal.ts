@@ -18,10 +18,7 @@ export const INTERNAL = {
 			ACCOUNT_TO: 'Счет зачисления',
 			RECIEVER_NAME: 'Имя получателя',
 			SUM: 'Сумма',
-			SUBMIT: 'Отправить',
-			ERRORS: {
-				NOT_ENOUGH_MONEY: 'Недостаточно средств'
-			}
+			SUBMIT: 'Отправить'
 		}
 	},
 	MODAL: {
@@ -31,5 +28,8 @@ export const INTERNAL = {
 			GO: 'Перейти',
 			STAY: 'Остаться'
 		}
+	},
+	ERRORS: {
+		NOT_ENOUGH_MONEY: 'Недостаточно средств'
 	}
 }

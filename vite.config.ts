@@ -40,8 +40,8 @@ export default defineConfig({
 				assetFileNames: 'assets/[name].[ext]',
 				chunkFileNames: 'chunks/[name].js',
 				entryFileNames: '[name].js'
-			}
-			// external: ['vue', 'vue-router', 'vue-i18n', 'pinia']
+			},
+			external: ['vue', 'vue-router', 'vue-i18n', 'pinia']
 		},
 		sourcemap: true,
 		target: 'esnext'
