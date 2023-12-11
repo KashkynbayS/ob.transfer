@@ -21,7 +21,8 @@ export const useHistoryStore = defineStore('history', {
 			filters: {
 				executed: true,
 				rejected: true,
-				processing: true
+				processing: true,
+				all: true
 			},
 			dates: '',
 			sum: {
