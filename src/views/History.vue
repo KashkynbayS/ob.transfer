@@ -10,7 +10,8 @@ import { CURRENCY, TransactionGroup, TransactionsType } from '@/types'
 import TransactionValue from '@/components/TransactionValue.vue'
 import { CURRENCY_SYMBOL } from '@/constants'
 import HistorySettings from '@/components/HistorySettings.vue'
-import { onMounted, ref } from 'vue'
+import { onMounted, reactive, ref } from 'vue'
+import AppTags, { Tag } from '@/components/AppTags.vue'
 
 const router = useRouter()
 
@@ -101,6 +102,16 @@ const openDetails = (id: string) => {
 }
 
 const settings = ref(false)
+const filters = reactive<Tag[]>([
+	{
+		value: '1',
+		title: 'Исполнено'
+	},
+	{
+		value: '2',
+		title: '1.07.23 – 14.08.23'
+	}
+])
 
 const openSettings = () => {
 	settings.value = true
@@ -110,9 +121,19 @@ const closeSettings = () => {
 	settings.value = false
 }
 
-onMounted(() => {
-	openSettings()
-})
+const applyFilters = (filters: any) => {
+	console.log(filters)
+	closeSettings()
+}
+
+const removeHandler = (filterValue: string) => {
+	filters.splice(
+		filters.findIndex((item) => item.value === filterValue),
+		1
+	)
+}
+
+onMounted(() => {})
 </script>
 
 <template>
@@ -125,6 +146,8 @@ onMounted(() => {
 				</button>
 			</template>
 		</AppNavbar>
+
+		<AppTags class="history__tags" :tags="filters" @removed="removeHandler" />
 
 		<CellGroup v-for="transactionGroup in transactions" :key="transactionGroup.title" class="transaction-group">
 			<div class="transaction-group__title">
@@ -155,7 +178,7 @@ onMounted(() => {
 			</Cell>
 		</CellGroup>
 
-		<HistorySettings :show="settings" @closed="closeSettings" />
+		<HistorySettings :show="settings" @closed="closeSettings" @apply="applyFilters" />
 	</div>
 </template>
 
@@ -175,18 +198,21 @@ onMounted(() => {
 	&__commission {
 		color: var(--text-low-contrast);
 	}
+
+	&__tags {
+		padding: var(--space-4) var(--space-4) 0 var(--space-4);
+	}
 }
 
 .transaction-group {
 	&:not(:last-child) {
-		margin-bottom: var(--space-3);
+		margin-bottom: var(--space-6);
 	}
 
 	&__title {
 		color: var(--text-low-contrast);
 		font-size: var(--font-size-caption);
 		line-height: var(--line-height-caption);
-		padding-top: var(--space-6);
 		padding-left: var(--space-4);
 	}
 }
