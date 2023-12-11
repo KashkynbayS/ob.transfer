@@ -17,18 +17,18 @@ router.addRoute({
 		{
 			path: '',
 			redirect: 'new',
-			name: 'MainTransfer',
-			component: () => import('@/views/MainTransfer/MainTransfer.vue'),
+			name: 'Main',
+			component: () => import('@/views/Main.vue'),
 			children: [
 				{
 					path: 'new',
 					name: 'New',
-					component: () => import('@/views/MainTransfer/New.vue')
+					component: () => import('@/views/Main/New.vue')
 				},
 				{
 					path: 'frequent',
 					name: 'Frequent',
-					component: () => import('@/views/MainTransfer/Frequent.vue')
+					component: () => import('@/views/Main/Frequent.vue')
 				}
 			]
 		},
@@ -36,17 +36,17 @@ router.addRoute({
 			path: 'internal',
 			redirect: 'internal/phone',
 			name: 'Internal',
-			component: () => import('@/views/Internal/Internal.vue'),
+			component: () => import('@/views/Internal.vue'),
 			children: [
 				{
 					path: 'phone',
 					name: 'InternalPhone',
-					component: () => import('@/views/Internal/internalPhone.vue')
+					component: () => import('@/views/Internal/Phone.vue')
 				},
 				{
 					path: 'account',
 					name: 'InternalAccount',
-					component: () => import('@/views/Internal/internalIban.vue')
+					component: () => import('@/views/Internal/Iban.vue')
 				}
 			]
 		},
@@ -63,7 +63,6 @@ router.addRoute({
 		{
 			path: 'success',
 			name: 'Success',
-			props: true,
 			component: () => import('@/views/Success.vue')
 		},
 		{

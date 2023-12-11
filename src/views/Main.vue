@@ -1,20 +1,20 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue';
 
-import { useRouter } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 
 import { SegmentedControl } from '@ui-kit/ui-kit';
 
 import AppNavbar from '@/components/AppNavbar.vue';
 
-type SegnemtType = 'new' | 'frequent'
-const segmentedControlValue = ref<SegnemtType>('new')
-
 const router = useRouter()
+const route = useRoute()
 
-watch(segmentedControlValue, () => {
-	router.push({
-		name: segmentedControlValue.value === 'new' ? 'New' : 'Frequent'
+const page = ref(route.name === 'New' ? 'new' : 'frequent')
+
+watch(page, () => {
+	router.replace({
+		name: page.value === 'new' ? 'New' : 'Frequent'
 	})
 })
 </script>
@@ -26,13 +26,13 @@ watch(segmentedControlValue, () => {
 		</template>
 
 		<template #label>
-			<button class="history">{{ $t('TRANSFER.HISTORY') }}</button>
+			<router-link to="/history" class="history-link">{{ $t('TRANSFER.HISTORY') }}</router-link>
 		</template>
 	</AppNavbar>
 
-	<div class="transfer">
+	<div class="transfer-nav">
 		<SegmentedControl
-			v-model="segmentedControlValue"
+			v-model="page"
 			:options="[
 				{
 					id: 'new',
@@ -52,22 +52,18 @@ watch(segmentedControlValue, () => {
 
 	<router-view></router-view>
 </template>
-<style lang="scss">
-.transfer {
+<style lang="scss" scoped>
+.transfer-nav {
 	box-sizing: content-box;
 	height: 100%;
-	padding: var(--space-8) var(--space-4) 0 var(--space-4);
+	padding: var(--space-3) var(--space-4);
 
 	.segment-picker {
 		width: 100%;
 	}
 }
 
-.navbar__label {
-	padding: 10px var(--space-4);
-}
-
-.history {
-	color: var(--txt-icons-red, #ed1307);
+.history-link {
+	color: var(--txt-icons-red, var(--accent-primary));
 }
 </style>

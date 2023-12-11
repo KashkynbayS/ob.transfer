@@ -28,5 +28,8 @@ export const INTERNAL = {
 			GO: 'Перейти',
 			STAY: 'Остаться'
 		}
+	},
+	ERRORS: {
+		NOT_ENOUGH_MONEY: 'Недостаточно средств'
 	}
 }

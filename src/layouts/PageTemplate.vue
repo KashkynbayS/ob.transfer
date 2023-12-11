@@ -1,12 +1,8 @@
-<script setup lang="ts">
-const props = defineProps<{
-	withoutPaddings?: boolean
-}>()
-</script>
-
 <template>
 	<div class="page-template">
-		<div class="page-template__main" :class="{ 'page-template__main--no-paddings': props.withoutPaddings }">
+		<slot name="header" />
+
+		<div class="page-template__main">
 			<slot />
 		</div>
 		<div class="page-template__footer">
@@ -29,10 +25,7 @@ const props = defineProps<{
 		display: flex;
 		flex-direction: column;
 		align-items: center;
-
-		&:not(.page-template__main--no-paddings) {
-			padding: 0 var(--space-4) 0 var(--space-4);
-		}
+		padding: 0 var(--space-4) 0 var(--space-4);
 	}
 
 	&__footer {
