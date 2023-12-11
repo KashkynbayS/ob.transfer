@@ -41,7 +41,7 @@ export default defineConfig({
 				chunkFileNames: 'chunks/[name].js',
 				entryFileNames: '[name].js'
 			},
-			external: ['vue', 'vue-router', 'vue-i18n', 'pinia']
+			external: ['vue', 'vue-router', 'vue-i18n']
 		},
 		sourcemap: true,
 		target: 'esnext'
