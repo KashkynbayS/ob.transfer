@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { BottomSheet, Input, Button, SelectButton, Calendar } from '@ui-kit/ui-kit'
+import { BottomSheet, Button, Calendar, Input, SelectButton } from '@ui-kit/ui-kit'
 import CalendarIcon from '@ui-kit/kmf-icons/others/calendars/calendar.svg'
-import { reactive, ref, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { ModalAction } from '@ui-kit/ui-kit/dist/ui/components/modal/types'
-import { HistoryFilter } from '@/stores/details.ts'
+import { filters, HistoryFilter, useHistoryStore } from '@/stores/history.ts'
 
 const props = defineProps<{
 	show: boolean
@@ -12,7 +12,6 @@ const props = defineProps<{
 
 const emit = defineEmits<{
 	(e: 'closed'): void
-	(e: 'apply', v: any): void
 }>()
 
 watch(
@@ -27,11 +26,44 @@ watch(
 )
 
 const bottomSheetRef = ref<InstanceType<typeof BottomSheet> | null>(null)
+const historyStore = useHistoryStore()
 
-const filterModel = ref('')
-const dates = ref('')
-const sumFrom = ref('')
-const sumTo = ref('')
+const dates = computed<Date[]>({
+	get() {
+		return historyStore.settings.dates
+	},
+	set(newValue) {
+		historyStore.settings.dates = newValue
+	}
+})
+const datesString = computed(() => historyStore.datesString)
+const filterModel = computed({
+	get() {
+		return historyStore.settings.currentFilter as string
+	},
+	set(newValue) {
+		historyStore.settings.currentFilter = newValue as HistoryFilter
+	}
+})
+
+const sumFrom = computed<string>({
+	get() {
+		return historyStore.settings.sum.from
+	},
+	set(newValue) {
+		historyStore.settings.sum.from = newValue
+	}
+})
+
+const sumTo = computed<string>({
+	get() {
+		return historyStore.settings.sum.to
+	},
+	set(newValue) {
+		historyStore.settings.sum.to = newValue
+	}
+})
+
 const showCalendar = ref(false)
 
 function toggleCalendar(value = !showCalendar.value) {
@@ -39,24 +71,8 @@ function toggleCalendar(value = !showCalendar.value) {
 }
 
 function applyFilters() {
-	emit('apply', {
-		filter: filterModel.value
-	})
+	emit('closed')
 }
-
-interface Filter {
-	id: HistoryFilter
-	title: string
-	value: HistoryFilter
-	disabled: boolean
-}
-
-const filters = reactive<Filter[]>([
-	{ id: 'all', title: 'Все', value: 'all', disabled: false },
-	{ id: 'executed', title: 'Исполнено', value: 'executed', disabled: false },
-	{ id: 'rejected', title: 'Отклонено', value: 'rejected', disabled: false },
-	{ id: 'processing', title: 'В обработке', value: 'processing', disabled: false }
-])
 
 function closeHandler() {
 	emit('closed')
@@ -67,8 +83,8 @@ function closeHandler() {
 }
 
 function onDateSelected(value: Date[]) {
-	console.log(value)
-	dates.value = '1.07.23 – 14.08.23'
+	dates.value = value
+
 	toggleCalendar(false)
 }
 </script>
@@ -95,7 +111,7 @@ function onDateSelected(value: Date[]) {
 							:title="filter.title"
 						/>
 					</div>
-					<Input id="date-input" v-model="dates" label="Период" @on-focus="toggleCalendar(true)">
+					<Input id="date-input" :model-value="datesString" label="Период" @on-focus="toggleCalendar(true)">
 						<template #append>
 							<CalendarIcon />
 						</template>
@@ -133,6 +149,7 @@ function onDateSelected(value: Date[]) {
 		// Скрытие скроллбара
 		-ms-overflow-style: none;
 		scrollbar-width: none;
+
 		&::-webkit-scrollbar {
 			display: none;
 		}
