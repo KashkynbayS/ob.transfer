@@ -10,10 +10,12 @@ import { CURRENCY, TransactionGroup, TransactionsType } from '@/types'
 import TransactionValue from '@/components/TransactionValue.vue'
 import { CURRENCY_SYMBOL } from '@/constants'
 import HistorySettings from '@/components/HistorySettings.vue'
-import { onMounted, reactive, ref } from 'vue'
+import { ref } from 'vue'
 import AppTags, { Tag } from '@/components/AppTags.vue'
+import { useHistoryStore } from '@/stores/history.ts'
 
 const router = useRouter()
+const historyStore = useHistoryStore()
 
 const typeMapping: Record<TransactionsType, string> = {
 	fill: 'Пополнение',
@@ -102,38 +104,21 @@ const openDetails = (id: string) => {
 }
 
 const settings = ref(false)
-const filters = reactive<Tag[]>([
-	{
-		value: '1',
-		title: 'Исполнено'
-	},
-	{
-		value: '2',
-		title: '1.07.23 – 14.08.23'
-	}
-])
+const filters = ref<Tag[]>([])
 
 const openSettings = () => {
 	settings.value = true
 }
 
 const closeSettings = () => {
+	filters.value = historyStore.filterTags
 	settings.value = false
 }
 
-const applyFilters = (filters: any) => {
-	console.log(filters)
-	closeSettings()
-}
-
 const removeHandler = (filterValue: string) => {
-	filters.splice(
-		filters.findIndex((item) => item.value === filterValue),
-		1
-	)
+	historyStore.disableFilter(filterValue)
+	filters.value = historyStore.filterTags
 }
-
-onMounted(() => {})
 </script>
 
 <template>
@@ -178,7 +163,7 @@ onMounted(() => {})
 			</Cell>
 		</CellGroup>
 
-		<HistorySettings :show="settings" @closed="closeSettings" @apply="applyFilters" />
+		<HistorySettings :show="settings" @closed="closeSettings" />
 	</div>
 </template>
 
