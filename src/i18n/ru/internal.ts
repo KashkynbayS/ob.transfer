@@ -9,7 +9,12 @@ export const INTERNAL = {
 			ACCOUNT_FROM: 'Счёт KZT',
 			PHONE_NUMBER: 'Номер телефона',
 			SUM: 'Сумма',
-			SUBMIT: 'Отправить'
+			SUBMIT: 'Отправить',
+			ERRORS: {
+				NOT_ENOUGH_MONEY: 'Недостаточно средств',
+				EMPTY_AMOUNT: 'Введите сумму',
+				MIN_AMOUNT: 'Минимальная сумма перевода 100 ₸'
+			}
 		}
 	},
 	IBAN: {
@@ -18,7 +23,14 @@ export const INTERNAL = {
 			ACCOUNT_TO: 'Счет зачисления',
 			RECIEVER_NAME: 'Имя получателя',
 			SUM: 'Сумма',
-			SUBMIT: 'Отправить'
+			SUBMIT: 'Отправить',
+			ERRORS: {
+				EMPTY_TO: 'Введите счет зачисления',
+				EMPTY_RECEIVER_NAME: 'Введите имя получателя',
+				NOT_ENOUGH_MONEY: 'Недостаточно средств',
+				EMPTY_AMOUNT: 'Введите сумму',
+				MIN_AMOUNT: 'Минимальная сумма перевода 100 ₸'
+			}
 		}
 	},
 	MODAL: {
@@ -28,8 +40,5 @@ export const INTERNAL = {
 			GO: 'Перейти',
 			STAY: 'Остаться'
 		}
-	},
-	ERRORS: {
-		NOT_ENOUGH_MONEY: 'Недостаточно средств'
 	}
 }

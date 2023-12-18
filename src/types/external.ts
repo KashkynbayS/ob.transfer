@@ -7,5 +7,5 @@ export interface ExternalForm {
 	knp: Knp | null
 	iin: ''
 	name: ''
-	amount: ''
+	amount: number | null
 }

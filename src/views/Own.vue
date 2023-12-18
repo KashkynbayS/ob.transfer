@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, ref, watch, watchEffect } from 'vue'
+import { computed, ref, watch, watchEffect } from 'vue'
 
 import { useRouter } from 'vue-router'
 
@@ -33,7 +33,7 @@ const successStore = useSuccessStore()
 const form = ref<OwnForm>({
 	from: undefined,
 	to: undefined,
-	amount: '',
+	amount: null,
 	writeOffAmount: '',
 	enrollmentAmount: '',
 	lastUpdated: undefined,
@@ -205,11 +205,11 @@ watch(
 	}
 )
 
-onMounted(() => {
-	const queryParams = router.currentRoute.value.query
+// onMounted(() => {
+// 	const queryParams = router.currentRoute.value.query
 
-	form.value.amount = (queryParams.amount as string) || ''
-})
+// 	form.value.amount = (queryParams.amount as string) || ''
+// })
 </script>
 
 <template>

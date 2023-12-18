@@ -4,13 +4,18 @@ import { PhoneForm } from './../types/phone'
 
 import { PhoneService } from '@/services/phone.service'
 import { FORM_STATE, FormStore } from '@/types/form'
-import { extractValidationErrors, validateAmountFromAccount } from '@/utils/validators'
+import { extractValidationErrors, validateAmount } from '@/utils/validators'
 
 export interface PhoneStore extends FormStore {}
 
 // TODO: Добавить остальную валидацию после внедрения ТЗ и реализации API
 const formSchema = object({
-	amount: validateAmountFromAccount('amount', 'INTERNAL.ERRORS.NOT_ENOUGH_MONEY')
+	amount: validateAmount(
+		'amount',
+		'INTERNAL.PHONE.FORM.ERRORS.NOT_ENOUGH_MONEY',
+		'INTERNAL.PHONE.FORM.ERRORS.EMPTY_AMOUNT',
+		'INTERNAL.PHONE.FORM.ERRORS.MIN_AMOUNT'
+	  )
 })
 
 export const usePhoneStore = defineStore('phone', {

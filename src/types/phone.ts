@@ -4,6 +4,6 @@ export interface PhoneForm {
 	from: Account | undefined
 	phoneNumber: string
     receiverName: string
-	amount: string
+	amount: number | null
 	transferType: string
 }

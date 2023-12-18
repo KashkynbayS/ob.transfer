@@ -5,13 +5,17 @@ import { OwnService } from '@/services/own.service'
 
 import { FORM_STATE, FormStore } from '@/types/form'
 import { OwnForm } from '@/types/own'
-import { extractValidationErrors, validateAmountFromAccount } from '@/utils/validators'
+import { extractValidationErrors, validateAmount } from '@/utils/validators'
 
 export interface OwnStore extends FormStore {}
 
 const formSchema = object({
-	amount: validateAmountFromAccount('amount', 'OWN.FORM.ERRORS.NOT_ENOUGH_MONEY'),
-	writeOffAmount: validateAmountFromAccount('writeOffAmount', 'OWN.FORM.ERRORS.NOT_ENOUGH_MONEY')
+	amount: validateAmount(
+		'amount',
+		'INTERNAL.IBAN.FORM.ERRORS.NOT_ENOUGH_MONEY',
+		'INTERNAL.IBAN.FORM.ERRORS.EMPTY_AMOUNT',
+		'INTERNAL.IBAN.FORM.ERRORS.MIN_AMOUNT'
+	),
 })
 
 export const useOwnStore = defineStore('own', {

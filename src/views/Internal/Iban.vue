@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, reactive, ref, watch } from 'vue'
+import { reactive, ref, watch } from 'vue'
 
 import { onBeforeRouteLeave, useRouter } from 'vue-router'
 
@@ -64,16 +64,8 @@ const form = ref<IbanForm>({
 	from: undefined,
 	to: '',
 	receiverName: '',
-	amount: '',
+	amount: null,
 	transferType: 'iban'
-})
-
-onMounted(() => {
-	const queryParams = router.currentRoute.value.query
-
-	form.value.to = (queryParams.to as string) || ''
-	form.value.receiverName = (queryParams.receiverName as string) || ''
-	form.value.amount = (queryParams.amount as string) || ''
 })
 
 watch(
@@ -113,12 +105,6 @@ watch(
 const handleSubmit = async (e: Event | null = null) => {
 	e?.preventDefault()
 	IbanStore.validateAndSubmit(form.value)
-
-	// try {
-	// 	await addToFrequents(form)
-	// } catch (error) {
-	// 	console.error('Ошибка при добавлении в избранное:', error)
-	// }
 }
 </script>
 
@@ -134,23 +120,27 @@ const handleSubmit = async (e: Event | null = null) => {
 			<IbanInput
 				id="recieverNameModel"
 				v-model:model-value="form.to"
-				:invalid="!!form.to"
 				class="form-field"
 				:label="$t('INTERNAL.IBAN.FORM.ACCOUNT_TO')"
+				:invalid="!!IbanStore.errors.to"
+				:helper-text="IbanStore.errors.to ? $t(IbanStore.errors.to) : ''"
+				@update:model-value="IbanStore.clearErrors()"
 			/>
 			<Input
 				id="123"
 				v-model:model-value="form.receiverName"
-				:invalid="!!form.receiverName"
 				class="form-field"
 				:label="$t('INTERNAL.IBAN.FORM.RECIEVER_NAME')"
+				:invalid="!!IbanStore.errors.receiverName"
+				:helper-text="IbanStore.errors.receiverName ? $t(IbanStore.errors.receiverName) : ''"
+				@update:model-value="IbanStore.clearErrors()"
 			/>
 			<CurrencyInput
 				id="amount"
 				v-model:model-value="form.amount"
-				:invalid="!!IbanStore.errors.amount"
 				class="form-field"
 				:label="$t('INTERNAL.IBAN.FORM.SUM')"
+				:invalid="!!IbanStore.errors.amount"
 				:helper-text="IbanStore.errors.amount ? $t(IbanStore.errors.amount) : ''"
 				@update:model-value="IbanStore.clearErrors()"
 			/>

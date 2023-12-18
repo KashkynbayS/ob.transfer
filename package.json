@@ -16,8 +16,8 @@
 	},
 	"dependencies": {
 		"@ui-kit/kmf-icons": "0.3.13",
-		"@ui-kit/kmf-styles": "1.0.5",
-		"@ui-kit/ui-kit": "1.1.11",
+		"@ui-kit/kmf-styles": "^1.1.0",
+		"@ui-kit/ui-kit": "^1.2.2",
 		"@vee-validate/yup": "^4.11.8",
 		"axios": "^1.6.2",
 		"pinia": "^2.1.6",

@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import { computed, reactive, ref, watch } from 'vue'
+import { reactive, ref, watch } from 'vue'
 
 import { onBeforeRouteLeave, useRouter } from 'vue-router'
 
-import User from '@ui-kit/kmf-icons/interface/users/user.svg'
-import { BottomSheet, Button, Cell, CellGroup, CurrencyInput, Input, Modal } from '@ui-kit/ui-kit'
+import { Button, CurrencyInput, Modal } from '@ui-kit/ui-kit'
 import { ModalAction } from '@ui-kit/ui-kit/dist/ui/components/modal/types'
+import { SelectContactInput } from '@ui-kit/ui-kit/dist/widgets'
 
 import AccountDropdown from '@/components/AccountDropdown.vue'
 
@@ -27,17 +27,9 @@ const form = ref<PhoneForm>({
 	from: undefined,
 	phoneNumber: '',
 	receiverName: '',
-	amount: '',
+	amount: null,
 	transferType: 'phone'
 })
-
-const errors = reactive({
-	from: '',
-	phoneNumber: '',
-	amount: ''
-})
-
-const isPhoneInvalid = ref(false)
 
 // Modal
 const modal = ref<InstanceType<typeof Modal> | null>(null)
@@ -73,31 +65,6 @@ onBeforeRouteLeave((to, _, next) => {
 
 	modal.value?.open()
 })
-
-const contact = reactive({
-	value: '',
-	search: '',
-	ownerPhone: '87053811230',
-	list: [
-		{ name: 'Yernar', phoneNumber: '87053811231' },
-		{ name: 'Dulat', phoneNumber: '87053811232' },
-		{ name: 'Aibek', phoneNumber: '87053811233' },
-		{ name: 'Dosbol', phoneNumber: '87053811234' },
-		{ name: 'Zeinep', phoneNumber: '87053811235' }
-	]
-})
-
-const filteredContactList = computed(() =>
-	contact.list.filter((item) => item.name?.toLowerCase().includes(contact.search.toLowerCase()))
-)
-
-const contactBottomSheetRef = ref<InstanceType<typeof BottomSheet> | null>(null)
-
-function selectContact(contact: any) {
-	form.value.phoneNumber = contact.phoneNumber
-	form.value.receiverName = contact.name
-	contactBottomSheetRef?.value?.close()
-}
 
 watch(
 	() => phoneStore.state,
@@ -149,23 +116,8 @@ const handleSubmit = async (e: Event | null = null) => {
 				:accounts-groups="ACCOUNTS_GROUPS"
 				:label="$t('OWN.FORM.FROM')"
 			/>
-			<Input
-				id="123"
-				v-model="form.phoneNumber"
-				class="form-field"
-				:label="$t('INTERNAL.PHONE.FORM.PHONE_NUMBER')"
-				:invalid="isPhoneInvalid"
-				:helper-text="errors.phoneNumber"
-			>
-				<template #append>
-					<div v-if="form.receiverName" class="receiver-name" @click="contactBottomSheetRef?.open()">
-						{{ form.receiverName }}
-					</div>
-					<div v-else>
-						<User @click="contactBottomSheetRef?.open()" />
-					</div>
-				</template>
-			</Input>
+
+			<SelectContactInput/>
 
 			<CurrencyInput
 				id="123"
@@ -182,21 +134,6 @@ const handleSubmit = async (e: Event | null = null) => {
 			<Button id="123" type="primary" @click="handleSubmit"> {{ $t('INTERNAL.PHONE.FORM.SUBMIT') }} </Button>
 		</div>
 	</form>
-
-	<BottomSheet ref="contactBottomSheetRef">
-		<template #title><h4>Контакты</h4></template>
-		<template #content>
-			<div class="address__bottom-sheet-content">
-				<Input id="contact-search" v-model="contact.search" placeholder="Поиск по названию" type="search" />
-				<CellGroup>
-					<Cell v-for="item in filteredContactList" :key="item.phoneNumber" @click="selectContact(item)">
-						<template #title>{{ item.name }}</template>
-						<template #subtitle>{{ item.phoneNumber }}</template>
-					</Cell>
-				</CellGroup>
-			</div>
-		</template>
-	</BottomSheet>
 
 	<Modal ref="modal" v-bind="{ asd: 'asdasd' }" :actions="actions" close-on-outline-click>
 		<template #title>{{ $t('INTERNAL.MODAL.LEAVE_WHEN_FORM_IS_DIRTY.TITLE') }}</template>

@@ -28,7 +28,7 @@ const form = ref<ExternalForm>({
 	knp: null,
 	iin: '',
 	name: '',
-	amount: ''
+	amount: null
 })
 
 watch(

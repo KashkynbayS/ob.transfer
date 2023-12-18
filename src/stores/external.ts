@@ -4,14 +4,18 @@ import { ExternalForm } from './../types/external'
 
 import { ExternalService } from '@/services/external.service'
 import { FORM_STATE, FormStore } from '@/types/form'
-import { extractValidationErrors, validateAmountFromAccount } from '@/utils/validators'
+import { extractValidationErrors, validateAmount } from '@/utils/validators'
 
 export interface ExternalStore extends FormStore {}
 
 // TODO: Добавить остальную валидацию после внедрения ТЗ и реализации API
 const formSchema = object({
-	amount: validateAmountFromAccount('amount', 'EXTERNAL.FORM.ERRORS.NOT_ENOUGH_MONEY')
-})
+	amount: validateAmount(
+		'amount',
+		'INTERNAL.IBAN.FORM.ERRORS.NOT_ENOUGH_MONEY',
+		'INTERNAL.IBAN.FORM.ERRORS.EMPTY_AMOUNT',
+		'INTERNAL.IBAN.FORM.ERRORS.MIN_AMOUNT'
+	),})
 
 export const useExternalStore = defineStore('external', {
 	state: (): ExternalStore => ({
