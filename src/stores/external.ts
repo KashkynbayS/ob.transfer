@@ -4,23 +4,31 @@ import { ExternalForm } from './../types/external'
 
 import { ExternalService } from '@/services/external.service'
 import { FORM_STATE, FormStore } from '@/types/form'
-import { extractValidationErrors, validateAmount } from '@/utils/validators'
+import { extractValidationErrors, validateAmount, validateIban, validateIin, validateKnp, validateReceiverName } from '@/utils/validators'
 
 export interface ExternalStore extends FormStore {}
 
 // TODO: Добавить остальную валидацию после внедрения ТЗ и реализации API
 const formSchema = object({
+	iban: validateIban('iban', 'EXTERNAL.FORM.ERRORS.EMPTY_IBAN'),
+	knp: validateKnp('knp', 'EXTERNAL.FORM.ERRORS.EMPTY_KNP'),
+	iin: validateIin('iin', 'EXTERNAL.FORM.ERRORS.EMPTY_IIN'),
+	receiverName: validateReceiverName('receiverName', 'EXTERNAL.FORM.ERRORS.EMPTY_RECEIVER_NAME'),
 	amount: validateAmount(
 		'amount',
-		'INTERNAL.IBAN.FORM.ERRORS.NOT_ENOUGH_MONEY',
-		'INTERNAL.IBAN.FORM.ERRORS.EMPTY_AMOUNT',
-		'INTERNAL.IBAN.FORM.ERRORS.MIN_AMOUNT'
+		'EXTERNAL.FORM.ERRORS.NOT_ENOUGH_MONEY',
+		'EXTERNAL.FORM.ERRORS.EMPTY_AMOUNT',
+		'EXTERNAL.FORM.ERRORS.MIN_AMOUNT'
 	),})
 
 export const useExternalStore = defineStore('external', {
 	state: (): ExternalStore => ({
 		state: FORM_STATE.INITIAL,
 		errors: {
+			iban: '',
+			knp: '',
+			iin: '',
+			receiverName: '',
 			amount: ''
 		}
 	}),
@@ -55,10 +63,19 @@ export const useExternalStore = defineStore('external', {
 					this.state = FORM_STATE.ERROR
 				})
 		},
-		clearErrors() {
-			this.errors = {
-				amount: ''
+		clearErrors(fieldName?: any) {
+			if (fieldName) {
+			  	this.errors[fieldName] = '';
+			} 
+			else {
+				this.errors = {
+					iban: '',
+					knp: '',
+					iin: '',
+					receiverName: '',
+					amount: ''
+				};
 			}
-		}
+		  }
 	}
 })

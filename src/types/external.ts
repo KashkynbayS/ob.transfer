@@ -6,6 +6,6 @@ export interface ExternalForm {
 	iban: ''
 	knp: Knp | null
 	iin: ''
-	name: ''
+	receiverName: ''
 	amount: number | null
 }

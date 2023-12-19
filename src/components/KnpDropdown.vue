@@ -13,6 +13,9 @@ const props = defineProps<{
 	id: string
 	modelValue: Knp | null
 	value?: Knp | undefined | null
+	errorInvalid: boolean
+	helperText: string
+	updateField: Function
 }>()
 
 const emit = defineEmits<{
@@ -28,6 +31,7 @@ const onSelect = (item: Knp) => {
 	selected.value = item
 	emit('update:modelValue', item)
 	bottomSheetRef.value?.close()
+	props.updateField()
 }
 
 watchEffect(() => {
@@ -37,7 +41,14 @@ watchEffect(() => {
 
 <template>
 	<div class="knp">
-		<Dropdown :id="props.id" :value="selectedView" :label="$t('KNP.LABEL')" @on-focus="bottomSheetRef?.open()" />
+		<Dropdown 
+			:id="props.id" 
+			:value="selectedView" 
+			:label="$t('KNP.LABEL')" 
+			@on-focus="bottomSheetRef?.open()" 
+			:invalid="props.errorInvalid"
+			:helper-text="props.helperText"
+		/>
 
 		<BottomSheet ref="bottomSheetRef">
 			<template #title>

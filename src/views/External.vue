@@ -22,12 +22,14 @@ import { FORM_STATE } from '@/types/form'
 const externalStore = useExternalStore()
 const successStore = useSuccessStore()
 
+externalStore.clearErrors()
+
 const form = ref<ExternalForm>({
 	from: undefined,
 	iban: '',
 	knp: null,
 	iin: '',
-	name: '',
+	receiverName: '',
 	amount: null
 })
 
@@ -68,6 +70,10 @@ const handleSubmit = (e: Event | null = null) => {
 	e?.preventDefault()
 	externalStore.validateAndSubmit(form.value)
 }
+
+const handleKnpUpdate = () => {
+  externalStore.clearErrors('knp');
+};
 </script>
 
 <template>
@@ -85,19 +91,45 @@ const handleSubmit = (e: Event | null = null) => {
 				v-model="form.from"
 				:accounts-groups="ACCOUNTS_GROUPS"
 				:label="$t('EXTERNAL.FORM.FROM')"
-				@update:model-value="externalStore.clearErrors()"
 			/>
-			<IbanInput id="iban" v-model="form.iban" :label="$t('EXTERNAL.FORM.IBAN')" />
-			<KnpDropdown id="knp" v-model="form.knp" />
-			<Input id="iin" v-model="form.iin" :label="$t('EXTERNAL.FORM.IIN')" />
-			<Input id="name" v-model="form.name" :label="$t('EXTERNAL.FORM.NAME')" />
+			<IbanInput 
+				id="iban" 
+				v-model="form.iban" 
+				:label="$t('EXTERNAL.FORM.IBAN')" 
+				:invalid="!!externalStore.errors.iban"
+				:helper-text="!!externalStore.errors.iban ? $t(externalStore.errors.iban) : ''"
+				@update:model-value="externalStore.clearErrors('iban')"
+			/>
+			<KnpDropdown 
+				id="knp" 
+				v-model="form.knp" 
+				:errorInvalid="!!externalStore.errors.knp"
+				:helperText="!!externalStore.errors.knp ? $t(externalStore.errors.knp) : ''"
+				:updateField="handleKnpUpdate"
+			/>
+			<Input 
+			id="iin" 
+			v-model="form.iin" 
+				:label="$t('EXTERNAL.FORM.IIN')" 
+				:invalid="!!externalStore.errors.iin"
+				:helper-text="!!externalStore.errors.iin ? $t(externalStore.errors.iin) : ''"
+				@update:model-value="externalStore.clearErrors('iin')"
+			/>
+			<Input 
+				id="name" 
+				v-model="form.receiverName"
+				:label="$t('EXTERNAL.FORM.NAME')"
+				:invalid="!!externalStore.errors.receiverName"
+				:helper-text="!!externalStore.errors.receiverName ? $t(externalStore.errors.receiverName) : ''"
+				@update:model-value="externalStore.clearErrors('receiverName')"	
+			/>
 			<CurrencyInput
 				id="amount"
 				v-model="form.amount"
 				:label="$t('EXTERNAL.FORM.AMOUNT')"
 				:invalid="!!externalStore.errors.amount"
 				:helper-text="!!externalStore.errors.amount ? $t(externalStore.errors.amount) : ''"
-				@update:model-value="externalStore.clearErrors()"
+				@update:model-value="externalStore.clearErrors('amount')"
 			/>
 
 			<Button id="externalSubmit" class="form__submit" type="primary" attr-type="submit" @click="handleSubmit">
