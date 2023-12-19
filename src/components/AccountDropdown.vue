@@ -22,6 +22,9 @@ const props = defineProps<{
 	modelValue?: Account | null
 	disabled?: Account | null
 	value?: Account | undefined | null
+	errorInvalid?: boolean
+	helperText?: string
+	updateField?: Function
 }>()
 
 const emit = defineEmits<{
@@ -46,12 +49,23 @@ const onSelect = (item: Account) => {
 	selected.value = item
 	emit('update:modelValue', item)
 	accountBottomSheetRef.value?.close()
+
+	if (props.updateField) {
+		props.updateField();
+	}
 }
 </script>
 
 <template>
 	<div class="accounts">
-		<Dropdown :id="props.id || ''" :value="view.amount" :label="view.label" @on-focus="accountBottomSheetRef?.open()" />
+		<Dropdown 
+			:id="props.id || ''" 
+			:value="view.amount" 
+			:label="view.label" 
+			@on-focus="accountBottomSheetRef?.open()" 
+			:invalid="props.errorInvalid"
+			:helper-text="props.helperText"
+		/>
 
 		<BottomSheet ref="accountBottomSheetRef">
 			<template #title>

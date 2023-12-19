@@ -30,6 +30,8 @@ const ownStore = useOwnStore()
 const rateStore = useRateStore()
 const successStore = useSuccessStore()
 
+ownStore.clearErrors()
+
 const form = ref<OwnForm>({
 	from: undefined,
 	to: undefined,
@@ -45,7 +47,7 @@ const hasDifferentCurrencies = computed(() => {
 	if (!form.value.from || !form.value.to) {
 		return false
 	}
-
+	ownStore.clearErrors()
 	return form.value.from.currency !== form.value.to.currency
 })
 
@@ -105,6 +107,14 @@ const handleSubmit = async (e: Event | null = null) => {
 		console.error('Ошибка при добавлении в избранное:', error)
 	}
 }
+
+const handleFromUpdate = () => {
+  	ownStore.clearErrors('from');
+};
+
+const handleToUpdate = () => {
+  	ownStore.clearErrors('to');
+};
 
 const updateEnrollmentAmount = (value = form.value.writeOffAmount) => {
 	if (!rateStore.rate || !value || !form.value.from) {
@@ -229,7 +239,9 @@ watch(
 				:accounts-groups="ACCOUNTS_GROUPS"
 				:label="$t('OWN.FORM.FROM')"
 				:disabled="form.to"
-				@update:model-value="ownStore.clearErrors()"
+				:errorInvalid="!!ownStore.errors.from"
+				:helperText="!!ownStore.errors.from ? $t(ownStore.errors.from) : ''"
+				:updateField="handleFromUpdate"
 			/>
 			<AccountDropdown
 				id="to"
@@ -237,17 +249,20 @@ watch(
 				:accounts-groups="ACCOUNTS_GROUPS"
 				:label="$t('OWN.FORM.TO')"
 				:disabled="form.from"
-				@update:model-value="ownStore.clearErrors()"
+				:errorInvalid="!!ownStore.errors.to"
+				:helperText="!!ownStore.errors.to ? $t(ownStore.errors.to) : ''"
+				:updateField="handleToUpdate"
 			/>
 
 			<template v-if="hasDifferentCurrencies">
 				<CurrencyInput
 					id="writeOffAmount"
 					v-model="form.writeOffAmount"
-					:invalid="!!ownStore.errors.writeOffAmount"
 					:label="$t('OWN.FORM.WRITE_OFF_AMOUNT', { currency: $t(writeOffCurrency) })"
-					:helper-text="ownStore.errors.writeOffAmount ? $t(ownStore.errors.writeOffAmount) : ''"
 					@input="handleWriteOffAmountChange"
+					:invalid="!!ownStore.errors.writeOffAmount"
+					:helper-text="ownStore.errors.writeOffAmount ? $t(ownStore.errors.writeOffAmount) : ''"
+					@update:model-value="ownStore.clearErrors('writeOffAmount')"
 				/>
 				<CurrencyInput
 					id="enrollmentAmount"
@@ -262,12 +277,10 @@ watch(
 				<CurrencyInput
 					id="amount"
 					v-model="form.amount"
-					:invalid="!!ownStore.errors.amount"
 					:label="$t('OWN.FORM.AMOUNT')"
-					:helper-text="
-						!!ownStore.errors.amount ? $t(ownStore.errors.amount) : $t('OWN.FORM.COMMISSION', rateHelperArgs)
-					"
-					@on-input="ownStore.clearErrors()"
+					:invalid="!!ownStore.errors.amount"
+					:helper-text="ownStore.errors.amount ? $t(ownStore.errors.amount) : $t('OWN.FORM.COMMISSION', rateHelperArgs)"
+					@update:model-value="ownStore.clearErrors('amount')"
 				/>
 			</template>
 

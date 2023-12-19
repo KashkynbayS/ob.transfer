@@ -10,7 +10,10 @@ export const OWN = {
 		RATE: 'Курс: {from} = {to}',
 		COMMISSION: 'Комиссия: 0 ₸',
 		ERRORS: {
-			NOT_ENOUGH_MONEY: 'Недостаточно средств'
+			NOT_ENOUGH_MONEY: 'Недостаточно средств',
+			EMPTY_AMOUNT: 'Введите сумму',
+			MIN_AMOUNT: 'Минимальная сумма перевода 100 ₸',
+			SELECT_ACCOUNT: 'Выберите счет'
 		}
 	},
 	CURRENCIES: {

@@ -2,7 +2,7 @@ import { Account } from '@/types'
 import { ValidationError, number, object, string } from 'yup'
 
 // Functions of validation From
-export const validateFromFunc = (value: object | undefined | null) => !value
+export const validateAccountFunc = (value: object | undefined | null) => !value
 
 // Functions of validation To
 export const validateToFunc = (value: string | undefined) => !value
@@ -27,7 +27,19 @@ export const validateAmountFromAccount = (value: number | undefined | null, from
 	return fromAccount.amount >= Number(value)
 }
 export const validateNotEmptyAmount = (value: number | undefined | null) => !value || Number(value) == 0
+
 export const validateMinAmount = (value: number | undefined | null) => value && Number(value) < 100
+
+// Functions of validation WriteOffAmount
+export const validateWriteOffAmountFromAccount = (value: string | undefined | null, fromAccount: Account) => {
+	if (!fromAccount || !value) {
+		return true
+	}
+	return fromAccount.amount >= Number(value)
+}
+export const validateNotEmptyWriteOffAmount = (value: string | undefined | null) => !value || Number(value) == 0
+
+export const validateMinWriteOffAmount = (value: string | undefined | null) => value && Number(value) < 100
 
 // extractValidationErrors
 export const extractValidationErrors = (сurrent: any, next: any) => {
@@ -43,10 +55,10 @@ export const extractValidationErrors = (сurrent: any, next: any) => {
 }
 
 // Validation From
-export const validateFrom = (field: string, errorText: string) =>
-	object()
+export const validateAccount = (field: string, errorText: string) =>
+	object().nullable()
 		.test(field, errorText, function (value) {
-			return !validateFromFunc(value);
+			return !validateAccountFunc(value);
 		});
 
 // Validation To
@@ -96,4 +108,18 @@ export const validateAmount = (field: string, errorText1: string, errorText2: st
 		})
 		.test(field, errorText3, function (value) {
 			return !validateMinAmount(value)
+		});
+
+		// Validation WriteOffAmount
+export const validateWriteOffAmount = (field: string, errorText1: string, errorText2: string, errorText3: string) =>
+	string()
+		.test(field, errorText1, function (value) {
+			const { fromAccount } = this.options.context as { fromAccount: Account }
+			return validateWriteOffAmountFromAccount(value, fromAccount);
+		})
+		.test(field, errorText2, function (value) {
+			return !validateNotEmptyWriteOffAmount(value)
+		})
+		.test(field, errorText3, function (value) {
+			return !validateMinWriteOffAmount(value)
 		});
