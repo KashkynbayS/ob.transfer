@@ -56,9 +56,14 @@ export const usePhoneStore = defineStore('phone', {
 					this.state = FORM_STATE.ERROR
 				})
 		},
-		clearErrors() {
-			this.errors = {
-				amount: ''
+		clearErrors(fieldName?: any) {
+			if (fieldName) {
+			  	this.errors[fieldName] = '';
+			} 
+			else {
+				this.errors = {
+					amount: ''
+				};
 			}
 		}
 	}

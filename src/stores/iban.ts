@@ -60,11 +60,16 @@ export const useIbanStore = defineStore('iban', {
 					this.state = FORM_STATE.ERROR
 				})
 		},
-		clearErrors() {
-			this.errors = {
-				to: '',
-				receiverName: '',
-				amount: ''
+		clearErrors(fieldName?: any) {
+			if (fieldName) {
+			  	this.errors[fieldName] = '';
+			} 
+			else {
+				this.errors = {
+					to: '',
+					receiverName: '',
+					amount: ''
+				};
 			}
 		}
 	}

@@ -24,6 +24,8 @@ import { IbanForm } from '@/types/iban'
 const IbanStore = useIbanStore()
 const successStore = useSuccessStore()
 
+IbanStore.clearErrors()
+
 // Modal
 const modal = ref<InstanceType<typeof Modal> | null>(null)
 const router = useRouter()
@@ -124,7 +126,7 @@ const handleSubmit = async (e: Event | null = null) => {
 				:label="$t('INTERNAL.IBAN.FORM.ACCOUNT_TO')"
 				:invalid="!!IbanStore.errors.to"
 				:helper-text="IbanStore.errors.to ? $t(IbanStore.errors.to) : ''"
-				@update:model-value="IbanStore.clearErrors()"
+				@update:model-value="IbanStore.clearErrors('to')"
 			/>
 			<Input
 				id="123"
@@ -133,7 +135,7 @@ const handleSubmit = async (e: Event | null = null) => {
 				:label="$t('INTERNAL.IBAN.FORM.RECIEVER_NAME')"
 				:invalid="!!IbanStore.errors.receiverName"
 				:helper-text="IbanStore.errors.receiverName ? $t(IbanStore.errors.receiverName) : ''"
-				@update:model-value="IbanStore.clearErrors()"
+				@update:model-value="IbanStore.clearErrors('receiverName')"
 			/>
 			<CurrencyInput
 				id="amount"
@@ -142,7 +144,7 @@ const handleSubmit = async (e: Event | null = null) => {
 				:label="$t('INTERNAL.IBAN.FORM.SUM')"
 				:invalid="!!IbanStore.errors.amount"
 				:helper-text="IbanStore.errors.amount ? $t(IbanStore.errors.amount) : ''"
-				@update:model-value="IbanStore.clearErrors()"
+				@update:model-value="IbanStore.clearErrors('amount')"
 			/>
 		</div>
 		<div class="internal-iban-form-bottom">

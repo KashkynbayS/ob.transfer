@@ -23,6 +23,8 @@ import { PhoneForm } from '@/types/phone'
 const phoneStore = usePhoneStore()
 const successStore = useSuccessStore()
 
+phoneStore.clearErrors()
+
 const form = ref<PhoneForm>({
 	from: undefined,
 	phoneNumber: '',
@@ -126,8 +128,7 @@ const handleSubmit = async (e: Event | null = null) => {
 				:label="$t('INTERNAL.PHONE.FORM.SUM')"
 				:invalid="!!phoneStore.errors.amount"
 				:helper-text="phoneStore.errors.amount ? $t(phoneStore.errors.amount) : ''"
-				@on-input="phoneStore.clearErrors()"
-				@update:model-value="phoneStore.clearErrors()"
+				@update:model-value="phoneStore.clearErrors('amount')"
 			/>
 		</div>
 		<div class="internal-phone-form-bottom">
