@@ -108,12 +108,8 @@ const handleSubmit = async (e: Event | null = null) => {
 	}
 }
 
-const handleFromUpdate = () => {
-  	ownStore.clearErrors('from');
-};
-
-const handleToUpdate = () => {
-  	ownStore.clearErrors('to');
+const handleSelectsUpdate = (value: string) => {
+  	ownStore.clearErrors(value);
 };
 
 const updateEnrollmentAmount = (value = form.value.writeOffAmount) => {
@@ -241,7 +237,7 @@ watch(
 				:disabled="form.to"
 				:errorInvalid="!!ownStore.errors.from"
 				:helperText="!!ownStore.errors.from ? $t(ownStore.errors.from) : ''"
-				:updateField="handleFromUpdate"
+				:updateField="() => handleSelectsUpdate('from')"
 			/>
 			<AccountDropdown
 				id="to"
@@ -251,7 +247,7 @@ watch(
 				:disabled="form.from"
 				:errorInvalid="!!ownStore.errors.to"
 				:helperText="!!ownStore.errors.to ? $t(ownStore.errors.to) : ''"
-				:updateField="handleToUpdate"
+				:updateField="() => handleSelectsUpdate('to')"
 			/>
 
 			<template v-if="hasDifferentCurrencies">
