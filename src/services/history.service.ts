@@ -1,9 +1,11 @@
+import useAxiosInstance from '@/api/api.instance.ts'
+import { BaseResponse } from '@/types'
+
+const { axiosInstance } = useAxiosInstance()
+
 export const HistoryService = {
-	fetch(): Promise<void> {
-		return new Promise((resolve) => {
-			setTimeout(() => {
-				resolve()
-			}, 1000)
-		})
+	async fetch(): Promise<any> {
+		const response = await axiosInstance.get<BaseResponse<any>>('main/history')
+		return response.data.data
 	}
 }

@@ -19,7 +19,7 @@ export default function useAxiosInstance() {
 	const language = 'RU'
 
 	const axiosInstance = axios.create({
-		baseURL: 'https://dev-api.kmf.kz/svc/bank/accounts',
+		baseURL: 'https://dev-api.kmf.kz/svc/bank/transfers',
 		headers: {
 			Authorization: getAccessToken(),
 			Lng: `${language}`
