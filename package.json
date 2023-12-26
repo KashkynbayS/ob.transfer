@@ -15,6 +15,7 @@
 		"update": "npm i @ui-kit/kmf-icons @ui-kit/kmf-styles @ui-kit/ui-kit"
 	},
 	"dependencies": {
+		"@ui-kit/events": "^1.1.1",
 		"@ui-kit/kmf-icons": "0.3.13",
 		"@ui-kit/kmf-styles": "^1.1.0",
 		"@ui-kit/ui-kit": "^1.2.2",
