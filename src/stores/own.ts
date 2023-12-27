@@ -1,10 +1,10 @@
 import { defineStore } from 'pinia'
 import { object } from 'yup'
 
-import { OwnService } from '@/services/own.service'
-
+import { TransferService } from '@/services/transfer.service'
 import { FORM_STATE, FormStore } from '@/types/form'
 import { OwnForm } from '@/types/own'
+import { TypeOfTransfer } from '@/types/transfer'
 import { extractValidationErrors, validateAccount, validateAmount, validateWriteOffAmount } from '@/utils/validators'
 
 export interface OwnStore extends FormStore {}
@@ -29,6 +29,7 @@ const formSchema = object({
 export const useOwnStore = defineStore('own', {
 	state: (): OwnStore => ({
 		state: FORM_STATE.INITIAL,
+		applicationId: '',
 		errors: {
 			from: '',
 			to: '',
@@ -38,8 +39,14 @@ export const useOwnStore = defineStore('own', {
 	}),
 	actions: {
 		submitForm(form: OwnForm) {
-			OwnService.transferOwn(form)
-				.then(() => {
+			TransferService.init({
+				iban: form.from!.iban,
+				recIban: form.to!.iban,
+				amount: String(form.amount),
+				typeOfTransfer: TypeOfTransfer.BetweenMyAccounts
+			})
+				.then((e) => {
+					this.applicationId = e.applicationID
 					this.state = FORM_STATE.SUCCESS
 				})
 				.catch(() => {
@@ -51,7 +58,7 @@ export const useOwnStore = defineStore('own', {
 			this.state = FORM_STATE.LOADING
 
 			formSchema
-				.validate(form, { abortEarly: false, context: { fromAccount: form.from } })
+				.validate(form, { abortEarly: false, context: { fromAccount: form.from, toAccount: form.to } })
 				.then(() => {
 					this.submitForm(form)
 				})
@@ -62,15 +69,14 @@ export const useOwnStore = defineStore('own', {
 		},
 		clearErrors(fieldName?: any) {
 			if (fieldName) {
-			  	this.errors[fieldName] = '';
-			} 
-			else {
+				this.errors[fieldName] = ''
+			} else {
 				this.errors = {
 					from: '',
 					to: '',
 					amount: '',
 					writeOffAmount: ''
-				};
+				}
 			}
 		}
 	}

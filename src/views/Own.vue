@@ -13,22 +13,19 @@ import AppNavbar from '@/components/AppNavbar.vue'
 import { ACCOUNTS_GROUPS } from '@/mocks/own'
 
 import { CURRENCY_SYMBOL } from '@/constants'
-import { CURRENCY, LAST_UPDATED, OwnForm } from '@/types'
+import { LAST_UPDATED, OwnForm } from '@/types'
 
 import { useOwnStore } from '@/stores/own.ts'
 import { useRateStore } from '@/stores/rate.ts'
 
-import { useSuccessStore } from '@/stores/success.ts'
-
 const router = useRouter()
 
-import { addToFrequents } from '@/services/frequentService'
+import { initEventSource } from '@/services/transfer.service'
 import { FORM_STATE } from '@/types/form'
 import { extractCurrencyFromAmount } from '@/utils/currencies'
 
 const ownStore = useOwnStore()
 const rateStore = useRateStore()
-const successStore = useSuccessStore()
 
 ownStore.clearErrors()
 
@@ -102,15 +99,16 @@ const handleSubmit = async (e: Event | null = null) => {
 	ownStore.validate(form.value)
 
 	try {
-		await addToFrequents(form.value)
+		//FIXME i guess this is no longer actual ? if no, please uncomment line below
+		// await addToFrequents(form.value)
 	} catch (error) {
 		console.error('Ошибка при добавлении в избранное:', error)
 	}
 }
 
 const handleSelectsUpdate = (value: string) => {
-  	ownStore.clearErrors(value);
-};
+	ownStore.clearErrors(value)
+}
 
 const updateEnrollmentAmount = (value = form.value.writeOffAmount) => {
 	if (!rateStore.rate || !value || !form.value.from) {
@@ -184,17 +182,20 @@ watchEffect(() => {
 watch(
 	() => ownStore.state,
 	(state) => {
+		console.log(state, '-------')
 		switch (state) {
 			case FORM_STATE.SUCCESS:
-				successStore.setDetails(Number(form.value.amount), form.value.from?.currency || CURRENCY.KZT, [
-					{ name: 'Сумма списания', value: '100 $' },
-					{ name: 'Статус', value: 'Исполнено', colored: true },
-					{ name: 'Номер квитанции', value: '56789900' },
-					{ name: 'Счет списания', value: 'KZ****4893' },
-					{ name: 'Счет зачисления', value: 'KZ****4893' },
-					{ name: 'Дата', value: '11.04.2023' }
-				])
-				router.push('Success')
+				initEventSource(ownStore.applicationId, console.log)
+
+				// successStore.setDetails(Number(form.value.amount), form.value.from?.currency || CURRENCY.KZT, [
+				// 	{ name: 'Сумма списания', value: '100 $' },
+				// 	{ name: 'Статус', value: 'Исполнено', colored: true },
+				// 	{ name: 'Номер квитанции', value: '56789900' },
+				// 	{ name: 'Счет списания', value: 'KZ****4893' },
+				// 	{ name: 'Счет зачисления', value: 'KZ****4893' },
+				// 	{ name: 'Дата', value: '11.04.2023' }
+				// ])
+				// router.push('Success')
 				break
 
 			case FORM_STATE.ERROR:
@@ -235,9 +236,9 @@ watch(
 				:accounts-groups="ACCOUNTS_GROUPS"
 				:label="$t('OWN.FORM.FROM')"
 				:disabled="form.to"
-				:errorInvalid="!!ownStore.errors.from"
-				:helperText="!!ownStore.errors.from ? $t(ownStore.errors.from) : ''"
-				:updateField="() => handleSelectsUpdate('from')"
+				:error-invalid="!!ownStore.errors.from"
+				:helper-text="!!ownStore.errors.from ? $t(ownStore.errors.from) : ''"
+				:update-field="() => handleSelectsUpdate('from')"
 			/>
 			<AccountDropdown
 				id="to"
@@ -245,9 +246,9 @@ watch(
 				:accounts-groups="ACCOUNTS_GROUPS"
 				:label="$t('OWN.FORM.TO')"
 				:disabled="form.from"
-				:errorInvalid="!!ownStore.errors.to"
-				:helperText="!!ownStore.errors.to ? $t(ownStore.errors.to) : ''"
-				:updateField="() => handleSelectsUpdate('to')"
+				:error-invalid="!!ownStore.errors.to"
+				:helper-text="!!ownStore.errors.to ? $t(ownStore.errors.to) : ''"
+				:update-field="() => handleSelectsUpdate('to')"
 			/>
 
 			<template v-if="hasDifferentCurrencies">
@@ -255,9 +256,9 @@ watch(
 					id="writeOffAmount"
 					v-model="form.writeOffAmount"
 					:label="$t('OWN.FORM.WRITE_OFF_AMOUNT', { currency: $t(writeOffCurrency) })"
-					@input="handleWriteOffAmountChange"
 					:invalid="!!ownStore.errors.writeOffAmount"
 					:helper-text="ownStore.errors.writeOffAmount ? $t(ownStore.errors.writeOffAmount) : ''"
+					@input="handleWriteOffAmountChange"
 					@update:model-value="ownStore.clearErrors('writeOffAmount')"
 				/>
 				<CurrencyInput
@@ -279,6 +280,8 @@ watch(
 					@update:model-value="ownStore.clearErrors('amount')"
 				/>
 			</template>
+
+			{{ form }}
 
 			<Button id="ownSubmit" class="form__submit" type="primary" attr-type="submit" @click="handleSubmit">
 				{{ $t('OWN.FORM.SUBMIT') }}

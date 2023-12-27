@@ -8,4 +8,5 @@ export enum FORM_STATE {
 export interface FormStore {
 	errors: Record<string, string>
 	state: FORM_STATE
+	applicationId: string
 }

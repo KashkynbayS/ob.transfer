@@ -26,9 +26,12 @@ export const validateAmountFromAccount = (value: number | undefined | null, from
 	}
 	return fromAccount.amount >= Number(value)
 }
-export const validateNotEmptyAmount = (value: number | undefined | null) => !value || Number(value) == 0
+export const validateNotEmptyAmount = (value: number | undefined | null) => !value || Number(value) === 0
 
 export const validateMinAmount = (value: number | undefined | null) => value && Number(value) < 100
+
+export const validateIsSameCurrency = (value: { fromAccount: Account; toAccount: Account }) =>
+	value?.fromAccount?.currency === value?.toAccount?.currency
 
 // Functions of validation WriteOffAmount
 export const validateWriteOffAmountFromAccount = (value: string | undefined | null, fromAccount: Account) => {
@@ -56,70 +59,73 @@ export const extractValidationErrors = (сurrent: any, next: any) => {
 
 // Validation From
 export const validateAccount = (field: string, errorText: string) =>
-	object().nullable()
+	object()
+		.nullable()
 		.test(field, errorText, function (value) {
-			return !validateAccountFunc(value);
-		});
+			return !validateAccountFunc(value)
+		})
 
 // Validation To
 export const validateTo = (field: string, errorText: string) =>
-	string()
-		.test(field, errorText, function (value) {
-			return !validateToFunc(value);
-		})
+	string().test(field, errorText, function (value) {
+		return !validateToFunc(value)
+	})
 
 // Validation IBAN
 export const validateIban = (field: string, errorText: string) =>
-	string()
-		.test(field, errorText, function (value) {
-			return !validateIbanFunc(value);
-		})
+	string().test(field, errorText, function (value) {
+		return !validateIbanFunc(value)
+	})
 
 // Validation KNP
 export const validateKnp = (field: string, errorText: string) =>
-	object().nullable()
+	object()
+		.nullable()
 		.test(field, errorText, function (value) {
-			return !validateKnpFunc(value);
+			return !validateKnpFunc(value)
 		})
 
 // Validation IIN
 export const validateIin = (field: string, errorText: string) =>
-	string()
-		.test(field, errorText, function (value) {
-			return !validateIinFunc(value);
-		})
+	string().test(field, errorText, function (value) {
+		return !validateIinFunc(value)
+	})
 
 // Validation Receiver name
 export const validateReceiverName = (field: string, errorText: string) =>
-	string()
-		.test(field, errorText, function (value) {
-			return !validateReceiverNameFunc(value);
-		})
+	string().test(field, errorText, function (value) {
+		return !validateReceiverNameFunc(value)
+	})
 
 // Validation Amount
 export const validateAmount = (field: string, errorText1: string, errorText2: string, errorText3: string) =>
-	number().nullable()
+	number()
+		.nullable()
 		.test(field, errorText1, function (value) {
 			const { fromAccount } = this.options.context as { fromAccount: Account }
-			return validateAmountFromAccount(value, fromAccount);
+			return validateAmountFromAccount(value, fromAccount)
 		})
 		.test(field, errorText2, function (value) {
 			return !validateNotEmptyAmount(value)
 		})
 		.test(field, errorText3, function (value) {
 			return !validateMinAmount(value)
-		});
+		})
 
-		// Validation WriteOffAmount
+// Validation WriteOffAmount
 export const validateWriteOffAmount = (field: string, errorText1: string, errorText2: string, errorText3: string) =>
 	string()
 		.test(field, errorText1, function (value) {
-			const { fromAccount } = this.options.context as { fromAccount: Account }
-			return validateWriteOffAmountFromAccount(value, fromAccount);
+			const data = this.options.context as { fromAccount: Account; toAccount: Account }
+
+			if (validateIsSameCurrency(data)) return true
+			return validateWriteOffAmountFromAccount(value, data.fromAccount)
 		})
 		.test(field, errorText2, function (value) {
+			if (validateIsSameCurrency(this.options.context as { fromAccount: Account; toAccount: Account })) return true
 			return !validateNotEmptyWriteOffAmount(value)
 		})
 		.test(field, errorText3, function (value) {
+			if (validateIsSameCurrency(this.options.context as { fromAccount: Account; toAccount: Account })) return true
 			return !validateMinWriteOffAmount(value)
-		});
+		})
