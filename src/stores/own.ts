@@ -58,11 +58,19 @@ export const useOwnStore = defineStore('own', {
 			this.state = FORM_STATE.LOADING
 
 			formSchema
-				.validate(form, { abortEarly: false, context: { fromAccount: form.from, toAccount: form.to } })
+				.validate(form, {
+					abortEarly: false,
+					context: {
+						fromAccount: form.from,
+						toAccount: form.to,
+						isSameCurrency: form.from?.currency === form.to?.currency
+					}
+				})
 				.then(() => {
 					this.submitForm(form)
 				})
 				.catch((err) => {
+					console.log(err)
 					this.state = FORM_STATE.INITIAL
 					this.errors = extractValidationErrors(this.errors, err)
 				})

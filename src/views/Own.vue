@@ -20,7 +20,6 @@ import { useRateStore } from '@/stores/rate.ts'
 
 const router = useRouter()
 
-import { initEventSource } from '@/services/transfer.service'
 import { FORM_STATE } from '@/types/form'
 import { extractCurrencyFromAmount } from '@/utils/currencies'
 
@@ -185,8 +184,6 @@ watch(
 		console.log(state, '-------')
 		switch (state) {
 			case FORM_STATE.SUCCESS:
-				initEventSource(ownStore.applicationId, console.log)
-
 				// successStore.setDetails(Number(form.value.amount), form.value.from?.currency || CURRENCY.KZT, [
 				// 	{ name: 'Сумма списания', value: '100 $' },
 				// 	{ name: 'Статус', value: 'Исполнено', colored: true },
