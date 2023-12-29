@@ -1,16 +1,14 @@
-export const addToFrequents = async (data: any): Promise<void> => {
-	return new Promise((resolve, reject) => {
-		try {
-			const storedData = localStorage.getItem('frequents')
-			const frequents = storedData ? JSON.parse(storedData) : []
-			frequents.unshift(data)
-			localStorage.setItem('frequents', JSON.stringify(frequents))
+import useAxiosInstance from '@/api/api.instance.ts'
+import { BaseResponse } from '@/types'
 
-			setTimeout(() => {
-				resolve()
-			}, 500)
-		} catch (error) {
-			reject(error)
-		}
-	})
+const { axiosInstance } = useAxiosInstance()
+
+export const getFrequents = {
+	async fetch(): Promise<any> {
+		const response = await axiosInstance.get<BaseResponse<any>>('main/favorite')
+		return response.data.data
+	}
 }
+
+
+  
