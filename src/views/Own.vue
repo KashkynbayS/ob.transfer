@@ -40,11 +40,13 @@ const form = ref<OwnForm>({
 })
 
 const hasDifferentCurrencies = computed(() => {
-	if (!form.value.from || !form.value.to) {
-		return false
-	}
-	ownStore.clearErrors()
-	return form.value.from.currency !== form.value.to.currency
+	return false
+	// временно отключаем по задаче: DBO-1037 - Отключение функционала Конвертации
+	// if (!form.value.from || !form.value.to) {
+	// 	return false
+	// }
+	// ownStore.clearErrors()
+	// return form.value.from.currency !== form.value.to.currency
 })
 
 const writeOffCurrency = computed(() => extractCurrencyFromAmount(form.value.from))

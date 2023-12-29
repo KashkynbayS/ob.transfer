@@ -11,14 +11,14 @@ export const ACCOUNTS_GROUPS: AccountsGroup[] = [
 				amount: 389000.01,
 				iban: 'KZ123456789012345678',
 				title: 'Счёт KZT'
-			},
-			{
-				id: 'usd-account',
-				currency: CURRENCY.USD,
-				amount: 457,
-				iban: 'KZ123456789012345679',
-				title: 'Счёт USD'
 			}
+			// {
+			// 	id: 'usd-account',
+			// 	currency: CURRENCY.USD,
+			// 	amount: 457,
+			// 	iban: 'KZ123456789012345679',
+			// 	title: 'Счёт USD'
+			// }
 		]
 	},
 	{
@@ -31,14 +31,14 @@ export const ACCOUNTS_GROUPS: AccountsGroup[] = [
 				amount: 1345098.45,
 				iban: 'KZ123456789012345680',
 				title: 'Депозит KZT'
-			},
-			{
-				id: 'usd-deposit',
-				currency: CURRENCY.USD,
-				amount: 500,
-				iban: 'KZ123456789012345681',
-				title: 'Депозит USD'
 			}
+			// {
+			// 	id: 'usd-deposit',
+			// 	currency: CURRENCY.USD,
+			// 	amount: 500,
+			// 	iban: 'KZ123456789012345681',
+			// 	title: 'Депозит USD'
+			// }
 		]
 	}
 ]
