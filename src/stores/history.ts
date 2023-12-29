@@ -1,9 +1,8 @@
-import { defineStore } from 'pinia'
-import { Tag } from '@/components/AppTags.vue'
 import { CURRENCY_SYMBOL } from '@/constants'
-import { CURRENCY } from '@/types'
-import { reactive } from 'vue'
+import { CURRENCY, Tag } from '@/types'
 import { useDateFormat } from '@vueuse/core'
+import { defineStore } from 'pinia'
+import { reactive } from 'vue'
 
 export interface HistorySettings {
 	currentFilter?: HistoryFilter
@@ -57,6 +56,7 @@ export const useHistoryStore = defineStore('history', {
 			}
 
 			if (this.datesString) {
+				console.log(this.datesString)
 				tags.push({
 					value: 'date',
 					title: this.datesString
@@ -94,7 +94,7 @@ export const useHistoryStore = defineStore('history', {
 		datesString(): string {
 			const dates = this.settings.dates
 			return dates.length
-				? `${useDateFormat(dates[0], 'DD-MM-YYYY').value} - ${useDateFormat(dates[1], 'DD-MM-YYYY').value}`
+				? `${useDateFormat(dates[0], 'DD.MM.YYYY').value} - ${useDateFormat(dates[1], 'DD.MM.YYYY').value}`
 				: ''
 		}
 	},

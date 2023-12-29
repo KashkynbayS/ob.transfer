@@ -1,9 +1,7 @@
 <script setup lang="ts">
+import { Tag } from '@/types/history'
+
 import CloseIcon from '@ui-kit/kmf-icons/interface/close/close-medium.svg'
-export interface Tag {
-	title: string
-	value: string
-}
 
 const props = defineProps<{
 	tags: Tag[]

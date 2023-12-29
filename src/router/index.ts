@@ -74,6 +74,11 @@ router.addRoute({
 			path: 'details/:transactionId',
 			name: 'TransactionDetails',
 			component: () => import('@/views/Details.vue')
+		},
+		{
+			path: 'status',
+			name: 'Status',
+			component: () => import('@/views/StatusPage.vue')
 		}
 	]
 })

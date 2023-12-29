@@ -17,3 +17,13 @@ export interface TransactionGroup {
 	title: string
 	list: Transaction[]
 }
+
+export interface Tag {
+	title: string
+	value: string
+	type?: TAG_TYPE
+}
+
+export enum TAG_TYPE {
+	DATE = 'DATE'
+}

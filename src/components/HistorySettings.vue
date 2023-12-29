@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { BottomSheet, Button, Calendar, Input, SelectButton } from '@ui-kit/ui-kit'
+import { HistoryFilter, filters, useHistoryStore } from '@/stores/history.ts'
 import CalendarIcon from '@ui-kit/kmf-icons/others/calendars/calendar.svg'
-import { computed, ref, watch } from 'vue'
+import { BottomSheet, Button, Calendar, Input, SelectButton } from '@ui-kit/ui-kit'
 import { ModalAction } from '@ui-kit/ui-kit/dist/ui/components/modal/types'
-import { filters, HistoryFilter, useHistoryStore } from '@/stores/history.ts'
+import { computed, ref, watch } from 'vue'
 
 const props = defineProps<{
 	show: boolean
