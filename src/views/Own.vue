@@ -13,18 +13,26 @@ import AppNavbar from '@/components/AppNavbar.vue'
 import { ACCOUNTS_GROUPS } from '@/mocks/own'
 
 import { CURRENCY_SYMBOL } from '@/constants'
-import { LAST_UPDATED, OwnForm } from '@/types'
+import { CURRENCY, LAST_UPDATED, OwnForm, SseResponse, isLinkType, isStatusType } from '@/types'
 
 import { useOwnStore } from '@/stores/own.ts'
 import { useRateStore } from '@/stores/rate.ts'
 
 const router = useRouter()
 
+import { validateOwnForm } from '@/helpers/own-form.helper'
+import { TransferService } from '@/services/transfer.service'
+import { useLoadingStore } from '@/stores/loading'
+import { useStatusStore } from '@/stores/status'
 import { FORM_STATE } from '@/types/form'
+import { TypeOfTransfer } from '@/types/transfer'
+import { getRelativeUrl } from '@/utils'
 import { extractCurrencyFromAmount } from '@/utils/currencies'
 
 const ownStore = useOwnStore()
 const rateStore = useRateStore()
+
+const { setLoading } = useLoadingStore()
 
 ownStore.clearErrors()
 
@@ -97,7 +105,61 @@ const handleEnrollmentAmountChange = (event: InputEvent) => {
 
 const handleSubmit = async (e: Event | null = null) => {
 	e?.preventDefault()
-	ownStore.validate(form.value)
+	try {
+		await validateOwnForm(form.value)
+		ownStore.clearErrors()
+		ownStore.setState(FORM_STATE.LOADING)
+
+		TransferService.initWithSSE(
+			{
+				iban: form.value.from!.iban,
+				recIban: form.value.to!.iban,
+				amount: String(form.value.amount),
+				typeOfTransfer: TypeOfTransfer.BetweenMyAccounts
+			},
+			(event) => {
+				setLoading(false)
+
+				const eventData = JSON.parse(event.data) as SseResponse<'link' | 'status'>
+				console.log('onmessage', eventData)
+
+				if (isLinkType(eventData)) {
+					if (eventData.data.target === '_blank') {
+						window.open(eventData.data.url, '_blank')
+					} else {
+						const relativeUrl = getRelativeUrl(eventData.data.url)
+						console.log('routing to ', relativeUrl)
+						// noinspection JSIgnoredPromiseFromCall
+						router.push(relativeUrl)
+					}
+				} else if (isStatusType(eventData)) {
+					const statusStore = useStatusStore()
+					eventData.data.title = eventData.data.title
+						.replace('{amount}', String(form.value.amount || 0))
+						.replace(
+							'{currency}',
+							form.value.from?.currency === CURRENCY.KZT ? CURRENCY_SYMBOL.kzt : CURRENCY_SYMBOL.usd
+						)
+					statusStore.$state = eventData.data
+					// noinspection JSIgnoredPromiseFromCall
+					console.log(eventData.data)
+					router.push({
+						name: 'Status'
+					})
+				}
+			}
+		)
+			.then((e) => {
+				ownStore.applicationId = e.applicationID
+				ownStore.setState(FORM_STATE.SUCCESS)
+			})
+			.catch(() => {
+				ownStore.setState(FORM_STATE.ERROR)
+			})
+	} catch (err) {
+		ownStore.setState(FORM_STATE.INITIAL)
+		ownStore.setValidationError(err)
+	}
 
 	try {
 		//FIXME i guess this is no longer actual ? if no, please uncomment line below

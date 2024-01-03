@@ -33,6 +33,8 @@ const props = withDefaults(
 img {
 	height: auto;
 	margin-bottom: var(--space-6);
+	padding: 24px;
+	margin-top: 72px;
 
 	&.l {
 		width: 343px;

@@ -1,5 +1,7 @@
 import { ref } from 'vue'
 
+const SSE_URL = 'https://dev-api.kmf.kz/svc/go-redis-sse/events'
+
 export const initEventSource = (uuidValue: string, callback: (event: MessageEvent<any>) => void) => {
 	const eventSource = ref<EventSource | null>(null)
 
@@ -7,7 +9,7 @@ export const initEventSource = (uuidValue: string, callback: (event: MessageEven
 		eventSource.value.close()
 	}
 
-	eventSource.value = new EventSource('https://dev-api.kmf.kz/svc/go-redis-sse/events?stream=' + uuidValue)
+	eventSource.value = new EventSource(`${SSE_URL}?stream=${uuidValue}`)
 
 	eventSource.value.onmessage = (event) => {
 		callback(event)
