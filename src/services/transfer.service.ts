@@ -1,16 +1,24 @@
 import useAxiosInstance from '@/api/api.instance.ts'
 import { BaseResponse } from '@/types'
 import { ITransferRequest, ITransferResponse } from '@/types/transfer'
-
-// type SseMessageCallback = (event: any) => void
+import { initEventSource } from './sse.service'
 
 const { axiosInstance } = useAxiosInstance()
 // const SSE_BASE_URL = 'https://dev-api.kmf.kz/svc/go-redis-sse/events?stream='
 
 export const TransferService = {
-	async init(body: ITransferRequest): Promise<ITransferResponse> {
+	async init(body: ITransferRequest): Promise<BaseResponse<ITransferResponse>> {
 		const response = await axiosInstance.post<BaseResponse<ITransferResponse>>('/main/init', body)
-		return response.data.data
+		return response.data
+	},
+
+	async initWithSSE(body: ITransferRequest, callback: (event: MessageEvent<any>) => void): Promise<ITransferResponse> {
+		const res = await this.init(body)
+		if (res.success) {
+			initEventSource(res.data.applicationID, callback)
+		}
+
+		return res.data
 	}
 }
 

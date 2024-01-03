@@ -2,10 +2,19 @@ import { defineStore } from 'pinia'
 import { object } from 'yup'
 
 import { TransferService } from '@/services/transfer.service'
+import { SseResponse, isLinkType, isStatusType } from '@/types'
 import { FORM_STATE, FormStore } from '@/types/form'
 import { OwnForm } from '@/types/own'
 import { TypeOfTransfer } from '@/types/transfer'
+import { getRelativeUrl } from '@/utils'
 import { extractValidationErrors, validateAccount, validateAmount, validateWriteOffAmount } from '@/utils/validators'
+import { useRouter } from 'vue-router'
+import { useLoadingStore } from './loading'
+import { useStatusStore } from './status'
+
+const router = useRouter()
+
+const { setLoading } = useLoadingStore()
 
 export interface OwnStore extends FormStore {}
 
@@ -39,12 +48,39 @@ export const useOwnStore = defineStore('own', {
 	}),
 	actions: {
 		submitForm(form: OwnForm) {
-			TransferService.init({
-				iban: form.from!.iban,
-				recIban: form.to!.iban,
-				amount: String(form.amount),
-				typeOfTransfer: TypeOfTransfer.BetweenMyAccounts
-			})
+			TransferService.initWithSSE(
+				{
+					iban: form.from!.iban,
+					recIban: form.to!.iban,
+					amount: String(form.amount),
+					typeOfTransfer: TypeOfTransfer.BetweenMyAccounts
+				},
+				(event) => {
+					setLoading(false)
+
+					const eventData = JSON.parse(event.data) as SseResponse<'link' | 'status'>
+					console.log('onmessage', eventData)
+
+					if (isLinkType(eventData)) {
+						if (eventData.data.target === '_blank') {
+							window.open(eventData.data.url, '_blank')
+						} else {
+							const relativeUrl = getRelativeUrl(eventData.data.url)
+							console.log('routing to ', relativeUrl)
+							// noinspection JSIgnoredPromiseFromCall
+							router.push(relativeUrl)
+						}
+					} else if (isStatusType(eventData)) {
+						const statusStore = useStatusStore()
+
+						statusStore.$state = eventData.data
+						// noinspection JSIgnoredPromiseFromCall
+						router.push({
+							name: 'Status'
+						})
+					}
+				}
+			)
 				.then((e) => {
 					this.applicationId = e.applicationID
 					this.state = FORM_STATE.SUCCESS
