@@ -1,98 +1,37 @@
 <script setup lang="ts">
-import ArrowRoundIcon from '@/assets/icons/arrow-round.svg'
-import FiltersIcon from '@/assets/icons/filters.svg'
 import AppNavbar from '@/components/AppNavbar.vue'
-import AppTags, { Tag } from '@/components/AppTags.vue'
-import HistorySettings from '@/components/HistorySettings.vue'
-import TransactionValue from '@/components/TransactionValue.vue'
-import { CURRENCY_SYMBOL } from '@/constants'
-import { useHistoryStore } from '@/stores/history.ts'
-import { CURRENCY, TransactionGroup, TransactionsType } from '@/types'
 import AccountNewIcon from '@ui-kit/kmf-icons/finance/accounts/account-new.svg'
 import TransfersIcon from '@ui-kit/kmf-icons/finance/transfers/transfers.svg'
+import ArrowRoundIcon from '@/assets/icons/arrow-round.svg'
+import FiltersIcon from '@/assets/icons/filters.svg'
 import { Cell, CellGroup } from '@ui-kit/ui-kit'
-import { ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { Tag, TransactionGroup } from '@/types'
+import TransactionValue from '@/components/TransactionValue.vue'
+import { CURRENCY_SYMBOL } from '@/constants'
+import HistorySettings from '@/components/HistorySettings.vue'
+import { onMounted, ref } from 'vue'
+import AppTags from '@/components/AppTags.vue'
+import { useHistoryStore } from '@/stores/history.ts'
+import { HistoryService } from '@/services/history.service.ts'
+import { TypeOfTransfer } from '@/types/transfer.ts'
 
 const router = useRouter()
 const historyStore = useHistoryStore()
 
-const typeMapping: Record<TransactionsType, string> = {
-	fill: 'Пополнение',
-	payment: 'Покупка',
-	transferByAccount: 'Перевод на счет',
-	transferByPhone: 'Перевод по номеру'
+const typeMapping: Record<TypeOfTransfer, string> = {
+	1: 'Между счетами',
+	2: 'Внутренний',
+	3: 'Внешний'
 }
 
-const typeIconMapping: Record<TransactionsType, string> = {
-	fill: AccountNewIcon,
-	payment: ArrowRoundIcon,
-	transferByAccount: TransfersIcon,
-	transferByPhone: TransfersIcon
+const typeIconMapping: Record<TypeOfTransfer, string> = {
+	1: AccountNewIcon,
+	2: ArrowRoundIcon,
+	3: TransfersIcon
 }
 
-const transactions: TransactionGroup[] = [
-	{
-		title: 'Вчера',
-		list: [
-			{
-				type: 'fill',
-				currency: CURRENCY.KZT,
-				caption: '12:56',
-				value: 8888889.99,
-				status: 'credited',
-				id: '123'
-			},
-			{
-				type: 'payment',
-				currency: CURRENCY.USD,
-				caption: '11:00',
-				commission: 1.5,
-				value: 300,
-				id: '123',
-				status: 'removed'
-			},
-			{
-				type: 'transferByAccount',
-				currency: CURRENCY.KZT,
-				caption: '10:43',
-				value: 6800,
-				id: '123',
-				status: 'removed'
-			}
-		]
-	},
-	{
-		title: '5 ноября',
-		list: [
-			{
-				type: 'fill',
-				currency: CURRENCY.KZT,
-				caption: '12:56',
-				value: 8888889.99,
-				id: '123',
-				status: 'waiting'
-			},
-			{
-				type: 'payment',
-				currency: CURRENCY.USD,
-				caption: '11:00',
-				value: 300,
-				id: '123',
-				status: 'transferred'
-			},
-			{
-				type: 'transferByAccount',
-				currency: CURRENCY.KZT,
-				caption: '10:43',
-				commission: 150,
-				value: 6800,
-				id: '123',
-				status: 'removed'
-			}
-		]
-	}
-]
+const transactions = ref<TransactionGroup[]>([])
 
 const openDetails = (id: string) => {
 	router.push({
@@ -119,6 +58,10 @@ const removeHandler = (filterValue: string) => {
 	historyStore.disableFilter(filterValue)
 	filters.value = historyStore.filterTags
 }
+
+onMounted(async () => {
+	transactions.value = await HistoryService.fetch()
+})
 </script>
 
 <template>

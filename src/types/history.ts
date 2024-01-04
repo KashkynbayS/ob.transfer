@@ -1,10 +1,10 @@
 import { CURRENCY } from '@/types/index.ts'
+import { TypeOfTransfer } from '@/types/transfer.ts'
 
-export type TransactionsType = 'fill' | 'payment' | 'transferByAccount' | 'transferByPhone'
-export type TransactionStatus = 'credited' | 'removed' | 'waiting' | 'transferred'
+export type TransactionStatus = 'success' | 'in_progress'
 
 export interface Transaction {
-	type: TransactionsType
+	type: TypeOfTransfer
 	currency: CURRENCY
 	caption: string
 	value: number
@@ -16,6 +16,25 @@ export interface Transaction {
 export interface TransactionGroup {
 	title: string
 	list: Transaction[]
+}
+
+export interface TransactionFromApi {
+	recMobileNumber: string
+	transferDescription: string
+	amount: number
+	recIban: string
+	bin: string
+	knp: string
+	kbe: string
+	createdAt: string
+	recBin: string
+	iban: string
+	recFio: string
+	commission: string
+	id: string
+	recIin: string
+	typeOfTransfer: number
+	status: TransactionStatus
 }
 
 export interface Tag {
