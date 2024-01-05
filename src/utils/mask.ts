@@ -9,5 +9,5 @@ export function maskAmount(amount: number | null = null, currency: CURRENCY = CU
 }
 
 export function maskIban(iban: string) {
-	return iban.replace(/KZ(\d{2})\d{12}(\d{4})/, 'KZ****$2')
+	return iban.substring(0, 2) + '****' + iban.slice(-4)
 }

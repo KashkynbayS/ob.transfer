@@ -51,20 +51,20 @@ const onSelect = (item: Account) => {
 	accountBottomSheetRef.value?.close()
 
 	if (props.updateField) {
-		props.updateField();
+		props.updateField()
 	}
 }
 </script>
 
 <template>
 	<div class="accounts">
-		<Dropdown 
-			:id="props.id || ''" 
-			:value="view.amount" 
-			:label="view.label" 
-			@on-focus="accountBottomSheetRef?.open()" 
+		<Dropdown
+			:id="props.id || ''"
+			:value="view.amount"
+			:label="view.label"
 			:invalid="props.errorInvalid"
 			:helper-text="props.helperText"
+			@on-focus="accountBottomSheetRef?.open()"
 		/>
 
 		<BottomSheet ref="accountBottomSheetRef">
@@ -83,6 +83,7 @@ const onSelect = (item: Account) => {
 						v-for="item in group.list"
 						:key="item.id"
 						left-bg="#6E757C"
+						:reverse="true"
 						:class="item.id === props.disabled?.id ? 'cell--disabled' : ''"
 						@click="onSelect(item)"
 					>
@@ -90,10 +91,14 @@ const onSelect = (item: Account) => {
 							<Component :is="CURRENCY_ICON[item.currency]" class="text-white" />
 						</template>
 						<template #title>{{ item.title }}</template>
-						<template #subtitle>{{ maskIban(item.iban) }}</template>
+						<template #subtitle>
+							<span class="text-caption">{{ maskIban(item.iban) }} </span>
+						</template>
 						<template #right>
 							<span v-if="item.id === props.disabled?.id" class="text-green"><CheckIcon /></span>
-							<span v-if="item.id !== props.disabled?.id">{{ maskAmount(item.amount, item.currency) }}</span>
+							<span v-if="item.id !== props.disabled?.id" class="text-caption color-dark">
+								{{ maskAmount(item.amount, item.currency) }}
+							</span>
 						</template>
 					</Cell>
 				</CellGroup>
