@@ -3,6 +3,41 @@ import AppNavbar from '@/components/AppNavbar.vue'
 import ArrowRoundIcon from '@/assets/icons/arrow-round.svg'
 import ShareIcon from '@/assets/icons/share.svg'
 import { Button, Cell, CellGroup, CellGroupHeader } from '@ui-kit/ui-kit'
+import { computed } from 'vue'
+import { useRoute } from 'vue-router'
+import { useHistoryStore } from '@/stores/history.ts'
+import { TransactionStatus } from '@/types'
+
+const route = useRoute()
+const historyStore = useHistoryStore()
+
+const transactionId = computed(() => route.params.transactionId as string)
+const details = computed(() => historyStore.getTransactionById(transactionId.value))
+
+const statuses: Record<TransactionStatus, string> = {
+	success: 'Исполнено',
+	in_progress: 'В процессе'
+}
+
+function formatDateTime(inputString: string | undefined): string {
+	if (!inputString) {
+		return ''
+	}
+
+	const date = new Date(inputString)
+	const options: Intl.DateTimeFormatOptions = { day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' }
+	return date.toLocaleDateString('ru-RU', options)
+}
+
+const formattedDateTime = computed(() => formatDateTime(details.value?.createdAt))
+
+function formatIban(input: string): string {
+	if (input.length !== 20) {
+		throw new Error('Неверный формат IBAN')
+	}
+
+	return `${input.slice(0, 4)} ${input.slice(4, 8)} ${input.slice(8, 12)} ${input.slice(12, 16)} ${input.slice(16)}`
+}
 </script>
 
 <template>
@@ -11,55 +46,57 @@ import { Button, Cell, CellGroup, CellGroupHeader } from '@ui-kit/ui-kit'
 			<template #title><h5>Детали платежа</h5></template>
 		</AppNavbar>
 
-		<div class="details__value">-10 000 ₸</div>
-		<div class="details__info">
-			<span class="details__status">Исполнено</span>
-			•
-			<span class="details__date">16 октября 12:56</span>
-		</div>
+		<template v-if="details">
+			<div class="details__value">-{{ details.amount }} ₸</div>
+			<div class="details__info">
+				<span class="details__status">{{ statuses[details.status] }}</span>
+				•
+				<span class="details__date">{{ formattedDateTime }}</span>
+			</div>
 
-		<div class="details__actions">
-			<Button id="share-details-btn">
-				<ShareIcon style="width: auto; height: auto" />
-				Поделиться
-			</Button>
-			<Button id="repeat-details-btn" type="secondary-gray">
-				<ArrowRoundIcon />
-				Повторить
-			</Button>
-		</div>
+			<div class="details__actions">
+				<Button id="share-details-btn">
+					<ShareIcon style="width: auto; height: auto" />
+					Поделиться
+				</Button>
+				<Button id="repeat-details-btn" type="secondary-gray">
+					<ArrowRoundIcon />
+					Повторить
+				</Button>
+			</div>
 
-		<CellGroup type="island">
-			<CellGroupHeader>
-				<template #title>Детали списания</template>
-			</CellGroupHeader>
-			<Cell>
-				<template #subtitle>Счет списания</template>
-				<template #title>KZ34 5678 9012 3456 7892</template>
-			</Cell>
-			<Cell>
-				<template #subtitle>Комиссия</template>
-				<template #title>0 ₸</template>
-			</Cell>
-		</CellGroup>
+			<CellGroup type="island">
+				<CellGroupHeader>
+					<template #title>Детали списания</template>
+				</CellGroupHeader>
+				<Cell>
+					<template #subtitle>Счет списания</template>
+					<template #title>{{ formatIban(details.iban) }}</template>
+				</Cell>
+				<Cell>
+					<template #subtitle>Комиссия</template>
+					<template #title>{{ details.commission || 0 }} ₸</template>
+				</Cell>
+			</CellGroup>
 
-		<CellGroup type="island">
-			<CellGroupHeader>
-				<template #title>Получатель</template>
-			</CellGroupHeader>
-			<Cell>
-				<template #subtitle>Счет зачисления</template>
-				<template #title>KZ34 5678 9012 3456 7892</template>
-			</Cell>
-			<Cell>
-				<template #subtitle>Номер квитанции</template>
-				<template #title>56789900</template>
-			</Cell>
-			<Cell>
-				<template #subtitle>Имя получателя</template>
-				<template #title>Ахметжанулы Сейтжан А.</template>
-			</Cell>
-		</CellGroup>
+			<CellGroup type="island">
+				<CellGroupHeader>
+					<template #title>Получатель</template>
+				</CellGroupHeader>
+				<Cell>
+					<template #subtitle>Счет зачисления</template>
+					<template #title>{{ formatIban(details.recIban) }}</template>
+				</Cell>
+				<Cell>
+					<template #subtitle>Номер квитанции</template>
+					<template #title>56789900</template>
+				</Cell>
+				<Cell>
+					<template #subtitle>Имя получателя</template>
+					<template #title>{{ details.recFio }}</template>
+				</Cell>
+			</CellGroup>
+		</template>
 	</div>
 </template>
 

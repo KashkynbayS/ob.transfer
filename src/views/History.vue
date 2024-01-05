@@ -10,28 +10,27 @@ import { Tag, TransactionGroup } from '@/types'
 import TransactionValue from '@/components/TransactionValue.vue'
 import { CURRENCY_SYMBOL } from '@/constants'
 import HistorySettings from '@/components/HistorySettings.vue'
-import { onMounted, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import AppTags from '@/components/AppTags.vue'
 import { useHistoryStore } from '@/stores/history.ts'
-import { HistoryService } from '@/services/history.service.ts'
 import { TypeOfTransfer } from '@/types/transfer.ts'
 
 const router = useRouter()
 const historyStore = useHistoryStore()
 
 const typeMapping: Record<TypeOfTransfer, string> = {
-	1: 'Между счетами',
-	2: 'Внутренний',
-	3: 'Внешний'
+	[TypeOfTransfer.BetweenMyAccounts]: 'Между счетами',
+	[TypeOfTransfer.Internal]: 'Внутренний',
+	[TypeOfTransfer.External]: 'Внешний'
 }
 
 const typeIconMapping: Record<TypeOfTransfer, string> = {
-	1: AccountNewIcon,
-	2: ArrowRoundIcon,
-	3: TransfersIcon
+	[TypeOfTransfer.BetweenMyAccounts]: TransfersIcon,
+	[TypeOfTransfer.Internal]: ArrowRoundIcon,
+	[TypeOfTransfer.External]: AccountNewIcon
 }
 
-const transactions = ref<TransactionGroup[]>([])
+const history = computed<TransactionGroup[]>(() => historyStore.transformedHistory)
 
 const openDetails = (id: string) => {
 	router.push({
@@ -60,7 +59,7 @@ const removeHandler = (filterValue: string) => {
 }
 
 onMounted(async () => {
-	transactions.value = await HistoryService.fetch()
+	await historyStore.fetchHistory()
 })
 </script>
 
@@ -77,7 +76,7 @@ onMounted(async () => {
 
 		<AppTags class="history__tags" :tags="filters" @removed="removeHandler" />
 
-		<CellGroup v-for="transactionGroup in transactions" :key="transactionGroup.title" class="transaction-group">
+		<CellGroup v-for="transactionGroup in history" :key="transactionGroup.title" class="transaction-group">
 			<div class="transaction-group__title">
 				{{ transactionGroup.title }}
 			</div>
