@@ -32,6 +32,9 @@ import { extractCurrencyFromAmount } from '@/utils/currencies'
 const ownStore = useOwnStore()
 const rateStore = useRateStore()
 
+// временно отключаем по задаче: DBO-1037 - Отключение функционала Конвертации
+const IS_CONVERSION_DISABLED = false
+
 const { setLoading } = useLoadingStore()
 
 ownStore.clearErrors()
@@ -48,13 +51,17 @@ const form = ref<OwnForm>({
 })
 
 const hasDifferentCurrencies = computed(() => {
-	return false
-	// временно отключаем по задаче: DBO-1037 - Отключение функционала Конвертации
-	// if (!form.value.from || !form.value.to) {
-	// 	return false
-	// }
-	// ownStore.clearErrors()
-	// return form.value.from.currency !== form.value.to.currency
+	if (IS_CONVERSION_DISABLED) {
+		return false
+	}
+
+	if (!form.value.from || !form.value.to) {
+		return false
+	}
+
+	ownStore.clearErrors()
+
+	return form.value.from.currency !== form.value.to.currency
 })
 
 const writeOffCurrency = computed(() => extractCurrencyFromAmount(form.value.from))
@@ -341,8 +348,6 @@ watch(
 					@update:model-value="ownStore.clearErrors('amount')"
 				/>
 			</template>
-
-			{{ form }}
 
 			<Button id="ownSubmit" class="form__submit" type="primary" attr-type="submit" @click="handleSubmit">
 				{{ $t('OWN.FORM.SUBMIT') }}
