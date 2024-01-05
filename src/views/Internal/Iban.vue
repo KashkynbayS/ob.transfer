@@ -17,9 +17,12 @@ import { CURRENCY_SYMBOL } from '@/constants'
 import { useIbanStore } from '@/stores/iban.ts'
 import { useSuccessStore } from '@/stores/success'
 
+import { handleTransferSSEResponse } from '@/services/sse.service'
+import { TransferService } from '@/services/transfer.service'
 import { CURRENCY } from '@/types'
 import { FORM_STATE } from '@/types/form'
 import { IbanForm } from '@/types/iban'
+import { TypeOfTransfer } from '@/types/transfer'
 
 const IbanStore = useIbanStore()
 const successStore = useSuccessStore()
@@ -106,7 +109,29 @@ watch(
 // Submit handler
 const handleSubmit = async (e: Event | null = null) => {
 	e?.preventDefault()
-	IbanStore.validateAndSubmit(form.value)
+	IbanStore.clearErrors()
+	IbanStore.setState(FORM_STATE.LOADING)
+
+	TransferService.initWithSSE(
+		{
+			iban: form.value.from!.iban,
+			recIban: form.value.to,
+			recFio: form.value.receiverName,
+			amount: String(form.value.amount),
+			typeOfTransfer: TypeOfTransfer.BetweenMyAccounts
+		},
+		(event) => {
+			IbanStore.setState(FORM_STATE.SUCCESS)
+			handleTransferSSEResponse(form.value, event, router)
+		}
+	)
+		.then((e) => {
+			IbanStore.applicationId = e.applicationID
+			IbanStore.setState(FORM_STATE.SUCCESS)
+		})
+		.catch(() => {
+			IbanStore.setState(FORM_STATE.ERROR)
+		})
 }
 </script>
 
