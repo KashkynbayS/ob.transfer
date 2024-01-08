@@ -16,9 +16,12 @@ import { CURRENCY_SYMBOL } from '@/constants'
 import { usePhoneStore } from '@/stores/phone.ts'
 import { useSuccessStore } from '@/stores/success'
 
+import { handleTransferSSEResponse } from '@/services/sse.service'
+import { TransferService } from '@/services/transfer.service'
 import { CURRENCY } from '@/types'
 import { FORM_STATE } from '@/types/form'
 import { PhoneForm } from '@/types/phone'
+import { TypeOfTransfer } from '@/types/transfer'
 
 const phoneStore = usePhoneStore()
 const successStore = useSuccessStore()
@@ -103,7 +106,29 @@ watch(
 
 const handleSubmit = async (e: Event | null = null) => {
 	e?.preventDefault()
-	phoneStore.validateAndSubmit(form.value)
+	phoneStore.clearErrors()
+	phoneStore.setState(FORM_STATE.LOADING)
+
+	TransferService.initWithSSE(
+		{
+			iban: form.value.from!.iban,
+			recMobileNumber: form.value.phoneNumber,
+			recFio: form.value.receiverName,
+			amount: String(form.value.amount),
+			typeOfTransfer: TypeOfTransfer.BetweenMyAccounts
+		},
+		(event) => {
+			phoneStore.setState(FORM_STATE.SUCCESS)
+			handleTransferSSEResponse(form.value, event, router)
+		}
+	)
+		.then((e) => {
+			phoneStore.applicationId = e.applicationID
+			phoneStore.setState(FORM_STATE.SUCCESS)
+		})
+		.catch(() => {
+			phoneStore.setState(FORM_STATE.ERROR)
+		})
 }
 
 // _________________________________________
@@ -112,14 +137,9 @@ const handleSubmit = async (e: Event | null = null) => {
 <template>
 	<form class="internal-phone-form">
 		<div class="internal-phone-form-top">
-			<AccountDropdown
-				id="from"
-				v-model="form.from"
-				:accounts-groups="ACCOUNTS_GROUPS"
-				:label="$t('OWN.FORM.FROM')"
-			/>
+			<AccountDropdown id="from" v-model="form.from" :accounts-groups="ACCOUNTS_GROUPS" :label="$t('OWN.FORM.FROM')" />
 
-			<SelectContactInput/>
+			<SelectContactInput />
 
 			<CurrencyInput
 				id="123"

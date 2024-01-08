@@ -18,7 +18,7 @@ export interface ITransferRequest {
 	knp?: string
 	recBin?: string
 	recFio?: string
-	recIban: string
+	recIban?: string
 	recIin?: string
 	recMobileNumber?: string
 	transferDescription?: string
