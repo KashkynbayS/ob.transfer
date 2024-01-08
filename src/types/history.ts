@@ -1,5 +1,6 @@
 import { CURRENCY } from '@/types/index.ts'
 import { TypeOfTransfer } from '@/types/transfer.ts'
+import { HistoryFilter } from '@/stores/history.ts'
 
 export type TransactionStatus = 'success' | 'in_progress'
 
@@ -45,4 +46,16 @@ export interface Tag {
 
 export enum TAG_TYPE {
 	DATE = 'DATE'
+}
+
+export interface HistoryParams {
+	startDate?: string
+	endDate?: string
+	minAmount?: string
+	maxAmount?: string
+	limit?: number
+	status?: HistoryFilter
+	offset?: number
+	sortField?: 'created_at' | 'amount' | 'status'
+	sortOrder?: 'asc' | 'desc'
 }

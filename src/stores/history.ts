@@ -1,5 +1,5 @@
 import { CURRENCY_SYMBOL } from '@/constants'
-import { CURRENCY, Tag, Transaction, TransactionFromApi, TransactionGroup } from '@/types'
+import { CURRENCY, HistoryParams, Tag, Transaction, TransactionFromApi, TransactionGroup } from '@/types'
 import { useDateFormat } from '@vueuse/core'
 import { defineStore } from 'pinia'
 import { reactive } from 'vue'
@@ -14,7 +14,7 @@ export interface HistorySettings {
 	}
 }
 
-export type HistoryFilter = 'all' | 'executed' | 'rejected' | 'processing'
+export type HistoryFilter = 'all' | 'success' | 'denied' | 'in_progress'
 
 export interface Filter {
 	id: HistoryFilter
@@ -25,9 +25,9 @@ export interface Filter {
 
 export const filters = reactive<Filter[]>([
 	{ id: 'all', title: 'Все', value: 'all', disabled: false },
-	{ id: 'executed', title: 'Исполнено', value: 'executed', disabled: false },
-	{ id: 'rejected', title: 'Отклонено', value: 'rejected', disabled: false },
-	{ id: 'processing', title: 'В обработке', value: 'processing', disabled: false }
+	{ id: 'success', title: 'Исполнено', value: 'success', disabled: false },
+	{ id: 'denied', title: 'Отклонено', value: 'denied', disabled: false },
+	{ id: 'in_progress', title: 'В обработке', value: 'in_progress', disabled: false }
 ])
 
 interface HistorySchema {
@@ -167,7 +167,21 @@ export const useHistoryStore = defineStore('history', {
 			}
 		},
 		async fetchHistory() {
-			this.history = await HistoryService.fetch()
+			const filters: HistoryParams = {}
+
+			if (this.settings.sum.from) filters.minAmount = this.settings.sum.from
+			if (this.settings.sum.to) filters.maxAmount = this.settings.sum.to
+
+			if (this.settings.currentFilter && this.settings.currentFilter !== 'all') {
+				filters.status = this.settings.currentFilter
+			}
+
+			const startDate = this.settings.dates[0]?.toISOString().split('T')[0]
+			const endDate = this.settings.dates[1]?.toISOString().split('T')[0]
+			if (startDate) filters.startDate = startDate
+			if (endDate) filters.startDate = endDate
+
+			this.history = await HistoryService.fetch(filters)
 		}
 	}
 })
