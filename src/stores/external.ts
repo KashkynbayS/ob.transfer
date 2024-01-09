@@ -2,9 +2,15 @@ import { defineStore } from 'pinia'
 import { object } from 'yup'
 import { ExternalForm } from './../types/external'
 
-import { ExternalService } from '@/services/external.service'
 import { FORM_STATE, FormStore } from '@/types/form'
-import { extractValidationErrors, validateAmount, validateIban, validateIin, validateKnp, validateReceiverName } from '@/utils/validators'
+import {
+	extractValidationErrors,
+	validateAmount,
+	validateIban,
+	validateIin,
+	validateKnp,
+	validateReceiverName
+} from '@/utils/validators'
 
 export interface ExternalStore extends FormStore {}
 
@@ -19,10 +25,12 @@ const formSchema = object({
 		'EXTERNAL.FORM.ERRORS.NOT_ENOUGH_MONEY',
 		'EXTERNAL.FORM.ERRORS.EMPTY_AMOUNT',
 		'EXTERNAL.FORM.ERRORS.MIN_AMOUNT'
-	),})
+	)
+})
 
 export const useExternalStore = defineStore('external', {
 	state: (): ExternalStore => ({
+		applicationId: '',
 		state: FORM_STATE.INITIAL,
 		errors: {
 			iban: '',
@@ -33,11 +41,6 @@ export const useExternalStore = defineStore('external', {
 		}
 	}),
 	actions: {
-		validateAndSubmit(form: ExternalForm) {
-			this.validate(form).then(() => {
-				this.submit(form)
-			})
-		},
 		validate(form: ExternalForm) {
 			this.clearErrors()
 			this.state = FORM_STATE.LOADING
@@ -54,28 +57,21 @@ export const useExternalStore = defineStore('external', {
 					throw err
 				})
 		},
-		submit(form: ExternalForm) {
-			ExternalService.transfer(form)
-				.then(() => {
-					this.state = FORM_STATE.SUCCESS
-				})
-				.catch(() => {
-					this.state = FORM_STATE.ERROR
-				})
+		setState(state: FORM_STATE) {
+			this.state = state
 		},
 		clearErrors(fieldName?: any) {
 			if (fieldName) {
-			  	this.errors[fieldName] = '';
-			} 
-			else {
+				this.errors[fieldName] = ''
+			} else {
 				this.errors = {
 					iban: '',
 					knp: '',
 					iin: '',
 					receiverName: '',
 					amount: ''
-				};
+				}
 			}
-		  }
+		}
 	}
 })
