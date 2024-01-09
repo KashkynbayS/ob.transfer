@@ -12,6 +12,7 @@ const props = defineProps<{
 
 const emit = defineEmits<{
 	(e: 'closed'): void
+	(e: 'apply'): void
 }>()
 
 watch(
@@ -71,7 +72,7 @@ function toggleCalendar(value = !showCalendar.value) {
 }
 
 function applyFilters() {
-	emit('closed')
+	emit('apply')
 }
 
 function closeHandler() {

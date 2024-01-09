@@ -49,8 +49,13 @@ const openSettings = () => {
 }
 
 const closeSettings = () => {
-	filters.value = historyStore.filterTags
 	settings.value = false
+}
+
+const applySettings = () => {
+	filters.value = historyStore.filterTags
+	closeSettings()
+	historyStore.fetchHistory()
 }
 
 const removeHandler = (filterValue: string) => {
@@ -105,7 +110,7 @@ onMounted(async () => {
 			</Cell>
 		</CellGroup>
 
-		<HistorySettings :show="settings" @closed="closeSettings" />
+		<HistorySettings :show="settings" @closed="closeSettings" @apply="applySettings" />
 	</div>
 </template>
 
