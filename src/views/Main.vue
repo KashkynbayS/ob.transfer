@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue';
+import { ref, watch } from 'vue'
 
-import { useRoute, useRouter } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router'
 
-import { SegmentedControl } from '@ui-kit/ui-kit';
+import { SegmentedControl } from '@ui-kit/ui-kit'
 
-import AppNavbar from '@/components/AppNavbar.vue';
+import AppNavbar from '@/components/AppNavbar.vue'
 
 const router = useRouter()
 const route = useRoute()

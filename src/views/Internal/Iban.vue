@@ -19,6 +19,7 @@ import { useSuccessStore } from '@/stores/success'
 
 import { handleTransferSSEResponse } from '@/services/sse.service'
 import { TransferService } from '@/services/transfer.service'
+import { useStatusStore } from '@/stores/status'
 import { CURRENCY } from '@/types'
 import { FORM_STATE } from '@/types/form'
 import { IbanForm } from '@/types/iban'
@@ -26,6 +27,7 @@ import { TypeOfTransfer } from '@/types/transfer'
 
 const IbanStore = useIbanStore()
 const successStore = useSuccessStore()
+const statusStore = useStatusStore()
 
 IbanStore.clearErrors()
 
@@ -92,7 +94,24 @@ watch(
 				break
 
 			case FORM_STATE.ERROR:
-				router.push('Error')
+				statusStore.$state = {
+					class: 'error',
+					title: 'Перевод не совершён',
+					description: 'Ошибка',
+					showAs: 'fullpage',
+					actions: [
+						{
+							title: 'Вернуться на главную',
+							type: 'secondary',
+							target: '_self',
+							url: 'https://online-dev.kmf.kz/app/bank/actions/close'
+						},
+						{ title: 'Обновить документ', type: 'primary', target: '_self', url: '' }
+					]
+				}
+				router.push({
+					name: 'Status'
+				})
 				break
 
 			case FORM_STATE.INITIAL:
@@ -127,6 +146,7 @@ const handleSubmit = async (e: Event | null = null) => {
 	)
 		.then((e) => {
 			IbanStore.applicationId = e.applicationID
+			sessionStorage.setItem('uuid', e.applicationID)
 			IbanStore.setState(FORM_STATE.SUCCESS)
 		})
 		.catch(() => {
