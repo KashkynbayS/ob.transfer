@@ -6,10 +6,12 @@ import { Button, Cell, CellGroup, CellGroupHeader } from '@ui-kit/ui-kit'
 import { computed } from 'vue'
 import { useRoute } from 'vue-router'
 import { useHistoryStore } from '@/stores/history.ts'
-import { TransactionStatus } from '@/types'
+import { FormParams, TransactionStatus } from '@/types'
+import { useFormAutoFill } from '@/helpers/useFormAutoFill.ts'
 
 const route = useRoute()
 const historyStore = useHistoryStore()
+const { routerPushWithData } = useFormAutoFill()
 
 const transactionId = computed(() => route.params.transactionId as string)
 const details = computed(() => historyStore.getTransactionById(transactionId.value))
@@ -38,6 +40,40 @@ function formatIban(input: string): string {
 
 	return `${input.slice(0, 4)} ${input.slice(4, 8)} ${input.slice(8, 12)} ${input.slice(12, 16)} ${input.slice(16)}`
 }
+
+function repeatAction() {
+	const params: FormParams = {}
+
+	if (details.value?.amount) {
+		params.amount = String(details.value.amount)
+	}
+
+	if (details.value?.recMobileNumber) {
+		params.recMobileNumber = details.value.recMobileNumber
+	}
+
+	if (details.value?.recIban) {
+		params.recIban = details.value.recIban
+	}
+
+	if (details.value?.recIin) {
+		params.recIin = details.value.recIin
+	}
+
+	if (details.value?.recFio) {
+		params.recFio = details.value.recFio
+	}
+
+	if (details.value?.iban) {
+		params.iban = details.value.iban
+	}
+
+	if (details.value?.kbe) {
+		params.kbe = details.value.kbe
+	}
+
+	routerPushWithData('External', params)
+}
 </script>
 
 <template>
@@ -59,7 +95,7 @@ function formatIban(input: string): string {
 					<ShareIcon style="width: auto; height: auto" />
 					Поделиться
 				</Button>
-				<Button id="repeat-details-btn" type="secondary-gray">
+				<Button id="repeat-details-btn" type="secondary-gray" @click="repeatAction">
 					<ArrowRoundIcon />
 					Повторить
 				</Button>

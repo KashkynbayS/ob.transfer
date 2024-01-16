@@ -3,9 +3,9 @@ import { Knp } from './knp'
 
 export interface ExternalForm {
 	from: Account | undefined
-	iban: ''
+	iban: string
 	knp: Knp | null
-	iin: ''
-	receiverName: ''
+	iin: string
+	receiverName: string
 	amount: number | null
 }

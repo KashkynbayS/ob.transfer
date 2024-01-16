@@ -19,19 +19,21 @@ import { useStatusStore } from '@/stores/status'
 import { ExternalForm } from '@/types/external'
 import { FORM_STATE } from '@/types/form'
 import { TypeOfTransfer } from '@/types/transfer'
+import { useFormAutoFill } from '@/helpers/useFormAutoFill.ts'
 
 const externalStore = useExternalStore()
 const statusStore = useStatusStore()
+const { formData } = useFormAutoFill()
 
 externalStore.clearErrors()
 
 const form = ref<ExternalForm>({
 	from: undefined,
-	iban: '',
+	iban: formData.value?.recIban || '',
 	knp: null,
-	iin: '',
-	receiverName: '',
-	amount: null
+	iin: formData.value?.recIin || '',
+	receiverName: formData.value?.recFio || '',
+	amount: Number(formData.value?.amount) || null
 })
 
 watch(
