@@ -2,7 +2,6 @@ import { createPinia } from 'pinia'
 import { createApp, h } from 'vue'
 
 import singleSpa from 'single-spa-vue'
-import VOtpInput from 'vue3-otp-input'
 
 import App from './App.vue'
 import { router } from './router'
@@ -28,7 +27,6 @@ if (isLocal) {
 	app.use(i18nPlugin)
 
 	// Mount
-	app.component('VOtpInput', VOtpInput)
 	app.mount('#app')
 } else {
 	vueLifecycles = singleSpa({
