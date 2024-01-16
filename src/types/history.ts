@@ -31,6 +31,7 @@ export interface TransactionFromApi {
 	recBin: string
 	iban: string
 	recFio: string
+	receiptNumber: string
 	commission: string
 	id: string
 	recIin: string

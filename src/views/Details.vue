@@ -108,7 +108,7 @@ onMounted(() => {
 				</Cell>
 				<Cell>
 					<template #subtitle>Номер квитанции</template>
-					<template #title>56789900</template>
+					<template #title>{{ details.receiptNumber }}</template>
 				</Cell>
 				<Cell>
 					<template #subtitle>Имя получателя</template>
