@@ -17,3 +17,26 @@
 .segment-picker__item {
 	font-weight: var(--font-weight-semibold);
 }
+
+.slide-fade-enter-active,
+.slide-fade-leave-active {
+	transition: all 400ms ease-in-out;
+}
+
+.slide-fade-enter-from,
+.slide-fade-leave-to {
+	opacity: 0;
+	transform: translateX(-10px);
+}
+
+
+.fade-enter-active,
+.fade-leave-active {
+	transition: opacity 150ms ease-in-out;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+	opacity: 0;
+}
+

@@ -1,19 +1,20 @@
 <script setup lang="ts">
-// import { useQueryParams } from '@/helpers/useQueryParams.ts'
-//
-// const queryParams = useQueryParams()
-//
-// queryParams.goTo('/by-card', {
-//   recipientIban: 'KZT123242345234534',
-//   recipientName: 'Сейтжан А.',
-//   transferSum: 10000
-// })
+import { useLoadingStore } from '@/stores/loading.ts'
+import { LoaderPage } from '@ui-kit/ui-kit/dist/layouts'
+
+const loadingStore = useLoadingStore()
 </script>
 
 <template>
 	<main>
-		<router-view></router-view>
+		<router-view v-slot="{ Component }">
+			<transition name="slide-fade" mode="out-in">
+				<component :is="Component" />
+			</transition>
+		</router-view>
+
+		<transition name="fade" mode="out-in">
+			<LoaderPage v-if="loadingStore.isLoading" />
+		</transition>
 	</main>
 </template>
-
-<style scoped></style>
