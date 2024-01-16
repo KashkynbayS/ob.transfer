@@ -156,53 +156,55 @@ const handleSubmit = async (e: Event | null = null) => {
 </script>
 
 <template>
-	<form class="internal-iban-form" @submit="handleSubmit">
-		<div class="internal-iban-form-top">
-			<AccountDropdown
-				v-model="form.from"
-				class="form-field"
-				:accounts-groups="ACCOUNTS_GROUPS"
-				:label="$t('OWN.FORM.TO')"
-			/>
-			<IbanInput
-				id="recieverNameModel"
-				v-model:model-value="form.to"
-				class="form-field"
-				:label="$t('INTERNAL.IBAN.FORM.ACCOUNT_TO')"
-				:invalid="!!IbanStore.errors.to"
-				:helper-text="IbanStore.errors.to ? $t(IbanStore.errors.to) : ''"
-				@update:model-value="IbanStore.clearErrors('to')"
-			/>
-			<Input
-				id="123"
-				v-model:model-value="form.receiverName"
-				class="form-field"
-				:label="$t('INTERNAL.IBAN.FORM.RECIEVER_NAME')"
-				:invalid="!!IbanStore.errors.receiverName"
-				:helper-text="IbanStore.errors.receiverName ? $t(IbanStore.errors.receiverName) : ''"
-				@update:model-value="IbanStore.clearErrors('receiverName')"
-			/>
-			<CurrencyInput
-				id="amount"
-				v-model:model-value="form.amount"
-				class="form-field"
-				:label="$t('INTERNAL.IBAN.FORM.SUM')"
-				:invalid="!!IbanStore.errors.amount"
-				:helper-text="IbanStore.errors.amount ? $t(IbanStore.errors.amount) : ''"
-				@update:model-value="IbanStore.clearErrors('amount')"
-			/>
-		</div>
-		<div class="internal-iban-form-bottom">
-			<Button id="internal-iban-submit" type="primary" @click="handleSubmit">
-				{{ $t('INTERNAL.IBAN.FORM.SUBMIT') }}
-			</Button>
-		</div>
-	</form>
+	<div>
+		<form class="internal-iban-form" @submit="handleSubmit">
+			<div class="internal-iban-form-top">
+				<AccountDropdown
+					v-model="form.from"
+					class="form-field"
+					:accounts-groups="ACCOUNTS_GROUPS"
+					:label="$t('OWN.FORM.TO')"
+				/>
+				<IbanInput
+					id="recieverNameModel"
+					v-model:model-value="form.to"
+					class="form-field"
+					:label="$t('INTERNAL.IBAN.FORM.ACCOUNT_TO')"
+					:invalid="!!IbanStore.errors.to"
+					:helper-text="IbanStore.errors.to ? $t(IbanStore.errors.to) : ''"
+					@update:model-value="IbanStore.clearErrors('to')"
+				/>
+				<Input
+					id="123"
+					v-model:model-value="form.receiverName"
+					class="form-field"
+					:label="$t('INTERNAL.IBAN.FORM.RECIEVER_NAME')"
+					:invalid="!!IbanStore.errors.receiverName"
+					:helper-text="IbanStore.errors.receiverName ? $t(IbanStore.errors.receiverName) : ''"
+					@update:model-value="IbanStore.clearErrors('receiverName')"
+				/>
+				<CurrencyInput
+					id="amount"
+					v-model:model-value="form.amount"
+					class="form-field"
+					:label="$t('INTERNAL.IBAN.FORM.SUM')"
+					:invalid="!!IbanStore.errors.amount"
+					:helper-text="IbanStore.errors.amount ? $t(IbanStore.errors.amount) : ''"
+					@update:model-value="IbanStore.clearErrors('amount')"
+				/>
+			</div>
+			<div class="internal-iban-form-bottom">
+				<Button id="internal-iban-submit" type="primary" @click="handleSubmit">
+					{{ $t('INTERNAL.IBAN.FORM.SUBMIT') }}
+				</Button>
+			</div>
+		</form>
 
-	<Modal ref="modal" :actions="actions" close-on-outline-click>
-		<template #title>{{ $t('INTERNAL.MODAL.LEAVE_WHEN_FORM_IS_DIRTY.TITLE') }}</template>
-		<template #body>{{ $t('INTERNAL.MODAL.LEAVE_WHEN_FORM_IS_DIRTY.SUBTITLE') }}</template>
-	</Modal>
+		<Modal ref="modal" :actions="actions" close-on-outline-click>
+			<template #title>{{ $t('INTERNAL.MODAL.LEAVE_WHEN_FORM_IS_DIRTY.TITLE') }}</template>
+			<template #body>{{ $t('INTERNAL.MODAL.LEAVE_WHEN_FORM_IS_DIRTY.SUBTITLE') }}</template>
+		</Modal>
+	</div>
 </template>
 
 <style scoped lang="scss">

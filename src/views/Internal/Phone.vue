@@ -155,31 +155,38 @@ const handleSubmit = async (e: Event | null = null) => {
 </script>
 
 <template>
-	<form class="internal-phone-form">
-		<div class="internal-phone-form-top">
-			<AccountDropdown id="from" v-model="form.from" :accounts-groups="ACCOUNTS_GROUPS" :label="$t('OWN.FORM.FROM')" />
+	<div>
+		<form class="internal-phone-form">
+			<div class="internal-phone-form-top">
+				<AccountDropdown
+					id="from"
+					v-model="form.from"
+					:accounts-groups="ACCOUNTS_GROUPS"
+					:label="$t('OWN.FORM.FROM')"
+				/>
 
-			<SelectContactInput />
+				<SelectContactInput />
 
-			<CurrencyInput
-				id="123"
-				v-model="form.amount"
-				class="form-field"
-				:label="$t('INTERNAL.PHONE.FORM.SUM')"
-				:invalid="!!phoneStore.errors.amount"
-				:helper-text="phoneStore.errors.amount ? $t(phoneStore.errors.amount) : ''"
-				@update:model-value="phoneStore.clearErrors('amount')"
-			/>
-		</div>
-		<div class="internal-phone-form-bottom">
-			<Button id="123" type="primary" @click="handleSubmit"> {{ $t('INTERNAL.PHONE.FORM.SUBMIT') }} </Button>
-		</div>
-	</form>
+				<CurrencyInput
+					id="123"
+					v-model="form.amount"
+					class="form-field"
+					:label="$t('INTERNAL.PHONE.FORM.SUM')"
+					:invalid="!!phoneStore.errors.amount"
+					:helper-text="phoneStore.errors.amount ? $t(phoneStore.errors.amount) : ''"
+					@update:model-value="phoneStore.clearErrors('amount')"
+				/>
+			</div>
+			<div class="internal-phone-form-bottom">
+				<Button id="123" type="primary" @click="handleSubmit"> {{ $t('INTERNAL.PHONE.FORM.SUBMIT') }} </Button>
+			</div>
+		</form>
 
-	<Modal ref="modal" v-bind="{ asd: 'asdasd' }" :actions="actions" close-on-outline-click>
-		<template #title>{{ $t('INTERNAL.MODAL.LEAVE_WHEN_FORM_IS_DIRTY.TITLE') }}</template>
-		<template #body>{{ $t('INTERNAL.MODAL.LEAVE_WHEN_FORM_IS_DIRTY.SUBTITLE') }}</template>
-	</Modal>
+		<Modal ref="modal" v-bind="{ asd: 'asdasd' }" :actions="actions" close-on-outline-click>
+			<template #title>{{ $t('INTERNAL.MODAL.LEAVE_WHEN_FORM_IS_DIRTY.TITLE') }}</template>
+			<template #body>{{ $t('INTERNAL.MODAL.LEAVE_WHEN_FORM_IS_DIRTY.SUBTITLE') }}</template>
+		</Modal>
+	</div>
 </template>
 
 <style scoped lang="scss">

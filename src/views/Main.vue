@@ -20,37 +20,39 @@ watch(page, () => {
 </script>
 
 <template>
-	<AppNavbar>
-		<template #title>
-			<h5>{{ $t('TRANSFER.TITLE') }}</h5>
-		</template>
+	<div>
+		<AppNavbar>
+			<template #title>
+				<h5>{{ $t('TRANSFER.TITLE') }}</h5>
+			</template>
 
-		<template #label>
-			<router-link to="/history" class="history-link">{{ $t('TRANSFER.HISTORY') }}</router-link>
-		</template>
-	</AppNavbar>
+			<template #label>
+				<router-link to="/history" class="history-link">{{ $t('TRANSFER.HISTORY') }}</router-link>
+			</template>
+		</AppNavbar>
 
-	<div class="transfer-nav">
-		<SegmentedControl
-			v-model="page"
-			:options="[
-				{
-					id: 'new',
-					value: 'new',
-					label: $t('TRANSFER.TABS.NEW'),
-					disabled: false
-				},
-				{
-					id: 'frequent',
-					value: 'frequent',
-					label: $t('TRANSFER.TABS.FREQUENT'),
-					disabled: false
-				}
-			]"
-		/>
+		<div class="transfer-nav">
+			<SegmentedControl
+				v-model="page"
+				:options="[
+					{
+						id: 'new',
+						value: 'new',
+						label: $t('TRANSFER.TABS.NEW'),
+						disabled: false
+					},
+					{
+						id: 'frequent',
+						value: 'frequent',
+						label: $t('TRANSFER.TABS.FREQUENT'),
+						disabled: false
+					}
+				]"
+			/>
+		</div>
+
+		<router-view></router-view>
 	</div>
-
-	<router-view></router-view>
 </template>
 <style lang="scss" scoped>
 .transfer-nav {

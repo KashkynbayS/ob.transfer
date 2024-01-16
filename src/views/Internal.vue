@@ -15,32 +15,34 @@ watch(page, () => {
 </script>
 
 <template>
-	<AppNavbar>
-		<template #title>
-			<h5>{{ $t('INTERNAL.TITLE') }}</h5>
-		</template>
-	</AppNavbar>
-	<div class="internal">
-		<SegmentedControl
-			v-model="page"
-			:options="[
-				{
-					id: 'phone',
-					value: 'phone',
-					label: $t('INTERNAL.TABS.PHONE'),
-					disabled: false
-				},
-				{
-					id: 'account',
-					value: 'account',
-					label: $t('INTERNAL.TABS.IBAN'),
-					disabled: false
-				}
-			]"
-		/>
-	</div>
+	<div>
+		<AppNavbar>
+			<template #title>
+				<h5>{{ $t('INTERNAL.TITLE') }}</h5>
+			</template>
+		</AppNavbar>
+		<div class="internal">
+			<SegmentedControl
+				v-model="page"
+				:options="[
+					{
+						id: 'phone',
+						value: 'phone',
+						label: $t('INTERNAL.TABS.PHONE'),
+						disabled: false
+					},
+					{
+						id: 'account',
+						value: 'account',
+						label: $t('INTERNAL.TABS.IBAN'),
+						disabled: false
+					}
+				]"
+			/>
+		</div>
 
-	<router-view></router-view>
+		<router-view></router-view>
+	</div>
 </template>
 <style lang="scss">
 .internal {
