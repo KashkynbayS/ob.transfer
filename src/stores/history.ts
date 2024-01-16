@@ -1,9 +1,10 @@
 import { CURRENCY_SYMBOL } from '@/constants'
-import { CURRENCY, HistoryParams, Tag, Transaction, TransactionFromApi, TransactionGroup } from '@/types'
+import { BaseError, CURRENCY, HistoryParams, Tag, Transaction, TransactionFromApi, TransactionGroup } from '@/types'
 import { useDateFormat } from '@vueuse/core'
 import { defineStore } from 'pinia'
 import { reactive } from 'vue'
 import { HistoryService } from '@/services/history.service.ts'
+import { useLoadingStore } from '@/stores/loading.ts'
 
 export interface HistorySettings {
 	currentFilter?: HistoryFilter
@@ -33,7 +34,10 @@ export const filters = reactive<Filter[]>([
 interface HistorySchema {
 	settings: HistorySettings
 	history: TransactionFromApi[]
+	errorMsg: string
 }
+
+const loadingStore = useLoadingStore()
 
 export const useHistoryStore = defineStore('history', {
 	state: (): HistorySchema => ({
@@ -45,7 +49,8 @@ export const useHistoryStore = defineStore('history', {
 				to: ''
 			}
 		},
-		history: []
+		history: [],
+		errorMsg: ''
 	}),
 	getters: {
 		filterTags(): Tag[] {
@@ -167,21 +172,36 @@ export const useHistoryStore = defineStore('history', {
 			}
 		},
 		async fetchHistory() {
-			const filters: HistoryParams = {}
+			loadingStore.setLoading(true)
 
-			if (this.settings.sum.from) filters.minAmount = this.settings.sum.from
-			if (this.settings.sum.to) filters.maxAmount = this.settings.sum.to
+			try {
+				const filters: HistoryParams = {}
 
-			if (this.settings.currentFilter && this.settings.currentFilter !== 'all') {
-				filters.status = this.settings.currentFilter
+				if (this.settings.sum.from) filters.minAmount = this.settings.sum.from
+				if (this.settings.sum.to) filters.maxAmount = this.settings.sum.to
+
+				if (this.settings.currentFilter && this.settings.currentFilter !== 'all') {
+					filters.status = this.settings.currentFilter
+				}
+
+				const startDate = this.settings.dates[0]?.toISOString().split('T')[0]
+				const endDate = this.settings.dates[1]?.toISOString().split('T')[0]
+				if (startDate) filters.startDate = startDate
+				if (endDate) filters.startDate = endDate
+
+				this.history = await HistoryService.fetch(filters)
+
+				this.errorMsg = ''
+			} catch (e: any) {
+				if (e.response) {
+					const errorResponse = e.response.data as BaseError
+					this.errorMsg = errorResponse.msg
+				} else {
+					console.error('Произошла неизвестная ошибка', e)
+				}
+			} finally {
+				loadingStore.setLoading(false)
 			}
-
-			const startDate = this.settings.dates[0]?.toISOString().split('T')[0]
-			const endDate = this.settings.dates[1]?.toISOString().split('T')[0]
-			if (startDate) filters.startDate = startDate
-			if (endDate) filters.startDate = endDate
-
-			this.history = await HistoryService.fetch(filters)
 		}
 	}
 })

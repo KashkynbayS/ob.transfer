@@ -3,7 +3,7 @@ import AppNavbar from '@/components/AppNavbar.vue'
 import ArrowRoundIcon from '@/assets/icons/arrow-round.svg'
 import ShareIcon from '@/assets/icons/share.svg'
 import { Button, Cell, CellGroup, CellGroupHeader } from '@ui-kit/ui-kit'
-import { computed } from 'vue'
+import { computed, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { useHistoryStore } from '@/stores/history.ts'
 import { FormParams, TransactionStatus } from '@/types'
@@ -44,36 +44,19 @@ function formatIban(input: string): string {
 function repeatAction() {
 	const params: FormParams = {}
 
-	if (details.value?.amount) {
-		params.amount = String(details.value.amount)
-	}
-
-	if (details.value?.recMobileNumber) {
-		params.recMobileNumber = details.value.recMobileNumber
-	}
-
-	if (details.value?.recIban) {
-		params.recIban = details.value.recIban
-	}
-
-	if (details.value?.recIin) {
-		params.recIin = details.value.recIin
-	}
-
-	if (details.value?.recFio) {
-		params.recFio = details.value.recFio
-	}
-
-	if (details.value?.iban) {
-		params.iban = details.value.iban
-	}
-
-	if (details.value?.kbe) {
-		params.kbe = details.value.kbe
-	}
-
+	if (details.value?.amount) params.amount = String(details.value.amount)
+	if (details.value?.recMobileNumber) params.recMobileNumber = details.value.recMobileNumber
+	if (details.value?.recIban) params.recIban = details.value.recIban
+	if (details.value?.recIin) params.recIin = details.value.recIin
+	if (details.value?.recFio) params.recFio = details.value.recFio
+	if (details.value?.iban) params.iban = details.value.iban
+	if (details.value?.kbe) params.kbe = details.value.kbe
 	routerPushWithData('External', params)
 }
+
+onMounted(() => {
+	historyStore.fetchHistory()
+})
 </script>
 
 <template>

@@ -6,7 +6,7 @@ import ArrowRoundIcon from '@/assets/icons/arrow-round.svg'
 import FiltersIcon from '@/assets/icons/filters.svg'
 import { Cell, CellGroup } from '@ui-kit/ui-kit'
 import { useRouter } from 'vue-router'
-import { BaseError, Tag, TransactionGroup } from '@/types'
+import { Tag, TransactionGroup } from '@/types'
 import TransactionValue from '@/components/TransactionValue.vue'
 import { CURRENCY_SYMBOL } from '@/constants'
 import HistorySettings from '@/components/HistorySettings.vue'
@@ -14,11 +14,9 @@ import { computed, onMounted, ref } from 'vue'
 import AppTags from '@/components/AppTags.vue'
 import { useHistoryStore } from '@/stores/history.ts'
 import { TypeOfTransfer } from '@/types/transfer.ts'
-import { useLoadingStore } from '@/stores/loading.ts'
 
 const router = useRouter()
 const historyStore = useHistoryStore()
-const loadingStore = useLoadingStore()
 
 const typeMapping: Record<TypeOfTransfer, string> = {
 	[TypeOfTransfer.BetweenMyAccounts]: 'Между счетами',
@@ -33,25 +31,6 @@ const typeIconMapping: Record<TypeOfTransfer, string> = {
 }
 
 const history = computed<TransactionGroup[]>(() => historyStore.transformedHistory)
-const fetchErrorMsg = ref('')
-
-const loadHistory = async () => {
-	loadingStore.setLoading(true)
-
-	try {
-		await historyStore.fetchHistory()
-		fetchErrorMsg.value = ''
-	} catch (e: any) {
-		if (e.response) {
-			const errorResponse = e.response.data as BaseError
-			fetchErrorMsg.value = errorResponse.msg
-		} else {
-			console.error('Произошла неизвестная ошибка', e)
-		}
-	} finally {
-		loadingStore.setLoading(false)
-	}
-}
 
 const openDetails = (id: string) => {
 	router.push({
@@ -76,17 +55,17 @@ const closeSettings = () => {
 const applySettings = () => {
 	filters.value = historyStore.filterTags
 	closeSettings()
-	loadHistory()
+	historyStore.fetchHistory()
 }
 
 const removeHandler = (filterValue: string) => {
 	historyStore.disableFilter(filterValue)
 	filters.value = historyStore.filterTags
-	loadHistory()
+	historyStore.fetchHistory()
 }
 
-onMounted(async () => {
-	await loadHistory()
+onMounted(() => {
+	historyStore.fetchHistory()
 })
 </script>
 
@@ -132,7 +111,7 @@ onMounted(async () => {
 			</Cell>
 		</CellGroup>
 
-		<div v-if="fetchErrorMsg" class="history__error">{{ fetchErrorMsg }}</div>
+		<div v-if="historyStore.errorMsg" class="history__error">{{ historyStore.errorMsg }}</div>
 
 		<HistorySettings :show="settings" @closed="closeSettings" @apply="applySettings" />
 	</div>
