@@ -11,16 +11,17 @@ import KnpDropdown from '@/components/KnpDropdown.vue'
 
 import { ACCOUNTS_GROUPS } from '@/mocks/internal'
 
-import { CURRENCY_SYMBOL } from '@/constants'
 import router from '@/router'
+import { handleTransferSSEResponse } from '@/services/sse.service'
+import { TransferService } from '@/services/transfer.service'
 import { useExternalStore } from '@/stores/external'
-import { useSuccessStore } from '@/stores/success'
-import { CURRENCY } from '@/types'
+import { useStatusStore } from '@/stores/status'
 import { ExternalForm } from '@/types/external'
 import { FORM_STATE } from '@/types/form'
+import { TypeOfTransfer } from '@/types/transfer'
 
 const externalStore = useExternalStore()
-const successStore = useSuccessStore()
+const statusStore = useStatusStore()
 
 externalStore.clearErrors()
 
@@ -36,23 +37,29 @@ const form = ref<ExternalForm>({
 watch(
 	() => externalStore.state,
 	(state) => {
-		const currency = form.value.from ? form.value.from?.currency : CURRENCY.KZT
-
 		switch (state) {
 			case FORM_STATE.SUCCESS:
-				successStore.setDetails(Number(form.value.amount), currency, [
-					{ name: 'Сумма списания', value: `${form.value.amount} ${CURRENCY_SYMBOL[currency]}` },
-					{ name: 'Статус', value: 'Исполнено', colored: true },
-					{ name: 'Номер квитанции', value: '56789900' },
-					{ name: 'Счет списания', value: 'KZ****4893' },
-					{ name: 'Счет зачисления', value: 'KZ****4893' },
-					{ name: 'Дата', value: '11.04.2023' }
-				])
-				router.push('Success')
 				break
 
 			case FORM_STATE.ERROR:
-				router.push('Error')
+				statusStore.$state = {
+					class: 'error',
+					title: 'Перевод не совершён',
+					description: 'Ошибка',
+					showAs: 'fullpage',
+					actions: [
+						{
+							title: 'Вернуться на главную',
+							type: 'secondary',
+							target: '_self',
+							url: 'https://online-dev.kmf.kz/app/bank/actions/close'
+						},
+						{ title: 'Обновить документ', type: 'primary', target: '_self', url: '' }
+					]
+				}
+				router.push({
+					name: 'Status'
+				})
 				break
 
 			case FORM_STATE.INITIAL:
@@ -68,12 +75,38 @@ watch(
 
 const handleSubmit = (e: Event | null = null) => {
 	e?.preventDefault()
-	externalStore.validateAndSubmit(form.value)
+
+	externalStore.validate(form.value).then(() => {
+		const mapped: any = {
+			iban: form.value.from!.iban,
+			recIban: form.value.iban,
+			recIin: form.value.iin,
+			// bin_hardcode: '180541000305',
+			// recFio: form.value.receiverName,
+			amount: String(form.value.amount),
+			kbe: String(Number(form.value.knp?.code)),
+			transferDescription: 'отмывание денег',
+			typeOfTransfer: TypeOfTransfer.External
+		}
+
+		TransferService.initWithSSE(mapped, (event) => {
+			externalStore.setState(FORM_STATE.SUCCESS)
+			handleTransferSSEResponse(mapped, event, router)
+		})
+			.then((e) => {
+				externalStore.applicationId = e.applicationID
+				sessionStorage.setItem('uuid', e.applicationID)
+				externalStore.setState(FORM_STATE.SUCCESS)
+			})
+			.catch(() => {
+				externalStore.setState(FORM_STATE.ERROR)
+			})
+	})
 }
 
 const handleKnpUpdate = () => {
-  externalStore.clearErrors('knp');
-};
+	externalStore.clearErrors('knp')
+}
 </script>
 
 <template>
@@ -92,36 +125,36 @@ const handleKnpUpdate = () => {
 				:accounts-groups="ACCOUNTS_GROUPS"
 				:label="$t('EXTERNAL.FORM.FROM')"
 			/>
-			<IbanInput 
-				id="iban" 
-				v-model="form.iban" 
-				:label="$t('EXTERNAL.FORM.IBAN')" 
+			<IbanInput
+				id="iban"
+				v-model="form.iban"
+				:label="$t('EXTERNAL.FORM.IBAN')"
 				:invalid="!!externalStore.errors.iban"
 				:helper-text="!!externalStore.errors.iban ? $t(externalStore.errors.iban) : ''"
 				@update:model-value="externalStore.clearErrors('iban')"
 			/>
-			<KnpDropdown 
-				id="knp" 
-				v-model="form.knp" 
-				:errorInvalid="!!externalStore.errors.knp"
-				:helperText="!!externalStore.errors.knp ? $t(externalStore.errors.knp) : ''"
-				:updateField="handleKnpUpdate"
+			<KnpDropdown
+				id="knp"
+				v-model="form.knp"
+				:error-invalid="!!externalStore.errors.knp"
+				:helper-text="!!externalStore.errors.knp ? $t(externalStore.errors.knp) : ''"
+				:update-field="handleKnpUpdate"
 			/>
-			<Input 
-			id="iin" 
-			v-model="form.iin" 
-				:label="$t('EXTERNAL.FORM.IIN')" 
+			<Input
+				id="iin"
+				v-model="form.iin"
+				:label="$t('EXTERNAL.FORM.IIN')"
 				:invalid="!!externalStore.errors.iin"
 				:helper-text="!!externalStore.errors.iin ? $t(externalStore.errors.iin) : ''"
 				@update:model-value="externalStore.clearErrors('iin')"
 			/>
-			<Input 
-				id="name" 
+			<Input
+				id="name"
 				v-model="form.receiverName"
 				:label="$t('EXTERNAL.FORM.NAME')"
 				:invalid="!!externalStore.errors.receiverName"
 				:helper-text="!!externalStore.errors.receiverName ? $t(externalStore.errors.receiverName) : ''"
-				@update:model-value="externalStore.clearErrors('receiverName')"	
+				@update:model-value="externalStore.clearErrors('receiverName')"
 			/>
 			<CurrencyInput
 				id="amount"

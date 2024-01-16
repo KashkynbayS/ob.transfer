@@ -79,6 +79,11 @@ router.addRoute({
 			path: 'status',
 			name: 'Status',
 			component: () => import('@/views/StatusPage.vue')
+		},
+		{
+			path: '/otp',
+			name: 'OtpPage',
+			component: () => import('@/views/OtpPage.vue')
 		}
 	]
 })

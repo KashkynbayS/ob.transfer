@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import Error from '@/assets/images/error.svg'
+import Error from '@/assets/images/error.png'
 import Info from '@/assets/images/info.svg'
 import Success from '@/assets/images/success.png'
 import StatusPageLayout from '@/layouts/StatusPageLayout.vue'

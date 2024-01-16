@@ -31,6 +31,7 @@ import { extractCurrencyFromAmount } from '@/utils/currencies'
 
 const ownStore = useOwnStore()
 const rateStore = useRateStore()
+const statusStore = useStatusStore()
 
 // временно отключаем по задаче: DBO-1037 - Отключение функционала Конвертации
 const IS_CONVERSION_DISABLED = false
@@ -112,7 +113,9 @@ const handleEnrollmentAmountChange = (event: InputEvent) => {
 
 const handleSubmit = async (e: Event | null = null) => {
 	e?.preventDefault()
+
 	try {
+		setLoading(true)
 		await validateOwnForm(form.value)
 		ownStore.clearErrors()
 		ownStore.setState(FORM_STATE.LOADING)
@@ -158,6 +161,7 @@ const handleSubmit = async (e: Event | null = null) => {
 		)
 			.then((e) => {
 				ownStore.applicationId = e.applicationID
+				sessionStorage.setItem('uuid', e.applicationID)
 				ownStore.setState(FORM_STATE.SUCCESS)
 			})
 			.catch(() => {
@@ -252,7 +256,6 @@ watchEffect(() => {
 watch(
 	() => ownStore.state,
 	(state) => {
-		console.log(state, '-------')
 		switch (state) {
 			case FORM_STATE.SUCCESS:
 				// successStore.setDetails(Number(form.value.amount), form.value.from?.currency || CURRENCY.KZT, [
@@ -267,7 +270,24 @@ watch(
 				break
 
 			case FORM_STATE.ERROR:
-				router.push('Error')
+				statusStore.$state = {
+					class: 'error',
+					title: 'Перевод не совершён',
+					description: 'Ошибка',
+					showAs: 'fullpage',
+					actions: [
+						{
+							title: 'Вернуться на главную',
+							type: 'secondary',
+							target: '_self',
+							url: 'https://online-dev.kmf.kz/app/bank/actions/close'
+						},
+						{ title: 'Обновить документ', type: 'primary', target: '_self', url: '' }
+					]
+				}
+				router.push({
+					name: 'Status'
+				})
 				break
 
 			case FORM_STATE.INITIAL:

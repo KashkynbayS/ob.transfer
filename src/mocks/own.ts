@@ -9,7 +9,7 @@ export const ACCOUNTS_GROUPS: AccountsGroup[] = [
 				id: 'kzt-account',
 				currency: CURRENCY.KZT,
 				amount: 389000.01,
-				iban: 'KZ48888AA22040000148',
+				iban: 'KZ23888AA22040000016',
 				title: 'Счёт KZT'
 			}
 			// {

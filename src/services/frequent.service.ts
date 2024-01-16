@@ -9,6 +9,3 @@ export const getFrequents = {
 		return response.data.data
 	}
 }
-
-
-  
