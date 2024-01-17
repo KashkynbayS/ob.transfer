@@ -165,7 +165,7 @@ const handleSubmit = async (e: Event | null = null) => {
 					:label="$t('OWN.FORM.FROM')"
 				/>
 
-				<SelectContactInput />
+				<SelectContactInput v-model="form.phoneNumber"/>
 
 				<CurrencyInput
 					id="123"
