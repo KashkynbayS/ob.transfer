@@ -42,14 +42,14 @@ const form = ref<PhoneForm>({
 const modal = ref<InstanceType<typeof Modal> | null>(null)
 const router = useRouter()
 let destPath = ''
-let isLeaveConfiirmed = false
+let isLeaveConfirmed = false
 const actions = reactive<ModalAction[]>([
 	{
 		mode: 'primary',
 		title: 'Перейти',
 		autoClose: true,
 		action: () => {
-			isLeaveConfiirmed = true
+			isLeaveConfirmed = true
 			router.push(destPath)
 		}
 	},
@@ -66,7 +66,7 @@ onBeforeRouteLeave((to, _, next) => {
 	const isFormDirty = from || phoneNumber || amount
 	destPath = to.fullPath
 
-	if (!isFormDirty || isLeaveConfiirmed) {
+	if (!isFormDirty || isLeaveConfirmed) {
 		next(true)
 	}
 
@@ -127,6 +127,7 @@ const handleSubmit = async (e: Event | null = null) => {
 	e?.preventDefault()
 	phoneStore.clearErrors()
 	phoneStore.setState(FORM_STATE.LOADING)
+	isLeaveConfirmed = true
 
 	TransferService.initWithSSE(
 		{
@@ -165,7 +166,7 @@ const handleSubmit = async (e: Event | null = null) => {
 					:label="$t('OWN.FORM.FROM')"
 				/>
 
-				<SelectContactInput v-model="form.phoneNumber"/>
+				<SelectContactInput v-model="form.phoneNumber" />
 
 				<CurrencyInput
 					id="123"
