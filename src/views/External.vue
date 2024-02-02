@@ -11,6 +11,7 @@ import KnpDropdown from '@/components/KnpDropdown.vue'
 
 import { ACCOUNTS_GROUPS } from '@/mocks/internal'
 
+import { useFormAutoFill } from '@/helpers/useFormAutoFill.ts'
 import router from '@/router'
 import { handleTransferSSEResponse } from '@/services/sse.service'
 import { TransferService } from '@/services/transfer.service'
@@ -19,7 +20,6 @@ import { useStatusStore } from '@/stores/status'
 import { ExternalForm } from '@/types/external'
 import { FORM_STATE } from '@/types/form'
 import { TypeOfTransfer } from '@/types/transfer'
-import { useFormAutoFill } from '@/helpers/useFormAutoFill.ts'
 
 const externalStore = useExternalStore()
 const statusStore = useStatusStore()
@@ -27,11 +27,12 @@ const { formData } = useFormAutoFill()
 
 externalStore.clearErrors()
 
+// Mock for UL
 const form = ref<ExternalForm>({
 	from: undefined,
-	iban: formData.value?.recIban || '',
+	iban: formData.value?.recIban || 'KZ68888AA22040000070',
 	knp: null,
-	iin: formData.value?.recIin || '',
+	iin: formData.value?.recIin || '871209301136',
 	receiverName: formData.value?.recFio || '',
 	amount: Number(formData.value?.amount) || null
 })
@@ -83,10 +84,14 @@ const handleSubmit = (e: Event | null = null) => {
 			iban: form.value.from!.iban,
 			recIban: form.value.iban,
 			recIin: form.value.iin,
+			knp: '119',
+			kbe: '19',
+			recBin: '871209301136',
+			recCompany: 'ТОО "АБВГД"',
 			// bin_hardcode: '180541000305',
 			// recFio: form.value.receiverName,
 			amount: String(form.value.amount),
-			kbe: String(Number(form.value.knp?.code)),
+			// kbe: String(Number(form.value.knp?.code)),
 			transferDescription: 'отмывание денег',
 			typeOfTransfer: TypeOfTransfer.External
 		}
