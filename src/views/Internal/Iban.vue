@@ -80,7 +80,7 @@ const handleSubmit = async (e: Event | null = null) => {
 			recIban: form.value.to,
 			recFio: form.value.receiverName,
 			amount: String(form.value.amount),
-			typeOfTransfer: TypeOfTransfer.Internal
+			typeOfTransfer: TypeOfTransfer.InternalByAccount
 		},
 		(event) => {
 			IbanStore.setState(FORM_STATE.SUCCESS)
@@ -105,7 +105,7 @@ const handleSubmit = async (e: Event | null = null) => {
 					v-model="form.from"
 					class="form-field"
 					:accounts-groups="ACCOUNTS_GROUPS"
-					:label="$t('OWN.FORM.TO')"
+					:label="$t('OWN.FORM.FROM')"
 				/>
 				<IbanInput
 					id="recieverNameModel"

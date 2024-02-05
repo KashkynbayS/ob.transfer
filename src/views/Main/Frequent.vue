@@ -14,12 +14,14 @@ const frequents = ref<Array<ITransferRequest>>([]);
 
 const getReceiverNameByTransferType = (transferType: number, recFio: string): string => {
 	switch (transferType) {
-		case 1:
+		case 1 || 5 || 6:
 			return 'Между своими счетами';
 		case 2:
 			return recFio;
 		case 3:
-			return 'В другой банк РК';
+			return recFio;
+		case 4:
+			return recFio;
 		default:
 			return '';
 	}
@@ -28,11 +30,17 @@ const getReceiverNameByTransferType = (transferType: number, recFio: string): st
 const getSubtitleByTransferType = (transferType: number): string => {
 	switch (transferType) {
 		case 1:
+			return 'Конвертация USD';
+		case 5:
 			return 'Пополнение депозита';
+		case 6:
+			return 'Частичное снятие с депозита';
 		case 2:
-			return 'Перевод по счету';
+			return 'По номеру телефона';
 		case 3:
-			return 'В другой банк РК';
+			return 'По счету клиенту KMF';
+		case 4:
+			return 'По счету в другой Банк';
 		default:
 			return '';
 	}

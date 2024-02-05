@@ -14,11 +14,12 @@ import { ACCOUNTS_GROUPS } from '@/mocks/internal'
 import { CURRENCY_SYMBOL } from '@/constants'
 
 import { usePhoneStore } from '@/stores/phone.ts'
+import { useStatusStore } from '@/stores/status'
 import { useSuccessStore } from '@/stores/success'
 
 import { handleTransferSSEResponse } from '@/services/sse.service'
 import { TransferService } from '@/services/transfer.service'
-import { useStatusStore } from '@/stores/status'
+
 import { CURRENCY } from '@/types'
 import { FORM_STATE } from '@/types/form'
 import { PhoneForm } from '@/types/phone'
@@ -135,7 +136,7 @@ const handleSubmit = async (e: Event | null = null) => {
 			recMobileNumber: form.value.phoneNumber,
 			recFio: form.value.receiverName,
 			amount: String(form.value.amount),
-			typeOfTransfer: TypeOfTransfer.BetweenMyAccounts
+			typeOfTransfer: TypeOfTransfer.InternalByPhone
 		},
 		(event) => {
 			phoneStore.setState(FORM_STATE.SUCCESS)

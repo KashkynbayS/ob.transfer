@@ -111,6 +111,16 @@ const handleEnrollmentAmountChange = (event: InputEvent) => {
 	form.value.lastUpdated = LAST_UPDATED.ENROLLMENT_AMOUNT
 }
 
+const determineTypeOfTransfer = () => {
+    if (form.value.from?.currency !== form.value.to?.currency) {
+        return TypeOfTransfer.BetweenMyAccountsConversionUSD;
+    } else if (form.value.from?.id === 'kzt-account' && form.value.to?.id === 'kzt-deposit') {
+        return TypeOfTransfer.BetweenMyAccountsDepositReplenishment;
+    } else {
+        return TypeOfTransfer.BetweenMyAccountsWithdrawalFromDeposit;
+    }
+};
+
 const handleSubmit = async (e: Event | null = null) => {
 	e?.preventDefault()
 
@@ -130,7 +140,7 @@ const handleSubmit = async (e: Event | null = null) => {
 				kbe: '25',
 				recBin: '100940003891',
 				transferDescription: 'сбережения',
-				typeOfTransfer: TypeOfTransfer.BetweenMyAccounts
+				typeOfTransfer: determineTypeOfTransfer()
 			},
 			(event) => {
 				setLoading(false)
@@ -179,7 +189,6 @@ const handleSubmit = async (e: Event | null = null) => {
 
 	try {
 		//FIXME i guess this is no longer actual ? if no, please uncomment line below
-		// await addToFrequents(form.value)
 	} catch (error) {
 		console.error('Ошибка при добавлении в избранное:', error)
 	}
@@ -304,12 +313,6 @@ watch(
 		}
 	}
 )
-
-// onMounted(() => {
-// 	const queryParams = router.currentRoute.value.query
-
-// 	form.value.amount = (queryParams.amount as string) || ''
-// })
 </script>
 
 <template>

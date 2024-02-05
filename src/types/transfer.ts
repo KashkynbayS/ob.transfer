@@ -1,8 +1,12 @@
 //TODO clarify types from backenders
 export enum TypeOfTransfer {
-	BetweenMyAccounts = 1,
-	Internal = 2,
-	External = 3
+	BetweenMyAccountsConversionUSD = 1,
+	BetweenMyAccountsDepositReplenishment = 5,
+	BetweenMyAccountsWithdrawalFromDeposit = 6,
+	InternalByPhone = 2,
+	InternalByAccount = 3,
+	External = 4,
+
 }
 
 export enum TransferState {
