@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { reactive, ref, watch } from 'vue'
+import { reactive, ref } from 'vue'
 
 import { onBeforeRouteLeave, useRouter } from 'vue-router'
 
@@ -12,22 +12,15 @@ import AccountDropdown from '@/components/AccountDropdown.vue'
 
 import { ACCOUNTS_GROUPS } from '@/mocks/internal'
 
-import { CURRENCY_SYMBOL } from '@/constants'
-
 import { useIbanStore } from '@/stores/iban.ts'
-import { useSuccessStore } from '@/stores/success'
 
 import { handleTransferSSEResponse } from '@/services/sse.service'
 import { TransferService } from '@/services/transfer.service'
-import { useStatusStore } from '@/stores/status'
-import { CURRENCY } from '@/types'
 import { FORM_STATE } from '@/types/form'
 import { IbanForm } from '@/types/iban'
 import { TypeOfTransfer } from '@/types/transfer'
 
 const IbanStore = useIbanStore()
-const successStore = useSuccessStore()
-const statusStore = useStatusStore()
 
 IbanStore.clearErrors()
 
@@ -75,69 +68,19 @@ const form = ref<IbanForm>({
 	transferType: 'iban'
 })
 
-watch(
-	() => IbanStore.state,
-	(state) => {
-		const currency = form.value.from ? form.value.from?.currency : CURRENCY.KZT
-
-		switch (state) {
-			case FORM_STATE.SUCCESS:
-				successStore.setDetails(Number(form.value.amount), currency, [
-					{ name: 'Сумма списания', value: `${form.value.amount} ${CURRENCY_SYMBOL[currency]}` },
-					{ name: 'Статус', value: 'Исполнено', colored: true },
-					{ name: 'Номер квитанции', value: '56789900' },
-					{ name: 'Счет списания', value: 'KZ****4893' },
-					{ name: 'Счет зачисления', value: 'KZ****4893' },
-					{ name: 'Дата', value: '11.04.2023' }
-				])
-				router.push('/Success')
-				break
-
-			case FORM_STATE.ERROR:
-				statusStore.$state = {
-					class: 'error',
-					title: 'Перевод не совершён',
-					description: 'Ошибка',
-					showAs: 'fullpage',
-					actions: [
-						{
-							title: 'Вернуться на главную',
-							type: 'secondary',
-							target: '_self',
-							url: 'https://online-dev.kmf.kz/app/bank/actions/close'
-						},
-						{ title: 'Обновить документ', type: 'primary', target: '_self', url: '' }
-					]
-				}
-				router.push({
-					name: 'Status'
-				})
-				break
-
-			case FORM_STATE.INITIAL:
-			default:
-				break
-		}
-
-		if (state) {
-			console.log(state)
-		}
-	}
-)
-
 // Submit handler
 const handleSubmit = async (e: Event | null = null) => {
 	e?.preventDefault()
 	IbanStore.clearErrors()
 	IbanStore.setState(FORM_STATE.LOADING)
-
+	isLeaveConfirmed = true
 	TransferService.initWithSSE(
 		{
 			iban: form.value.from!.iban,
 			recIban: form.value.to,
 			recFio: form.value.receiverName,
 			amount: String(form.value.amount),
-			typeOfTransfer: TypeOfTransfer.BetweenMyAccounts
+			typeOfTransfer: TypeOfTransfer.Internal
 		},
 		(event) => {
 			IbanStore.setState(FORM_STATE.SUCCESS)
@@ -147,7 +90,6 @@ const handleSubmit = async (e: Event | null = null) => {
 		.then((e) => {
 			IbanStore.applicationId = e.applicationID
 			sessionStorage.setItem('uuid', e.applicationID)
-			IbanStore.setState(FORM_STATE.SUCCESS)
 		})
 		.catch(() => {
 			IbanStore.setState(FORM_STATE.ERROR)

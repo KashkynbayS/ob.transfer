@@ -120,11 +120,16 @@ const handleSubmit = async (e: Event | null = null) => {
 		ownStore.clearErrors()
 		ownStore.setState(FORM_STATE.LOADING)
 
+		// Mock for UL
 		TransferService.initWithSSE(
 			{
 				iban: form.value.from!.iban,
 				recIban: form.value.to!.iban,
 				amount: String(form.value.amount),
+				bin: '100940003891',
+				kbe: '25',
+				recBin: '100940003891',
+				transferDescription: 'сбережения',
 				typeOfTransfer: TypeOfTransfer.BetweenMyAccounts
 			},
 			(event) => {

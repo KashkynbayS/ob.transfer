@@ -15,6 +15,7 @@ export interface ITransferRequest {
 	iban: string
 	iin?: string
 	kbe?: string
+	id?: string
 	knp?: string
 	recBin?: string
 	recFio?: string

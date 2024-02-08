@@ -9,3 +9,14 @@ export const getFrequents = {
 		return response.data.data
 	}
 }
+
+export const removeFromFavorites = {
+    async delete(applicationID: string): Promise<void> {
+        try {
+            await axiosInstance.delete<BaseResponse<void>>(`main/favorite?applicationID=${applicationID}`);
+        } catch (error) {
+            console.error('Ошибка при удалении из избранного:', error);
+            throw error;
+        }
+    },
+};
