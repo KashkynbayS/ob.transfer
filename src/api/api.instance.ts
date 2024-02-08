@@ -1,7 +1,11 @@
 import { tokenExpired } from '@ui-kit/events'
-import axios from 'axios'
+import axios, { AxiosError, AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios' // Define the type for your token
 
 const LS_TOKEN_KEY = 'accessToken'
+interface CustomAxiosRequestConfig extends AxiosRequestConfig {
+	_retry?: boolean
+	retryCount?: number
+}
 
 if (import.meta.env.VITE_ENVIRONMENT === 'local') {
 	sessionStorage.setItem(
@@ -10,7 +14,50 @@ if (import.meta.env.VITE_ENVIRONMENT === 'local') {
 	)
 }
 
+const refreshToken = () => {
+	const url = 'https://dev-api.kmf.kz/svc/bank/sso/customer/authorize'
+	const formData = new FormData()
+
+	formData.append('phone', '+77081991418')
+	formData.append('password', 'Qwerty123')
+
+	return fetch(url, {
+		method: 'POST',
+		body: formData
+	}).then((response) => response.json())
+}
+
 const getAccessToken = (): string => `Bearer ${sessionStorage.getItem(LS_TOKEN_KEY) || ''}`
+
+type ErrorHandler = (error: AxiosError, axiosInstance: AxiosInstance) => Promise<AxiosResponse | void>
+const handleTokenExpiry: ErrorHandler = async (error, axiosInstance) => {
+	if (import.meta.env.VITE_ENVIRONMENT !== 'local') {
+		return
+	}
+
+	const originalRequest = error.config as CustomAxiosRequestConfig
+	if (originalRequest && originalRequest.headers && error.response && error.response.status === 401) {
+		originalRequest._retry = true
+		originalRequest.retryCount = originalRequest.retryCount || 0
+
+		if (originalRequest.retryCount >= 2) {
+			return Promise.reject(error)
+		}
+
+		originalRequest.retryCount++
+
+		try {
+			const token = await refreshToken()
+			sessionStorage.setItem(LS_TOKEN_KEY, (token as any)?.data.access)
+			return axiosInstance.request(originalRequest)
+		} catch (e) {
+			console.log('refresh token error', e)
+			return Promise.reject(error)
+		}
+	}
+
+	return Promise.reject(error)
+}
 
 export default function useAxiosInstance() {
 	const language = 'RU'
@@ -36,8 +83,8 @@ export default function useAxiosInstance() {
 		(error) => {
 			console.error('interceptors error:', error)
 
-			if (error.response.data?.msg?.includes('token')) {
-				console.info('token error', error)
+			if (error.response.status === 401) {
+				handleTokenExpiry(error, axiosInstance)
 				tokenExpired()
 			}
 
