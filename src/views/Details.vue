@@ -1,13 +1,13 @@
 <script setup lang="ts">
-import AppNavbar from '@/components/AppNavbar.vue'
 import ArrowRoundIcon from '@/assets/icons/arrow-round.svg'
 import ShareIcon from '@/assets/icons/share.svg'
+import AppNavbar from '@/components/AppNavbar.vue'
+import { useFormAutoFill } from '@/helpers/useFormAutoFill.ts'
+import { useHistoryStore } from '@/stores/history.ts'
+import { FormParams, TransactionStatus } from '@/types'
 import { Button, Cell, CellGroup, CellGroupHeader } from '@ui-kit/ui-kit'
 import { computed, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
-import { useHistoryStore } from '@/stores/history.ts'
-import { FormParams, TransactionStatus } from '@/types'
-import { useFormAutoFill } from '@/helpers/useFormAutoFill.ts'
 
 const route = useRoute()
 const historyStore = useHistoryStore()
@@ -18,7 +18,10 @@ const details = computed(() => historyStore.getTransactionById(transactionId.val
 
 const statuses: Record<TransactionStatus, string> = {
 	success: 'Исполнено',
-	in_progress: 'В процессе'
+	in_progress: 'В процессе',
+	waiting: 'В ожидании',
+	credited: 'Списано',
+	removed: 'Удалено'
 }
 
 function formatDateTime(inputString: string | undefined): string {
@@ -27,7 +30,12 @@ function formatDateTime(inputString: string | undefined): string {
 	}
 
 	const date = new Date(inputString)
-	const options: Intl.DateTimeFormatOptions = { day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' }
+	const options: Intl.DateTimeFormatOptions = {
+		day: 'numeric',
+		month: 'long',
+		hour: '2-digit',
+		minute: '2-digit'
+	}
 	return date.toLocaleDateString('ru-RU', options)
 }
 
