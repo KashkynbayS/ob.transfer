@@ -5,36 +5,36 @@ export const useTransferDetailsStore = defineStore('transferDetails', {
 		show: false,
 		conditions: [
 			{
-				key: 'Сумма списания',
+				key: 'TRANSFER_DETAILS.FORM.WRITE_OFF_AMOUNT',
 				value: '10 000 ₸'
 			},
 			{
-				key: 'Комиссия',
+				key: 'TRANSFER_DETAILS.FORM.COMMISSION',
 				value: '0 ₸ '
 			},
 			{
-				key: 'Статус',
-				value: 'Исполнен',
+				key: 'TRANSFER_DETAILS.FORM.STATUS.TITLE',
+				value: 'TRANSFER_DETAILS.FORM.STATUS.VALUE',
 				status: true
 			},
 			{
-				key: 'Номер квитанции',
+				key: 'TRANSFER_DETAILS.FORM.RECEIPT_NUMBER',
 				value: '56789900'
 			},
 			{
-				key: 'Счет списания',
+				key: 'TRANSFER_DETAILS.FORM.WRITE_OFF_ACCOUNT',
 				value: 'KZ****4893'
 			},
 			{
-				key: 'Счет получателя',
+				key: 'TRANSFER_DETAILS.FORM.RECEIVER_ACCOUNT',
 				value: 'KZ****4893'
 			},
 			{
-				key: 'Получатель',
+				key: 'TRANSFER_DETAILS.FORM.RECEIVER',
 				value: 'Ахметжанулы Сейтжан А.'
 			},
 			{
-				key: 'Дата',
+				key: 'TRANSFER_DETAILS.FORM.DATE',
 				value: '11.04.2023'
 			}
 		]

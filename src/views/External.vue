@@ -158,7 +158,7 @@ const handleKnpUpdate = () => {
 			<Input
 				id="name"
 				v-model="form.receiverName"
-				:label="$t('EXTERNAL.FORM.NAME')"
+				:label="$t('EXTERNAL.FORM.PAYMENT_PURPOSES')"
 				:invalid="!!externalStore.errors.receiverName"
 				:helper-text="!!externalStore.errors.receiverName ? $t(externalStore.errors.receiverName) : ''"
 				@update:model-value="externalStore.clearErrors('receiverName')"

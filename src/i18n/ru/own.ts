@@ -13,6 +13,7 @@ export const OWN = {
 			NOT_ENOUGH_MONEY: 'Недостаточно средств',
 			EMPTY_AMOUNT: 'Введите сумму',
 			MIN_AMOUNT: 'Минимальная сумма перевода 100 ₸',
+			MAX_AMOUNT: 'Максимальная сумма перевода в день 1 млн ₸',
 			SELECT_ACCOUNT: 'Выберите счет'
 		}
 	},

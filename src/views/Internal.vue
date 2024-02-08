@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import AppNavbar from '@/components/AppNavbar.vue'
-import { SegmentedControl } from '@ui-kit/ui-kit'
-import { ref, watch } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import AppNavbar from '@/components/AppNavbar.vue';
+import { SegmentedControl } from '@ui-kit/ui-kit';
+import { ref, watch } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
 const router = useRouter()
 const route = useRoute()
 const page = ref(route.name === 'InternalPhone' ? 'phone' : 'account')

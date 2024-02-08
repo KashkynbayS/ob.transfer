@@ -13,7 +13,8 @@ export const INTERNAL = {
 			ERRORS: {
 				NOT_ENOUGH_MONEY: 'Недостаточно средств',
 				EMPTY_AMOUNT: 'Введите сумму',
-				MIN_AMOUNT: 'Минимальная сумма перевода 100 ₸'
+				MIN_AMOUNT: 'Минимальная сумма перевода 100 ₸',
+				MAX_AMOUNT: 'Максимальная сумма перевода в день 1 млн ₸'
 			}
 		}
 	},
@@ -22,14 +23,20 @@ export const INTERNAL = {
 			ACCOUNT_FROM: 'Счёт KZT',
 			ACCOUNT_TO: 'Счет зачисления',
 			RECIEVER_NAME: 'Имя получателя',
+			COMPANY_NAME: 'Наименование',
+			PAYMENT_PURPOSES: 'Назначения платежа',
 			SUM: 'Сумма',
 			SUBMIT: 'Отправить',
 			ERRORS: {
 				EMPTY_TO: 'Введите счет зачисления',
 				EMPTY_RECEIVER_NAME: 'Введите имя получателя',
+				EMPTY_COMPANY_NAME: 'Введите наименование',
+				EMPTY_PAYMENT_PURPOSES: 'Введите назначение платежа',
 				NOT_ENOUGH_MONEY: 'Недостаточно средств',
 				EMPTY_AMOUNT: 'Введите сумму',
-				MIN_AMOUNT: 'Минимальная сумма перевода 100 ₸'
+				MIN_AMOUNT: 'Минимальная сумма перевода 100 ₸',
+				MAX_AMOUNT: 'Максимальная сумма перевода в день 1 млн ₸'
+				
 			}
 		}
 	},

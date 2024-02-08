@@ -113,10 +113,10 @@ function formatPhoneNumber(number: string): string {
 				<AppNavbar />
 			</template>
 			<template #content>
-				<h4>Введите код из SMS</h4>
-				<p class="text-low-contrast">Код отправлен на номер {{ maskedPhone }}</p>
+				<h4>{{ $t('OTP.TITLE') }}</h4>
+				<p class="text-low-contrast">{{ $t('OTP.CODE_SENT_TO_NUMBER') maskedPhone }}</p>
 			</template>
-			<template #resend-btn-text> Получить новый код </template>
+			<template #resend-btn-text> {{ $t('OTP.RECEIVE_NEW_CODE') }} </template>
 		</OtpLayout>
 	</PageTemplate>
 </template>

@@ -17,7 +17,7 @@ export interface ExternalStore extends FormStore {}
 // TODO: Добавить остальную валидацию после внедрения ТЗ и реализации API
 const formSchema = object({
 	iban: validateIban('iban', 'EXTERNAL.FORM.ERRORS.EMPTY_IBAN'),
-	knp: validateKnp('knp', 'EXTERNAL.FORM.ERRORS.EMPTY_KNP'),
+	knp: validateKnp('knp', 'KNP.TITLE'),
 	iin: validateIin('iin', 'EXTERNAL.FORM.ERRORS.EMPTY_IIN'),
 	receiverName: validateReceiverName('receiverName', 'EXTERNAL.FORM.ERRORS.EMPTY_RECEIVER_NAME'),
 	amount: validateAmount(

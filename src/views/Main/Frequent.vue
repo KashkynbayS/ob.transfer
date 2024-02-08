@@ -15,7 +15,7 @@ const frequents = ref<Array<ITransferRequest>>([]);
 const getReceiverNameByTransferType = (transferType: number, recFio: string): string => {
 	switch (transferType) {
 		case 1 || 5 || 6:
-			return 'Между своими счетами';
+			return 'TRANSFER.FREQUENT.OWN';
 		case 2:
 			return recFio;
 		case 3:
@@ -30,17 +30,17 @@ const getReceiverNameByTransferType = (transferType: number, recFio: string): st
 const getSubtitleByTransferType = (transferType: number): string => {
 	switch (transferType) {
 		case 1:
-			return 'Конвертация USD';
+			return 'TRANSFER.FREQUENT.USD_CONVERTION';
 		case 5:
-			return 'Пополнение депозита';
+			return 'TRANSFER.FREQUENT.DEPOSIT_REPLENISHMENT';
 		case 6:
-			return 'Частичное снятие с депозита';
+			return 'TRANSFER.FREQUENT.PARTIAL_WITHDRAWAL_FROM_DEPOSIT';
 		case 2:
-			return 'По номеру телефона';
+			return 'TRANSFER.FREQUENT.BY_PHONE';
 		case 3:
-			return 'По счету клиенту KMF';
+			return 'TRANSFER.FREQUENT.BY_ACCOUNT_INTERNAL';
 		case 4:
-			return 'По счету в другой Банк';
+			return 'TRANSFER.FREQUENT.BY_ACCOUNT_EXTERNAL';
 		default:
 			return '';
 	}
@@ -78,8 +78,8 @@ onMounted(async () => {
 			:left-color="'var(--accent-primary)'"
 		>
 			<template #left><Frequent/></template>
-			<template #title> {{ getReceiverNameByTransferType(item.typeOfTransfer, item.recFio || '')  }} </template>
-			<template #subtitle>{{ getSubtitleByTransferType(item.typeOfTransfer) }}</template>
+			<template #title> {{ $t(getReceiverNameByTransferType(item.typeOfTransfer, item.recFio || ''))  }} </template>
+			<template #subtitle>{{ $t(getSubtitleByTransferType(item.typeOfTransfer)) }}</template>
 			<template #right-button>
 				<ResetIcon @click="removeFromFavoritesHandler(item.id)" width="20" height="20" />
 			</template>

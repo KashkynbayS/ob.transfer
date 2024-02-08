@@ -13,20 +13,20 @@ const router = useRouter()
 const transferTypes = [
 	{
 		leftIcon: TransBetweenMyAccaunts,
-		title: 'TRANSFER.OWN.TITLE',
-		subTitle: 'TRANSFER.OWN.SUBTITLE',
+		title: 'TRANSFER.NEW.OWN.TITLE',
+		subTitle: 'TRANSFER.NEW.OWN.SUBTITLE',
 		link: '/own'
 	},
 	{
 		leftIcon: KMFSemifilled,
-		title: 'TRANSFER.INTERNAL.TITLE',
-		subTitle: 'TRANSFER.INTERNAL.SUBTITLE',
+		title: 'TRANSFER.NEW.INTERNAL.TITLE',
+		subTitle: 'TRANSFER.NEW.INTERNAL.SUBTITLE',
 		link: '/internal'
 	},
 	{
 		leftIcon: TransAnotherAccaunts,
-		title: 'TRANSFER.OTHER.TITLE',
-		subTitle: 'TRANSFER.OTHER.SUBTITLE',
+		title: 'TRANSFER.NEW.OTHER.TITLE',
+		subTitle: 'TRANSFER.NEW.OTHER.SUBTITLE',
 		link: '/external'
 	}
 ]

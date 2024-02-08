@@ -75,7 +75,7 @@ const onSelect = (item: Account) => {
 				<CellGroup v-for="group in props.accountsGroups" :key="group.id" class="group">
 					<CellGroupHeader class="header">
 						<template #title>
-							<strong class="text-content text-low-contrast text-semibold">{{ group.title }}</strong>
+							<strong class="text-content text-low-contrast text-semibold">{{ $t(group.title) }}</strong>
 						</template>
 					</CellGroupHeader>
 
@@ -90,7 +90,7 @@ const onSelect = (item: Account) => {
 						<template #left>
 							<Component :is="CURRENCY_ICON[item.currency]" class="text-white" />
 						</template>
-						<template #title>{{ item.title }}</template>
+						<template #title>{{ $t(item.title) }}</template>
 						<template #subtitle>
 							<span class="text-caption">{{ maskIban(item.iban) }} </span>
 						</template>
