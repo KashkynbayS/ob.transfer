@@ -16,6 +16,7 @@ import { CURRENCY_SYMBOL } from '@/constants'
 import { usePhoneStore } from '@/stores/phone.ts'
 import { useStatusStore } from '@/stores/status'
 import { useSuccessStore } from '@/stores/success'
+import { useApplicationIDStore } from '@/stores/useApplicationIDStore'
 
 import { handleTransferSSEResponse } from '@/services/sse.service'
 import { TransferService } from '@/services/transfer.service'
@@ -28,13 +29,14 @@ import { TypeOfTransfer } from '@/types/transfer'
 const phoneStore = usePhoneStore()
 const successStore = useSuccessStore()
 const statusStore = useStatusStore()
+const applicationIDStore = useApplicationIDStore()
 
 phoneStore.clearErrors()
 
 const form = ref<PhoneForm>({
 	from: undefined,
-	phoneNumber: '',
-	receiverName: '',
+	phoneNumber: '77766665947',
+	receiverName: 'Учиха Итачи',
 	amount: null,
 	transferType: 'phone'
 })
@@ -132,8 +134,12 @@ const handleSubmit = async (e: Event | null = null) => {
 
 	TransferService.initWithSSE(
 		{
-			iban: form.value.from!.iban,
-			recMobileNumber: form.value.phoneNumber,
+			iban: 'KZ23888AA22040000016',
+			// iban: form.value.from!.iban,
+			recMobileNumber: '77766665947',
+			// recMobileNumber: form.value.phoneNumber,
+			recIban: 'KZ59888AA22040000301',
+			
 			recFio: form.value.receiverName,
 			amount: String(form.value.amount),
 			typeOfTransfer: TypeOfTransfer.InternalByPhone
@@ -147,6 +153,7 @@ const handleSubmit = async (e: Event | null = null) => {
 			phoneStore.applicationId = e.applicationID
 			sessionStorage.setItem('uuid', e.applicationID)
 			phoneStore.setState(FORM_STATE.SUCCESS)
+			applicationIDStore.setApplicationID(e.applicationID)
 		})
 		.catch(() => {
 			phoneStore.setState(FORM_STATE.ERROR)

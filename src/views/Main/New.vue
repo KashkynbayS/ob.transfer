@@ -34,7 +34,7 @@ const transferTypes = [
 
 <template>
 	<CellGroup class="transfer-types">
-		<Cell
+		<Cell reverse
 			v-for="item in transferTypes"
 			:key="item.title"
 			left-type="img"

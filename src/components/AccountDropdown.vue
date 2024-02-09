@@ -54,6 +54,10 @@ const onSelect = (item: Account) => {
 		props.updateField()
 	}
 }
+
+if (props.accountsGroups && props.accountsGroups.length > 0 && props.accountsGroups[0].list.length > 0) {
+    selected.value = props.accountsGroups[0].list[0]
+}
 </script>
 
 <template>
@@ -61,7 +65,7 @@ const onSelect = (item: Account) => {
 		<Dropdown
 			:id="props.id || ''"
 			:value="view.amount"
-			:label="view.label"
+			:label="$t(view.label)"
 			:invalid="props.errorInvalid"
 			:helper-text="props.helperText"
 			@on-focus="accountBottomSheetRef?.open()"

@@ -10,6 +10,18 @@ export const getFrequents = {
 	}
 }
 
+export const addToFavorites = {
+    async post(applicationID: string): Promise<any> {
+        try {
+            const response = await axiosInstance.post<BaseResponse<any>>('main/favorite', { applicationID });
+            return response.data.data;
+        } catch (error) {
+            console.error('Ошибка при добавлении в избранное:', error);
+            throw error;
+        }
+    },
+}
+
 export const removeFromFavorites = {
     async delete(applicationID: string): Promise<void> {
         try {
