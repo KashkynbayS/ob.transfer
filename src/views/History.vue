@@ -1,33 +1,36 @@
 <script setup lang="ts">
-import AppNavbar from '@/components/AppNavbar.vue'
-import AccountNewIcon from '@ui-kit/kmf-icons/finance/accounts/account-new.svg'
-import TransfersIcon from '@ui-kit/kmf-icons/finance/transfers/transfers.svg'
-import ArrowRoundIcon from '@/assets/icons/arrow-round.svg'
 import FiltersIcon from '@/assets/icons/filters.svg'
-import { Cell, CellGroup } from '@ui-kit/ui-kit'
-import { useRouter } from 'vue-router'
-import { Tag, TransactionGroup } from '@/types'
+import AppNavbar from '@/components/AppNavbar.vue'
+import AppTags from '@/components/AppTags.vue'
+import HistorySettings from '@/components/HistorySettings.vue'
 import TransactionValue from '@/components/TransactionValue.vue'
 import { CURRENCY_SYMBOL } from '@/constants'
-import HistorySettings from '@/components/HistorySettings.vue'
-import { computed, onMounted, ref } from 'vue'
-import AppTags from '@/components/AppTags.vue'
 import { useHistoryStore } from '@/stores/history.ts'
+import { Tag, TransactionGroup } from '@/types'
 import { TypeOfTransfer } from '@/types/transfer.ts'
+import { Cell, CellGroup } from '@ui-kit/ui-kit'
+import { computed, onMounted, ref } from 'vue'
+import { useRouter } from 'vue-router'
 
 const router = useRouter()
 const historyStore = useHistoryStore()
 
 const typeMapping: Record<TypeOfTransfer, string> = {
-	[TypeOfTransfer.BetweenMyAccounts]: 'Между счетами',
-	[TypeOfTransfer.Internal]: 'Внутренний',
+	[TypeOfTransfer.BetweenMyAccountsConversionUSD]: 'Между счетами',
+	[TypeOfTransfer.BetweenMyAccountsDepositReplenishment]: 'Между счетами',
+	[TypeOfTransfer.BetweenMyAccountsWithdrawalFromDeposit]: 'Внутренний',
+	[TypeOfTransfer.InternalByPhone]: 'Внутренний',
+	[TypeOfTransfer.InternalByAccount]: 'Внешний',
 	[TypeOfTransfer.External]: 'Внешний'
 }
 
 const typeIconMapping: Record<TypeOfTransfer, string> = {
-	[TypeOfTransfer.BetweenMyAccounts]: TransfersIcon,
-	[TypeOfTransfer.Internal]: ArrowRoundIcon,
-	[TypeOfTransfer.External]: AccountNewIcon
+	[TypeOfTransfer.BetweenMyAccountsConversionUSD]: 'Между счетами',
+	[TypeOfTransfer.BetweenMyAccountsDepositReplenishment]: 'Между счетами',
+	[TypeOfTransfer.BetweenMyAccountsWithdrawalFromDeposit]: 'Внутренний',
+	[TypeOfTransfer.InternalByPhone]: 'Внутренний',
+	[TypeOfTransfer.InternalByAccount]: 'Внешний',
+	[TypeOfTransfer.External]: 'Внешний'
 }
 
 const history = computed<TransactionGroup[]>(() => historyStore.transformedHistory)
@@ -72,7 +75,7 @@ onMounted(() => {
 <template>
 	<div class="history">
 		<AppNavbar>
-			<template #title><h5>История</h5></template>
+			<template #title><h5>{{ $t('HISTORY.TITLE') }}</h5></template>
 			<template #label>
 				<button id="history-filters-btn" class="history__filters" @click="openSettings">
 					<FiltersIcon />
@@ -84,7 +87,7 @@ onMounted(() => {
 
 		<CellGroup v-for="transactionGroup in history" :key="transactionGroup.title" class="transaction-group">
 			<div class="transaction-group__title">
-				{{ transactionGroup.title }}
+				{{ $t(transactionGroup.title) }}
 			</div>
 			<Cell
 				v-for="transaction in transactionGroup.list"
@@ -97,8 +100,8 @@ onMounted(() => {
 				<template #left>
 					<Component :is="typeIconMapping[transaction.type]" />
 				</template>
-				<template #title>{{ typeMapping[transaction.type] }}</template>
-				<template #subtitle>{{ transaction.caption }}</template>
+				<template #title>{{ $t(typeMapping[transaction.type]) }}</template>
+				<template #subtitle>{{ $t(transaction.caption) }}</template>
 				<template #right>
 					<div class="history__value">
 						<TransactionValue :transaction="transaction" />

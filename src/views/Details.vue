@@ -17,11 +17,11 @@ const transactionId = computed(() => route.params.transactionId as string)
 const details = computed(() => historyStore.getTransactionById(transactionId.value))
 
 const statuses: Record<TransactionStatus, string> = {
-	success: 'Исполнено',
-	in_progress: 'В процессе',
-	waiting: 'В ожидании',
-	credited: 'Списано',
-	removed: 'Удалено'
+	success: 'HISTORY.STATUS.COMPLETED',
+	in_progress: 'HISTORY.STATUS.IN_PROCESSING',
+	waiting: 'HISTORY.STATUS.WAITING',
+	credited: 'HISTORY.STATUS.CREDITED',
+	removed: 'HISTORY.STATUS.REMOVED'
 }
 
 function formatDateTime(inputString: string | undefined): string {
@@ -70,13 +70,13 @@ onMounted(() => {
 <template>
 	<div class="details">
 		<AppNavbar>
-			<template #title><h5>Детали платежа</h5></template>
+			<template #title><h5>{{ $t('HISTORY.DETAILS.TITLE') }}</h5></template>
 		</AppNavbar>
 
 		<template v-if="details">
 			<div class="details__value">-{{ details.amount }} ₸</div>
 			<div class="details__info">
-				<span class="details__status">{{ statuses[details.status] }}</span>
+				<span class="details__status">{{ $t(statuses[details.status]) }}</span>
 				•
 				<span class="details__date">{{ formattedDateTime }}</span>
 			</div>
@@ -84,42 +84,42 @@ onMounted(() => {
 			<div class="details__actions">
 				<Button id="share-details-btn">
 					<ShareIcon style="width: auto; height: auto" />
-					Поделиться
+					{{ $t('HISTORY.DETAILS.SHARE') }}
 				</Button>
 				<Button id="repeat-details-btn" type="secondary-gray" @click="repeatAction">
 					<ArrowRoundIcon />
-					Повторить
+					{{ $t('HISTORY.DETAILS.REPEAT') }}
 				</Button>
 			</div>
 
 			<CellGroup type="island">
 				<CellGroupHeader>
-					<template #title>Детали списания</template>
+					<template #title>{{ $t('HISTORY.DETAILS.WRITE_OFF_DETAILS') }}</template>
 				</CellGroupHeader>
 				<Cell>
-					<template #subtitle>Счет списания</template>
+					<template #subtitle>{{ $t('HISTORY.DETAILS.WRITE_OFF_ACCOUNT') }}</template>
 					<template #title>{{ formatIban(details.iban) }}</template>
 				</Cell>
 				<Cell>
-					<template #subtitle>Комиссия</template>
+					<template #subtitle>{{ $t('HISTORY.DETAILS.COMMISSION') }}</template>
 					<template #title>{{ details.commission || 0 }} ₸</template>
 				</Cell>
 			</CellGroup>
 
 			<CellGroup type="island">
 				<CellGroupHeader>
-					<template #title>Получатель</template>
+					<template #title>{{ $t('HISTORY.DETAILS.RECEIVER') }}</template>
 				</CellGroupHeader>
 				<Cell>
-					<template #subtitle>Счет зачисления</template>
+					<template #subtitle>{{ $t('HISTORY.DETAILS.ACCOUNT_ENROLLMENT') }}</template>
 					<template #title>{{ formatIban(details.recIban) }}</template>
 				</Cell>
 				<Cell>
-					<template #subtitle>Номер квитанции</template>
+					<template #subtitle>{{ $t('HISTORY.DETAILS.RECEIPT_NUMBER') }}</template>
 					<template #title>{{ details.receiptNumber }}</template>
 				</Cell>
 				<Cell>
-					<template #subtitle>Имя получателя</template>
+					<template #subtitle>{{ $t('HISTORY.DETAILS.RECEIVER_NAME') }}</template>
 					<template #title>{{ details.recFio }}</template>
 				</Cell>
 			</CellGroup>

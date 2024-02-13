@@ -12,7 +12,7 @@ export const TRANSFER_DETAILS = {
         KNP: 'КНП',
         WRITE_OFF_ACCOUNT: 'Счет списания',
         ACCOUNT_ENROLLMENT: 'Счет зачисления',
-        RECEIVER_IIN: 'ИИН получателя',
+        RECEIVER_IIN: 'ИИН/БИН получателя',
         RECEIVER_ACCOUNT: 'Счет получателя',
         RECEIVER: 'Получатель',
         DATE: 'Дата',

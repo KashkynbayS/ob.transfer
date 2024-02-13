@@ -1,6 +1,7 @@
 import { ACCOUNTS_GROUPS } from './accountsGroups'
 import { ERROR } from './error'
 import { EXTERNAL } from './external'
+import { HISTORY } from './history'
 import { INTERNAL } from './internal'
 import { KNP } from './knp'
 import { OTP } from './otp'
@@ -19,5 +20,6 @@ export const I18N = {
 	ACCOUNTS_GROUPS,
 	TRANSFER_DETAILS,
 	OTP,
-	ERROR
+	ERROR,
+	HISTORY
 }

@@ -1,10 +1,10 @@
 import { CURRENCY_SYMBOL } from '@/constants'
+import { HistoryService } from '@/services/history.service.ts'
+import { useLoadingStore } from '@/stores/loading.ts'
 import { BaseError, CURRENCY, HistoryParams, Tag, Transaction, TransactionFromApi, TransactionGroup } from '@/types'
 import { useDateFormat } from '@vueuse/core'
 import { defineStore } from 'pinia'
 import { reactive } from 'vue'
-import { HistoryService } from '@/services/history.service.ts'
-import { useLoadingStore } from '@/stores/loading.ts'
 
 export interface HistorySettings {
 	currentFilter?: HistoryFilter
@@ -121,9 +121,9 @@ export const useHistoryStore = defineStore('history', {
 
 				let caption = ''
 				if (date.toDateString() === yesterday.toDateString()) {
-					caption = 'Вчера'
+					caption = 'HISTORY.YESTERDAY'
 				} else if (date.toDateString() === dayBeforeYesterday.toDateString()) {
-					caption = 'Позавчера'
+					caption = 'HISTORY.DAY_BEFORE_YESTERDAY'
 				} else {
 					const options: Intl.DateTimeFormatOptions = { day: 'numeric', month: 'long' }
 					caption = date.toLocaleDateString('ru-RU', options)
