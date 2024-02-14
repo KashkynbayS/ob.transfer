@@ -114,7 +114,7 @@ function formatPhoneNumber(number: string): string {
 			</template>
 			<template #content>
 				<h4>{{ $t('OTP.TITLE') }}</h4>
-				<p class="text-low-contrast">{{ $t('OTP.CODE_SENT_TO_NUMBER') maskedPhone }}</p>
+				<p class="text-low-contrast">{{ $t('OTP.CODE_SENT_TO_NUMBER') }} {{ maskedPhone }}</p>
 			</template>
 			<template #resend-btn-text> {{ $t('OTP.RECEIVE_NEW_CODE') }} </template>
 		</OtpLayout>

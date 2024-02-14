@@ -19,6 +19,7 @@ import { useExternalStore } from '@/stores/external'
 import { useStatusStore } from '@/stores/status'
 import { ExternalForm } from '@/types/external'
 import { FORM_STATE } from '@/types/form'
+import { Knp } from '@/types/knp'
 import { TypeOfTransfer } from '@/types/transfer'
 
 const externalStore = useExternalStore()
@@ -142,7 +143,7 @@ const handleKnpUpdate = () => {
 			/>
 			<KnpDropdown
 				id="knp"
-				v-model="form.knp"
+				v-model="form.knp as Knp | null"
 				:error-invalid="!!externalStore.errors.knp"
 				:helper-text="!!externalStore.errors.knp ? $t(externalStore.errors.knp) : ''"
 				:update-field="handleKnpUpdate"

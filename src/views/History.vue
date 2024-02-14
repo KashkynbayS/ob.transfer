@@ -1,32 +1,39 @@
 <script setup lang="ts">
-import AppNavbar from '@/components/AppNavbar.vue'
-import AccountNewIcon from '@ui-kit/kmf-icons/finance/accounts/account-new.svg'
-import TransfersIcon from '@ui-kit/kmf-icons/finance/transfers/transfers.svg'
 import ArrowRoundIcon from '@/assets/icons/arrow-round.svg'
 import FiltersIcon from '@/assets/icons/filters.svg'
-import { Cell, CellGroup } from '@ui-kit/ui-kit'
-import { useRouter } from 'vue-router'
-import { Tag, TransactionGroup } from '@/types'
+import AppNavbar from '@/components/AppNavbar.vue'
+import AppTags from '@/components/AppTags.vue'
+import HistorySettings from '@/components/HistorySettings.vue'
 import TransactionValue from '@/components/TransactionValue.vue'
 import { CURRENCY_SYMBOL } from '@/constants'
-import HistorySettings from '@/components/HistorySettings.vue'
-import { computed, onMounted, ref } from 'vue'
-import AppTags from '@/components/AppTags.vue'
 import { useHistoryStore } from '@/stores/history.ts'
+import { Tag, TransactionGroup } from '@/types'
 import { TypeOfTransfer } from '@/types/transfer.ts'
+import AccountNewIcon from '@ui-kit/kmf-icons/finance/accounts/account-new.svg'
+import TransfersIcon from '@ui-kit/kmf-icons/finance/transfers/transfers.svg'
+import { Cell, CellGroup } from '@ui-kit/ui-kit'
+import { computed, onMounted, ref } from 'vue'
+import { useRouter } from 'vue-router'
 
 const router = useRouter()
 const historyStore = useHistoryStore()
 
+// TODO: вынести локализацию
 const typeMapping: Record<TypeOfTransfer, string> = {
-	[TypeOfTransfer.BetweenMyAccounts]: 'Между счетами',
-	[TypeOfTransfer.Internal]: 'Внутренний',
+	[TypeOfTransfer.BetweenMyAccountsConversionUSD]:'Конвертация',
+	[TypeOfTransfer.BetweenMyAccountsDepositReplenishment]:'Пополнение депозита',
+	[TypeOfTransfer.BetweenMyAccountsWithdrawalFromDeposit]:'Снятие с депозита',
+	[TypeOfTransfer.InternalByPhone]:'По номеру телефона',
+	[TypeOfTransfer.InternalByAccount]:'По номеру счета',
 	[TypeOfTransfer.External]: 'Внешний'
 }
 
 const typeIconMapping: Record<TypeOfTransfer, string> = {
-	[TypeOfTransfer.BetweenMyAccounts]: TransfersIcon,
-	[TypeOfTransfer.Internal]: ArrowRoundIcon,
+	[TypeOfTransfer.BetweenMyAccountsConversionUSD]:ArrowRoundIcon,
+	[TypeOfTransfer.BetweenMyAccountsDepositReplenishment]:ArrowRoundIcon,
+	[TypeOfTransfer.BetweenMyAccountsWithdrawalFromDeposit]:ArrowRoundIcon,
+	[TypeOfTransfer.InternalByPhone]:TransfersIcon,
+	[TypeOfTransfer.InternalByAccount]:TransfersIcon,
 	[TypeOfTransfer.External]: AccountNewIcon
 }
 
