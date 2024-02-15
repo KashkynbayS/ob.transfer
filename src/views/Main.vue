@@ -23,7 +23,7 @@ watch(page, () => {
 	<div>
 		<AppNavbar>
 			<template #title>
-				<h5>{{ $t('TRANSFER.TITLE') }}</h5>
+				<h5 class="main-title">{{ $t('TRANSFER.TITLE') }}</h5>
 			</template>
 
 			<template #label>
@@ -58,7 +58,7 @@ watch(page, () => {
 .transfer-nav {
 	box-sizing: content-box;
 	height: 100%;
-	padding: var(--space-3) var(--space-4);
+	padding: var(--space-4);
 
 	.segment-picker {
 		width: 100%;
@@ -67,5 +67,9 @@ watch(page, () => {
 
 .history-link {
 	color: var(--txt-icons-red, var(--accent-primary));
+}
+
+.main-title {
+	margin-left: var(--space-8);
 }
 </style>
