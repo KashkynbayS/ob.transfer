@@ -4,6 +4,7 @@ import { CURRENCY, SseResponse, isLinkType, isStatusType } from '@/types'
 import { getRelativeUrl } from '@/utils'
 import { ref } from 'vue'
 import { Router } from 'vue-router'
+import { useTargetBlankStore } from '@/stores/targetBlank.ts'
 
 const SSE_URL = 'https://dev-api.kmf.kz/svc/go-redis-sse/events'
 
@@ -35,7 +36,9 @@ export const handleTransferSSEResponse = (
 
 	if (isLinkType(eventData)) {
 		if (eventData.data.target === '_blank') {
-			window.open(eventData.data.url, '_blank')
+			const targetBlankStore = useTargetBlankStore()
+
+			targetBlankStore.setUrl(eventData.data.url)
 		} else {
 			const relativeUrl = getRelativeUrl(eventData.data.url)
 			console.log('routing to ', relativeUrl)
