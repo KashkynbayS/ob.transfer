@@ -7,6 +7,7 @@ import { Button, CurrencyInput, IbanInput, Input, Modal } from '@ui-kit/ui-kit'
 import { ModalAction } from '@ui-kit/ui-kit/dist/ui/components/modal/types'
 
 import AccountDropdown from '@/components/AccountDropdown.vue'
+import KnpDropdown from '@/components/KnpDropdown.vue'
 
 // import { addToFrequents } from '@/services/frequentService'
 
@@ -18,7 +19,10 @@ import { handleTransferSSEResponse } from '@/services/sse.service'
 import { TransferService } from '@/services/transfer.service'
 import { FORM_STATE } from '@/types/form'
 import { IbanForm } from '@/types/iban'
+import { Knp } from '@/types/knp'
 import { TypeOfTransfer } from '@/types/transfer'
+
+import { validateInternalIban } from '@/helpers/internal-form-helper'
 
 const IbanStore = useIbanStore()
 
@@ -64,6 +68,8 @@ const form = ref<IbanForm>({
 	from: undefined,
 	to: '',
 	receiverName: '',
+	knp: null,
+	paymentPurposes: '',
 	amount: null,
 	transferType: 'iban'
 })
@@ -71,29 +77,44 @@ const form = ref<IbanForm>({
 // Submit handler
 const handleSubmit = async (e: Event | null = null) => {
 	e?.preventDefault()
-	IbanStore.clearErrors()
-	IbanStore.setState(FORM_STATE.LOADING)
-	isLeaveConfirmed = true
-	TransferService.initWithSSE(
-		{
-			iban: form.value.from!.iban,
-			recIban: form.value.to,
-			recFio: form.value.receiverName,
-			amount: String(form.value.amount),
-			typeOfTransfer: TypeOfTransfer.InternalByAccount
-		},
-		(event) => {
-			IbanStore.setState(FORM_STATE.SUCCESS)
-			handleTransferSSEResponse(form.value, event, router)
-		}
-	)
-		.then((e) => {
-			IbanStore.applicationId = e.applicationID
-			sessionStorage.setItem('uuid', e.applicationID)
-		})
-		.catch(() => {
-			IbanStore.setState(FORM_STATE.ERROR)
-		})
+
+	try {
+		await validateInternalIban(form.value)
+		IbanStore.clearErrors()
+		IbanStore.setState(FORM_STATE.LOADING)
+		isLeaveConfirmed = true
+
+		TransferService.initWithSSE(
+			{
+				iban: form.value.from!.iban,
+				recIban: form.value.to,
+				recFio: form.value.receiverName,
+				amount: String(form.value.amount),
+				typeOfTransfer: TypeOfTransfer.InternalByAccount,
+				paymentPurposes: form.value.paymentPurposes !== null ? form.value.paymentPurposes : undefined,
+				knp: form.value.knp !== null ? String(form.value.knp) : undefined
+			},
+			(event) => {
+				IbanStore.setState(FORM_STATE.SUCCESS)
+				handleTransferSSEResponse(form.value, event, router)
+			}
+		)
+			.then((e) => {
+				IbanStore.applicationId = e.applicationID
+				sessionStorage.setItem('uuid', e.applicationID)
+			})
+			.catch(() => {
+				IbanStore.setState(FORM_STATE.ERROR)
+			})
+
+	} catch (err) {
+		IbanStore.setState(FORM_STATE.INITIAL)
+		IbanStore.setValidationError(err)
+	}
+}
+
+const handleKnpUpdate = () => {
+	IbanStore.clearErrors('knp')
 }
 </script>
 
@@ -103,14 +124,12 @@ const handleSubmit = async (e: Event | null = null) => {
 			<div class="internal-iban-form-top">
 				<AccountDropdown
 					v-model="form.from"
-					class="form-field"
 					:accounts-groups="ACCOUNTS_GROUPS"
 					:label="$t('OWN.FORM.FROM')"
 				/>
 				<IbanInput
 					id="recieverNameModel"
 					v-model:model-value="form.to"
-					class="form-field"
 					:label="$t('INTERNAL.IBAN.FORM.ACCOUNT_TO')"
 					:invalid="!!IbanStore.errors.to"
 					:helper-text="IbanStore.errors.to ? $t(IbanStore.errors.to) : ''"
@@ -119,16 +138,31 @@ const handleSubmit = async (e: Event | null = null) => {
 				<Input
 					id="123"
 					v-model:model-value="form.receiverName"
-					class="form-field"
 					:label="$t('INTERNAL.IBAN.FORM.RECIEVER_NAME')"
 					:invalid="!!IbanStore.errors.receiverName"
 					:helper-text="IbanStore.errors.receiverName ? $t(IbanStore.errors.receiverName) : ''"
 					@update:model-value="IbanStore.clearErrors('receiverName')"
 				/>
+				<KnpDropdown
+					v-if="form.to == 'KZ1111' && form.to !== null"
+					id="knp"
+					v-model="form.knp as Knp | null"
+					:error-invalid="!!IbanStore.errors.knp"
+					:helper-text="!!IbanStore.errors.knp ? $t(IbanStore.errors.knp) : ''"
+					:update-field="handleKnpUpdate"
+				/>
+				<Input
+					v-if="form.to == 'KZ1111' && form.to !== null"
+					id="paymentPurposes"
+					v-model="form.paymentPurposes"
+					:label="$t('EXTERNAL.FORM.PAYMENT_PURPOSES')"
+					:invalid="!!IbanStore.errors.paymentPurposes"
+					:helper-text="!!IbanStore.errors.paymentPurposes ? $t(IbanStore.errors.paymentPurposes) : ''"
+					@update:model-value="IbanStore.clearErrors('paymentPurposes')"
+				/>
 				<CurrencyInput
 					id="amount"
 					v-model:model-value="form.amount"
-					class="form-field"
 					:label="$t('INTERNAL.IBAN.FORM.SUM')"
 					:invalid="!!IbanStore.errors.amount"
 					:helper-text="IbanStore.errors.amount ? $t(IbanStore.errors.amount) : ''"
@@ -152,10 +186,12 @@ const handleSubmit = async (e: Event | null = null) => {
 <style scoped lang="scss">
 .internal-iban-form {
 	box-sizing: content-box;
-	padding: var(--space-4) var(--space-4) 0 var(--space-4);
+	padding: var(--space-3) var(--space-4) 0 var(--space-4);
 
-	.form-field {
-		padding-bottom: var(--space-3);
+	&-top {
+		display: flex;
+		flex-direction: column;
+		gap: var(--space-3);
 	}
 
 	.internal-iban-form-bottom {

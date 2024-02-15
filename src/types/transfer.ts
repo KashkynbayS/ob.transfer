@@ -26,6 +26,7 @@ export interface ITransferRequest {
 	recIban?: string
 	recIin?: string
 	recMobileNumber?: string
+	paymentPurposes?: string
 	transferDescription?: string
 	amount: string
 	typeOfTransfer: TypeOfTransfer

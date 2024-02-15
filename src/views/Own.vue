@@ -391,6 +391,7 @@ watch(
 	flex-direction: column;
 	display: flex;
 	gap: var(--space-3);
+	padding: var(--space-4) 0
 }
 
 .form__submit {
