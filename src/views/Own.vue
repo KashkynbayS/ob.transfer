@@ -13,21 +13,20 @@ import AppNavbar from '@/components/AppNavbar.vue'
 import { ACCOUNTS_GROUPS } from '@/mocks/own'
 
 import { CURRENCY_SYMBOL } from '@/constants'
-import { CURRENCY, LAST_UPDATED, OwnForm, SseResponse, isLinkType, isStatusType } from '@/types'
+import { LAST_UPDATED, OwnForm } from '@/types'
 
 import { useOwnStore } from '@/stores/own.ts'
 import { useRateStore } from '@/stores/rate.ts'
-
-const router = useRouter()
-
 import { validateOwnForm } from '@/helpers/own-form.helper'
 import { TransferService } from '@/services/transfer.service'
 import { useLoadingStore } from '@/stores/loading'
 import { useStatusStore } from '@/stores/status'
 import { FORM_STATE } from '@/types/form'
 import { TypeOfTransfer } from '@/types/transfer'
-import { getRelativeUrl } from '@/utils'
 import { extractCurrencyFromAmount } from '@/utils/currencies'
+import { handleTransferSSEResponse } from '@/services/sse.service.ts'
+
+const router = useRouter()
 
 const ownStore = useOwnStore()
 const rateStore = useRateStore()
@@ -112,14 +111,14 @@ const handleEnrollmentAmountChange = (event: InputEvent) => {
 }
 
 const determineTypeOfTransfer = () => {
-    if (form.value.from?.currency !== form.value.to?.currency) {
-        return TypeOfTransfer.BetweenMyAccountsConversionUSD;
-    } else if (form.value.from?.id === 'kzt-account' && form.value.to?.id === 'kzt-deposit') {
-        return TypeOfTransfer.BetweenMyAccountsDepositReplenishment;
-    } else {
-        return TypeOfTransfer.BetweenMyAccountsWithdrawalFromDeposit;
-    }
-};
+	if (form.value.from?.currency !== form.value.to?.currency) {
+		return TypeOfTransfer.BetweenMyAccountsConversionUSD
+	} else if (form.value.from?.id === 'kzt-account' && form.value.to?.id === 'kzt-deposit') {
+		return TypeOfTransfer.BetweenMyAccountsDepositReplenishment
+	} else {
+		return TypeOfTransfer.BetweenMyAccountsWithdrawalFromDeposit
+	}
+}
 
 const handleSubmit = async (e: Event | null = null) => {
 	e?.preventDefault()
@@ -136,42 +135,11 @@ const handleSubmit = async (e: Event | null = null) => {
 				iban: form.value.from!.iban,
 				recIban: form.value.to!.iban,
 				amount: String(form.value.amount),
-				bin: '100940003891',
-				kbe: '25',
-				recBin: '100940003891',
-				transferDescription: 'сбережения',
-				typeOfTransfer: determineTypeOfTransfer()
+				recMobileNumber: '77772165656',
+				typeOfTransfer: 2
 			},
 			(event) => {
-				setLoading(false)
-
-				const eventData = JSON.parse(event.data) as SseResponse<'link' | 'status'>
-				console.log('onmessage', eventData)
-
-				if (isLinkType(eventData)) {
-					if (eventData.data.target === '_blank') {
-						window.open(eventData.data.url, '_blank')
-					} else {
-						const relativeUrl = getRelativeUrl(eventData.data.url)
-						console.log('routing to ', relativeUrl)
-						// noinspection JSIgnoredPromiseFromCall
-						router.push(relativeUrl)
-					}
-				} else if (isStatusType(eventData)) {
-					const statusStore = useStatusStore()
-					eventData.data.title = eventData.data.title
-						.replace('{amount}', String(form.value.amount || 0))
-						.replace(
-							'{currency}',
-							form.value.from?.currency === CURRENCY.KZT ? CURRENCY_SYMBOL.kzt : CURRENCY_SYMBOL.usd
-						)
-					statusStore.$state = eventData.data
-					// noinspection JSIgnoredPromiseFromCall
-					console.log(eventData.data)
-					router.push({
-						name: 'Status'
-					})
-				}
+				handleTransferSSEResponse(form.value, event, router)
 			}
 		)
 			.then((e) => {
@@ -391,7 +359,7 @@ watch(
 	flex-direction: column;
 	display: flex;
 	gap: var(--space-3);
-	padding: var(--space-4) 0
+	padding: var(--space-4) 0;
 }
 
 .form__submit {

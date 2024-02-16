@@ -5,8 +5,7 @@ export enum TypeOfTransfer {
 	BetweenMyAccountsWithdrawalFromDeposit = 6,
 	InternalByPhone = 2,
 	InternalByAccount = 3,
-	External = 4,
-
+	External = 4
 }
 
 export enum TransferState {

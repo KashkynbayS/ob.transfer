@@ -8,6 +8,8 @@ import { useTargetBlankStore } from '@/stores/targetBlank.ts'
 
 const SSE_URL = 'https://dev-api.kmf.kz/svc/go-redis-sse/events'
 
+const targetBlankStore = useTargetBlankStore()
+
 export const initEventSource = (uuidValue: string, callback: (event: MessageEvent<any>) => void) => {
 	const eventSource = ref<EventSource | null>(null)
 
@@ -36,8 +38,6 @@ export const handleTransferSSEResponse = (
 
 	if (isLinkType(eventData)) {
 		if (eventData.data.target === '_blank') {
-			const targetBlankStore = useTargetBlankStore()
-
 			targetBlankStore.setUrl(eventData.data.url)
 		} else {
 			const relativeUrl = getRelativeUrl(eventData.data.url)
