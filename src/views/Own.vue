@@ -15,16 +15,16 @@ import { ACCOUNTS_GROUPS } from '@/mocks/own'
 import { CURRENCY_SYMBOL } from '@/constants'
 import { LAST_UPDATED, OwnForm } from '@/types'
 
-import { useOwnStore } from '@/stores/own.ts'
-import { useRateStore } from '@/stores/rate.ts'
 import { validateOwnForm } from '@/helpers/own-form.helper'
+import { handleTransferSSEResponse } from '@/services/sse.service.ts'
 import { TransferService } from '@/services/transfer.service'
 import { useLoadingStore } from '@/stores/loading'
+import { useOwnStore } from '@/stores/own.ts'
+import { useRateStore } from '@/stores/rate.ts'
 import { useStatusStore } from '@/stores/status'
 import { FORM_STATE } from '@/types/form'
-import { TypeOfTransfer } from '@/types/transfer'
+// import { TypeOfTransfer } from '@/types/transfer'
 import { extractCurrencyFromAmount } from '@/utils/currencies'
-import { handleTransferSSEResponse } from '@/services/sse.service.ts'
 
 const router = useRouter()
 
@@ -110,15 +110,16 @@ const handleEnrollmentAmountChange = (event: InputEvent) => {
 	form.value.lastUpdated = LAST_UPDATED.ENROLLMENT_AMOUNT
 }
 
-const determineTypeOfTransfer = () => {
-	if (form.value.from?.currency !== form.value.to?.currency) {
-		return TypeOfTransfer.BetweenMyAccountsConversionUSD
-	} else if (form.value.from?.id === 'kzt-account' && form.value.to?.id === 'kzt-deposit') {
-		return TypeOfTransfer.BetweenMyAccountsDepositReplenishment
-	} else {
-		return TypeOfTransfer.BetweenMyAccountsWithdrawalFromDeposit
-	}
-}
+// TO DO Вынести отдельно
+// const determineTypeOfTransfer = () => {
+// 	if (form.value.from?.currency !== form.value.to?.currency) {
+// 		return TypeOfTransfer.BetweenMyAccountsConversionUSD
+// 	} else if (form.value.from?.id === 'kzt-account' && form.value.to?.id === 'kzt-deposit') {
+// 		return TypeOfTransfer.BetweenMyAccountsDepositReplenishment
+// 	} else {
+// 		return TypeOfTransfer.BetweenMyAccountsWithdrawalFromDeposit
+// 	}
+// }
 
 const handleSubmit = async (e: Event | null = null) => {
 	e?.preventDefault()
