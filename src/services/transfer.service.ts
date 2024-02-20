@@ -1,6 +1,6 @@
 import useAxiosInstance from '@/api/api.instance.ts'
 import { BaseResponse } from '@/types'
-import { ITransferRequest, ITransferResponse } from '@/types/transfer'
+import { IDealsResponse, ITransferRequest, ITransferResponse } from '@/types/transfer'
 import { initEventSource } from './sse.service'
 
 const { axiosInstance } = useAxiosInstance()
@@ -20,5 +20,11 @@ export const TransferService = {
 		}
 
 		return res.data
+	},
+
+	async fetchDealsList(): Promise<IDealsResponse> {
+		const response = await axiosInstance.get<BaseResponse<IDealsResponse>>('https://dev-svc.kmf.kz/api/bank/deals/list')
+
+		return response.data.data
 	}
 }

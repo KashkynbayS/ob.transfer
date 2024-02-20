@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref, watch, watchEffect } from 'vue'
+import { computed, onMounted, ref, watch, watchEffect } from 'vue'
 
 import { useRouter } from 'vue-router'
 
@@ -10,10 +10,8 @@ import PageTemplate from '@/layouts/PageTemplate.vue'
 import AccountDropdown from '@/components/AccountDropdown.vue'
 import AppNavbar from '@/components/AppNavbar.vue'
 
-import { ACCOUNTS_GROUPS } from '@/mocks/own'
-
 import { CURRENCY_SYMBOL } from '@/constants'
-import { LAST_UPDATED, OwnForm } from '@/types'
+import { Account, AccountsGroup, CURRENCY, LAST_UPDATED, OwnForm } from '@/types'
 
 import { validateOwnForm } from '@/helpers/own-form.helper'
 import { handleTransferSSEResponse } from '@/services/sse.service.ts'
@@ -49,6 +47,39 @@ const form = ref<OwnForm>({
 	transferType: 'own',
 	receiverName: 'Между своими счетами'
 })
+
+const myAccounts = ref<Account[]>([
+	{
+		id: 'kzt-account',
+		currency: CURRENCY.KZT,
+		amount: 389000.01,
+		iban: 'KZ59888AA22040000144',
+		title: 'ACCOUNTS_GROUPS.ACCOUNT_KZT'
+	}
+])
+
+const myDeposits = ref<Account[]>([
+	{
+		id: 'kzt-deposit',
+		currency: CURRENCY.KZT,
+		amount: 1345098.45,
+		iban: 'KZ59888AA22040000300',
+		title: 'ACCOUNTS_GROUPS.DEPOSIT_KZT'
+	}
+])
+
+const accountsGroups = computed<AccountsGroup[]>(() => [
+	{
+		id: 'my-accounts',
+		title: 'ACCOUNTS_GROUPS.MY_ACCOUNTS',
+		list: myAccounts.value
+	},
+	{
+		id: 'my-deposits',
+		title: 'ACCOUNTS_GROUPS.MY_DEPOSITS',
+		list: myDeposits.value
+	}
+])
 
 const hasDifferentCurrencies = computed(() => {
 	if (IS_CONVERSION_DISABLED) {
@@ -282,6 +313,18 @@ watch(
 		}
 	}
 )
+
+onMounted(async () => {
+	const deals = await TransferService.fetchDealsList()
+
+	myAccounts.value = deals.accounts.map((account) => ({
+		id: account.id,
+		currency: account.currency.name.toLowerCase() as CURRENCY,
+		iban: account.accNumber,
+		title: `ACCOUNTS_GROUPS.ACCOUNT_${account.currency.name.toUpperCase()}`,
+		amount: account.amount
+	}))
+})
 </script>
 
 <template>
@@ -298,7 +341,7 @@ watch(
 			<AccountDropdown
 				id="from"
 				v-model="form.from"
-				:accounts-groups="ACCOUNTS_GROUPS"
+				:accounts-groups="accountsGroups"
 				:label="$t('OWN.FORM.FROM')"
 				:disabled="form.to"
 				:error-invalid="!!ownStore.errors.from"
@@ -308,7 +351,7 @@ watch(
 			<AccountDropdown
 				id="to"
 				v-model="form.to"
-				:accounts-groups="ACCOUNTS_GROUPS"
+				:accounts-groups="accountsGroups"
 				:label="$t('OWN.FORM.TO')"
 				:disabled="form.from"
 				:error-invalid="!!ownStore.errors.to"
