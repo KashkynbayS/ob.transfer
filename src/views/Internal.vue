@@ -48,7 +48,7 @@ watch(page, () => {
 .internal {
 	box-sizing: content-box;
 	height: 100%;
-	padding: 0 var(--space-4) 0 var(--space-4);
+	padding: var(--space-4) var(--space-4) 0 var(--space-4);
 
 	.segment-picker {
 		width: 100%;

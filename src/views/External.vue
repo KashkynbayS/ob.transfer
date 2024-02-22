@@ -13,12 +13,15 @@ import { ACCOUNTS_GROUPS } from '@/mocks/internal'
 
 import { useFormAutoFill } from '@/helpers/useFormAutoFill.ts'
 import router from '@/router'
+import { getFioByIin } from '@/services/external.service.ts'
 import { handleTransferSSEResponse } from '@/services/sse.service'
 import { TransferService } from '@/services/transfer.service'
+
 import { useExternalStore } from '@/stores/external'
 import { useStatusStore } from '@/stores/status'
 import { ExternalForm } from '@/types/external'
 import { FORM_STATE } from '@/types/form'
+import { Knp } from '@/types/knp'
 import { TypeOfTransfer } from '@/types/transfer'
 
 const externalStore = useExternalStore()
@@ -114,6 +117,18 @@ const handleSubmit = (e: Event | null = null) => {
 const handleKnpUpdate = () => {
 	externalStore.clearErrors('knp')
 }
+
+const handleIINUpdate = async () => {
+	try {
+		if (form.value.iin.length === 12) {
+			const response = await getFioByIin.post(form.value.iin);
+			const { full_name: receiverName } = response;
+			form.value.receiverName = receiverName;
+		}
+	} catch (error) {
+		console.error('Ошибка при выполнении запроса:', error);
+	}
+};
 </script>
 
 <template>
@@ -140,13 +155,6 @@ const handleKnpUpdate = () => {
 				:helper-text="!!externalStore.errors.iban ? $t(externalStore.errors.iban) : ''"
 				@update:model-value="externalStore.clearErrors('iban')"
 			/>
-			<KnpDropdown
-				id="knp"
-				v-model="form.knp"
-				:error-invalid="!!externalStore.errors.knp"
-				:helper-text="!!externalStore.errors.knp ? $t(externalStore.errors.knp) : ''"
-				:update-field="handleKnpUpdate"
-			/>
 			<Input
 				id="iin"
 				v-model="form.iin"
@@ -154,6 +162,14 @@ const handleKnpUpdate = () => {
 				:invalid="!!externalStore.errors.iin"
 				:helper-text="!!externalStore.errors.iin ? $t(externalStore.errors.iin) : ''"
 				@update:model-value="externalStore.clearErrors('iin')"
+				@input="handleIINUpdate"
+			/>
+			<KnpDropdown
+				id="knp"
+				v-model="form.knp as Knp | null"
+				:error-invalid="!!externalStore.errors.knp"
+				:helper-text="!!externalStore.errors.knp ? $t(externalStore.errors.knp) : ''"
+				:update-field="handleKnpUpdate"
 			/>
 			<Input
 				id="name"

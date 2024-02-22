@@ -15,16 +15,17 @@
 		"update": "npm i @ui-kit/kmf-icons @ui-kit/kmf-styles @ui-kit/ui-kit"
 	},
 	"dependencies": {
-		"@ui-kit/events": "^1.3.0",
-		"@ui-kit/kmf-styles": "^1.1.1",
-		"@ui-kit/ui-kit": "^1.5.2",
+		"@ui-kit/events": "^1.4.1",
 		"@ui-kit/kmf-icons": "^0.3.13",
+		"@ui-kit/kmf-styles": "^1.1.1",
+		"@ui-kit/ui-kit": "^1.7.0",
 		"@vee-validate/yup": "^4.11.8",
 		"@vueuse/core": "^10.7.0",
 		"axios": "^1.6.2",
 		"pinia": "^2.1.6",
 		"single-spa-vue": "^3.0.0",
 		"vee-validate": "^4.11.8",
+		"volar-service-vetur": "^0.0.30",
 		"vue": "^3.3.4",
 		"vue-i18n": "9.5.0",
 		"vue-router": "^4.2.4"

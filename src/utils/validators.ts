@@ -13,6 +13,9 @@ export const validateIbanFunc = (value: string | undefined) => !value
 // Functions of validation KNP
 export const validateKnpFunc = (value: object | undefined | null) => !value
 
+// Functions of validation PaymentPurposes
+export const validatePaymentPurposesFunc = (value: string | undefined) => !value
+
 // Functions of validation IIN
 export const validateIinFunc = (value: string | undefined) => !value
 
@@ -84,6 +87,12 @@ export const validateKnp = (field: string, errorText: string) =>
 		.test(field, errorText, function (value) {
 			return !validateKnpFunc(value)
 		})
+
+// Validation Receiver name
+export const validatePaymentPurposes = (field: string, errorText: string) =>
+	string().test(field, errorText, function (value) {
+		return !validatePaymentPurposesFunc(value)
+	})
 
 // Validation IIN
 export const validateIin = (field: string, errorText: string) =>

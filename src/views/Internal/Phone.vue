@@ -26,16 +26,20 @@ import { FORM_STATE } from '@/types/form'
 import { PhoneForm } from '@/types/phone'
 import { TypeOfTransfer } from '@/types/transfer'
 
+import { validateInternalPhone } from '@/helpers/internal-form.helper'
+
+
 const phoneStore = usePhoneStore()
 const successStore = useSuccessStore()
 const statusStore = useStatusStore()
 const applicationIDStore = useApplicationIDStore()
 
+
 phoneStore.clearErrors()
 
 const form = ref<PhoneForm>({
 	from: undefined,
-	phoneNumber: '77766665947',
+	phoneNumber: '',
 	receiverName: 'Учиха Итачи',
 	amount: null,
 	transferType: 'phone'
@@ -128,36 +132,43 @@ watch(
 
 const handleSubmit = async (e: Event | null = null) => {
 	e?.preventDefault()
-	phoneStore.clearErrors()
-	phoneStore.setState(FORM_STATE.LOADING)
-	isLeaveConfirmed = true
 
-	TransferService.initWithSSE(
-		{
-			iban: 'KZ23888AA22040000016',
-			// iban: form.value.from!.iban,
-			recMobileNumber: '77766665947',
-			// recMobileNumber: form.value.phoneNumber,
-			recIban: 'KZ59888AA22040000301',
-			
-			recFio: form.value.receiverName,
-			amount: String(form.value.amount),
-			typeOfTransfer: TypeOfTransfer.InternalByPhone
-		},
-		(event) => {
-			phoneStore.setState(FORM_STATE.SUCCESS)
-			handleTransferSSEResponse(form.value, event, router)
-		}
-	)
-		.then((e) => {
-			phoneStore.applicationId = e.applicationID
-			sessionStorage.setItem('uuid', e.applicationID)
-			phoneStore.setState(FORM_STATE.SUCCESS)
-			applicationIDStore.setApplicationID(e.applicationID)
-		})
-		.catch(() => {
-			phoneStore.setState(FORM_STATE.ERROR)
-		})
+	try {
+		await validateInternalPhone(form.value)
+		phoneStore.clearErrors()
+		phoneStore.setState(FORM_STATE.LOADING)
+		isLeaveConfirmed = true
+
+		TransferService.initWithSSE(
+			{
+				iban: 'KZ23888AA22040000016',
+				// iban: form.value.from!.iban,
+				recMobileNumber: '77766665947',
+				// recMobileNumber: form.value.phoneNumber,
+				recIban: 'KZ59888AA22040000301',
+				
+				recFio: form.value.receiverName,
+				amount: String(form.value.amount),
+				typeOfTransfer: TypeOfTransfer.InternalByPhone
+			},
+			(event) => {
+				phoneStore.setState(FORM_STATE.SUCCESS)
+				handleTransferSSEResponse(form.value, event, router)
+			}
+		)
+			.then((e) => {
+				phoneStore.applicationId = e.applicationID
+				sessionStorage.setItem('uuid', e.applicationID)
+				phoneStore.setState(FORM_STATE.SUCCESS)
+				applicationIDStore.setApplicationID(e.applicationID)
+			})
+			.catch(() => {
+				phoneStore.setState(FORM_STATE.ERROR)
+			})
+	} catch (err) {
+		phoneStore.setState(FORM_STATE.INITIAL)
+		phoneStore.setValidationError(err)
+	}
 }
 
 // _________________________________________
@@ -201,7 +212,7 @@ const handleSubmit = async (e: Event | null = null) => {
 <style scoped lang="scss">
 .internal-phone-form {
 	box-sizing: content-box;
-	padding: var(--space-4) var(--space-4) 0 var(--space-4);
+	padding: var(--space-3) var(--space-4) 0 var(--space-4);
 
 	&-top {
 		width: 100%;

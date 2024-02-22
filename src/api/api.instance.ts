@@ -1,4 +1,4 @@
-import { tokenExpired } from '@ui-kit/events';
+import { tokenExpired } from '@ui-kit/events'
 import axios, { AxiosError, AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios'; // Define the type for your token
 
 const LS_TOKEN_KEY = 'accessToken'
@@ -14,7 +14,7 @@ if (import.meta.env.VITE_ENVIRONMENT === 'local') {
 	)
 }
 
-const refreshToken = () => {
+const refreshToken = async () => {
 	const url = 'https://dev-api.kmf.kz/svc/bank/sso/customer/authorize'
 	const formData = new FormData()
 
@@ -80,11 +80,11 @@ export default function useAxiosInstance() {
 		(response) => {
 			return response
 		},
-		(error) => {
+		async (error) => {
 			console.error('interceptors error:', error)
 
 			if (error.response.status === 401) {
-				handleTokenExpiry(error, axiosInstance)
+				await handleTokenExpiry(error, axiosInstance)
 				tokenExpired()
 			}
 
