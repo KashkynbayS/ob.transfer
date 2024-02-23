@@ -8,4 +8,5 @@ export interface ExternalForm {
 	iin: string
 	receiverName: string
 	amount: number | null
+	paymentPurposes: string
 }

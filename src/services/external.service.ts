@@ -19,7 +19,6 @@ export const getFioByIin = {
     async post(iin: string): Promise<any> {
         try {
             const response = await axiosInstance.post<BaseResponse<any>>('main/iin-check', { iin });
-            console.log("hiiiii");
             return response.data.data;
             
         } catch (error) {

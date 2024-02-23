@@ -17,6 +17,8 @@ export const TransferService = {
 			initEventSource(res.data.applicationID, (event) => {
 				callback(event)
 			})
+			console.log("SSE success");
+			
 		}
 
 		return res.data

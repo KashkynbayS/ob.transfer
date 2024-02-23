@@ -1,6 +1,6 @@
 import { FormParam, FormParams } from '@/types'
-import { useRoute, useRouter } from 'vue-router'
 import { ref } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 
 export const useFormAutoFill = () => {
 	const route = useRoute()
@@ -21,7 +21,8 @@ export const useFormAutoFill = () => {
 		recIin: getParam('recIin'),
 		recFio: getParam('recFio'),
 		recMobileNumber: getParam('recMobileNumber'),
-		kbe: getParam('kbe')
+		kbe: getParam('kbe'),
+		paymentPurposes: getParam('paymentPurposes')
 	})
 
 	return {

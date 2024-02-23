@@ -92,12 +92,12 @@ function onDateSelected(value: Date[]) {
 
 <template>
 	<BottomSheet ref="bottomSheetRef" :actions="props.actions" @closed="closeHandler">
-		<template #title>Фильтр</template>
+		<template #title>{{ $t("HISTORY.FILTER.TITLE") }}</template>
 		<template #content>
 			<div class="settings">
 				<div v-if="showCalendar" class="settings__calendar">
 					<Calendar v-model="dates" @on-date-selected="onDateSelected">
-						<template #calendar-title>Применить</template>
+						<template #calendar-title>{{ $t("HISTORY.FILTER.APPLY") }}</template>
 					</Calendar>
 				</div>
 
@@ -109,20 +109,20 @@ function onDateSelected(value: Date[]) {
 							:key="filter.id"
 							v-model="filterModel"
 							:value="filter.value"
-							:title="filter.title"
+							:title="$t(filter.title)"
 						/>
 					</div>
-					<Input id="date-input" :model-value="datesString" label="Период" @on-focus="toggleCalendar(true)">
+					<Input id="date-input" :model-value="datesString" :label="$t('HISTORY.FILTER.PERIOD.LABEL')" @on-focus="toggleCalendar(true)">
 						<template #append>
 							<CalendarIcon />
 						</template>
 					</Input>
 					<div class="settings__sum">
-						<Input id="sumFrom" v-model="sumFrom" label="Сумма от" />
-						<Input id="sumTo" v-model="sumTo" label="Сумма до" />
+						<Input id="sumFrom" v-model="sumFrom" :label="$t('HISTORY.FILTER.AMOUNT_FROM')" />
+						<Input id="sumTo" v-model="sumTo" :label="$t('HISTORY.FILTER.AMOUNT_TO')" />
 					</div>
-					<Button id="settings-reset" type="ghost">Сбросить</Button>
-					<Button id="settings-apply" class="settings__apply-btn" @click="applyFilters">Применить</Button>
+					<Button id="settings-reset" type="ghost">{{ $t("HISTORY.FILTER.RESET") }}</Button>
+					<Button id="settings-apply" class="settings__apply-btn" @click="applyFilters">{{ $t("HISTORY.FILTER.APPLY") }}</Button>
 				</div>
 			</div>
 		</template>

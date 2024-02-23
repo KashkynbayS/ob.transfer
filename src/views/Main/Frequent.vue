@@ -14,12 +14,12 @@ const frequents = ref<Array<ITransferRequest>>([]);
 
 const getReceiverNameByTransferType = (transferType: number, recFio: string): string => {
 	switch (transferType) {
-		case 1 || 5 || 6:
+		case 1:
+		case 5:
+		case 6:
 			return 'TRANSFER.FREQUENT.OWN';
 		case 2:
-			return recFio;
 		case 3:
-			return recFio;
 		case 4:
 			return recFio;
 		default:
@@ -79,7 +79,7 @@ onMounted(async () => {
 		>
 			<template #left><Frequent/></template>
 			<template #title> {{ $t(getReceiverNameByTransferType(item.typeOfTransfer, item.recFio || ''))  }} </template>
-			<template #subtitle>{{ $t(getSubtitleByTransferType(item.typeOfTransfer)) }}</template>
+			<template #subtitle ><span class="text-caption">{{ $t(getSubtitleByTransferType(item.typeOfTransfer)) }}</span></template>
 			<template #right-button>
 				<ResetIcon @click="removeFromFavoritesHandler(item.id)" width="20" height="20" />
 			</template>

@@ -25,10 +25,10 @@ export interface Filter {
 }
 
 export const filters = reactive<Filter[]>([
-	{ id: 'all', title: 'Все', value: 'all', disabled: false },
-	{ id: 'success', title: 'Исполнено', value: 'success', disabled: false },
-	{ id: 'denied', title: 'Отклонено', value: 'denied', disabled: false },
-	{ id: 'in_progress', title: 'В обработке', value: 'in_progress', disabled: false }
+	{ id: 'all', title: 'HISTORY.FILTER.ALL', value: 'all', disabled: false },
+	{ id: 'success', title: 'HISTORY.STATUS.COMPLETED', value: 'success', disabled: false },
+	{ id: 'denied', title: 'HISTORY.STATUS.REJECTED', value: 'denied', disabled: false },
+	{ id: 'in_progress', title: 'HISTORY.STATUS.IN_PROCESSING', value: 'in_progress', disabled: false }
 ])
 
 interface HistorySchema {

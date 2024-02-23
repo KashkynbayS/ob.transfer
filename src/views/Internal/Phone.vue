@@ -34,13 +34,13 @@ const successStore = useSuccessStore()
 const statusStore = useStatusStore()
 const applicationIDStore = useApplicationIDStore()
 
-
 phoneStore.clearErrors()
 
 const form = ref<PhoneForm>({
 	from: undefined,
-	phoneNumber: '',
-	receiverName: 'Учиха Итачи',
+	phoneNumber: '+77072165757',
+	receiverName: 'Дастан Р.',
+	iin: '910503300507', 
 	amount: null,
 	transferType: 'phone'
 })
@@ -132,7 +132,7 @@ watch(
 
 const handleSubmit = async (e: Event | null = null) => {
 	e?.preventDefault()
-
+	// handleIINUpdate()
 	try {
 		await validateInternalPhone(form.value)
 		phoneStore.clearErrors()
@@ -141,12 +141,11 @@ const handleSubmit = async (e: Event | null = null) => {
 
 		TransferService.initWithSSE(
 			{
-				iban: 'KZ23888AA22040000016',
+				iban: 'KZ84888AB22040000174',
 				// iban: form.value.from!.iban,
-				recMobileNumber: '77766665947',
+				recMobileNumber: '77072165757',
 				// recMobileNumber: form.value.phoneNumber,
-				recIban: 'KZ59888AA22040000301',
-				
+				// recIin: "910503300507",
 				recFio: form.value.receiverName,
 				amount: String(form.value.amount),
 				typeOfTransfer: TypeOfTransfer.InternalByPhone
@@ -170,6 +169,18 @@ const handleSubmit = async (e: Event | null = null) => {
 		phoneStore.setValidationError(err)
 	}
 }
+
+// const handleIINUpdate = async () => {
+// 	try {
+// 		if (form.value.iin.length === 12) {
+// 			const response = await getFioByIin.post(form.value.iin);
+// 			const { full_name: receiverName } = response;
+// 			form.value.receiverName = receiverName;
+// 		}
+// 	} catch (error) {
+// 		console.error('Ошибка при выполнении запроса:', error);
+// 	}
+// };
 
 // _________________________________________
 </script>

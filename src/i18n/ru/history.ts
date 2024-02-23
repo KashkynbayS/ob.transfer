@@ -2,6 +2,12 @@ export const HISTORY = {
 	TITLE: 'История',
     YESTERDAY: 'Вчера',
     DAY_BEFORE_YESTERDAY: 'Позавчера',
+    TYPE_OF_TRANSFER: {
+        OWN: 'Между своими счетами',
+        USD_CONVERTION: 'Конвертация',
+        INTERNAL: 'Клиенту КМФ',
+        EXTERNAL: 'Клиенту другого Банка',
+    },
 	DETAILS: {
 		TITLE: 'Детали платежа',
         SHARE: 'Поделиться',
@@ -16,6 +22,7 @@ export const HISTORY = {
         RECEIVER_IIN: 'ИИН/БИН получателя',
         RECEIVER_ACCOUNT: 'Счет получателя',
         RECEIVER_NAME: 'Имя получателя',
+        RECEIVER_PHONE: 'Номер телефона',
         RECEIVER: 'Получатель',
         DATE: 'Дата',
     },

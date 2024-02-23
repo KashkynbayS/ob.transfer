@@ -11,6 +11,8 @@ import KnpDropdown from '@/components/KnpDropdown.vue'
 
 import { ACCOUNTS_GROUPS } from '@/mocks/internal'
 
+import { CURRENCY_SYMBOL } from '@/constants'
+
 import { useFormAutoFill } from '@/helpers/useFormAutoFill.ts'
 import router from '@/router'
 import { getFioByIin } from '@/services/external.service.ts'
@@ -19,33 +21,51 @@ import { TransferService } from '@/services/transfer.service'
 
 import { useExternalStore } from '@/stores/external'
 import { useStatusStore } from '@/stores/status'
+import { useSuccessStore } from '@/stores/success'
+import { useApplicationIDStore } from '@/stores/useApplicationIDStore'
+
+import { CURRENCY } from '@/types'
 import { ExternalForm } from '@/types/external'
 import { FORM_STATE } from '@/types/form'
 import { Knp } from '@/types/knp'
 import { TypeOfTransfer } from '@/types/transfer'
 
 const externalStore = useExternalStore()
+const successStore = useSuccessStore()
 const statusStore = useStatusStore()
 const { formData } = useFormAutoFill()
+const applicationIDStore = useApplicationIDStore()
 
 externalStore.clearErrors()
 
 // Mock for UL
 const form = ref<ExternalForm>({
 	from: undefined,
-	iban: formData.value?.recIban || 'KZ68888AA22040000070',
+	iban: formData.value?.recIban || 'KZ86601A871003328701',
 	knp: null,
-	iin: formData.value?.recIin || '871209301136',
+	iin: formData.value?.recIin || '910503300507',
 	receiverName: formData.value?.recFio || '',
-	amount: Number(formData.value?.amount) || null
+	amount: Number(formData.value?.amount) || null,
+	paymentPurposes: formData.value?.paymentPurposes || '019'
 })
 
 watch(
 	() => externalStore.state,
 	(state) => {
+		const currency = form.value.from ? form.value.from?.currency : CURRENCY.KZT
+
 		switch (state) {
 			case FORM_STATE.SUCCESS:
-				break
+				successStore.setDetails(Number(form.value.amount), currency, [
+					{ name: 'Сумма списания', value: `${form.value.amount} ${CURRENCY_SYMBOL[currency]}` },
+					{ name: 'Статус', value: 'Исполнено', colored: true },
+					{ name: 'Номер квитанции', value: '56789900' },
+					{ name: 'Счет списания', value: 'KZ****4893' },
+					{ name: 'Счет зачисления', value: 'KZ****4893' },
+					{ name: 'Дата', value: '11.04.2023' }
+				])
+				router.push('/Success')
+				break		
 
 			case FORM_STATE.ERROR:
 				statusStore.$state = {
@@ -82,21 +102,28 @@ watch(
 const handleSubmit = (e: Event | null = null) => {
 	e?.preventDefault()
 
+	externalStore.clearErrors()
+	externalStore.setState(FORM_STATE.LOADING)
+	
 	externalStore.validate(form.value).then(() => {
 		const mapped: any = {
-			iban: form.value.from!.iban,
-			recIban: form.value.iban,
-			recIin: form.value.iin,
-			knp: '119',
+
+			iban: "KZ84888AB22040000174",
+			recIban: "KZ86601A871003328701",
+			recIin: "910503300507",
+			amount: String(form.value.amount),
+			typeOfTransfer: TypeOfTransfer.External,
 			kbe: '19',
-			recBin: '871209301136',
-			recCompany: 'ТОО "АБВГД"',
+			recFio: form.value.receiverName,
+
+			// recIin: form.value.iin,
+			// knp: form.value.knp,
+			// recBin: '871209301136',
+			// recCompany: 'ТОО "АБВГД"',
 			// bin_hardcode: '180541000305',
 			// recFio: form.value.receiverName,
-			amount: String(form.value.amount),
 			// kbe: String(Number(form.value.knp?.code)),
-			transferDescription: 'отмывание денег',
-			typeOfTransfer: TypeOfTransfer.External
+			// transferDescription: 'отмывание денег',
 		}
 
 		TransferService.initWithSSE(mapped, (event) => {
@@ -107,6 +134,7 @@ const handleSubmit = (e: Event | null = null) => {
 				externalStore.applicationId = e.applicationID
 				sessionStorage.setItem('uuid', e.applicationID)
 				externalStore.setState(FORM_STATE.SUCCESS)
+				applicationIDStore.setApplicationID(e.applicationID)
 			})
 			.catch(() => {
 				externalStore.setState(FORM_STATE.ERROR)
@@ -173,11 +201,11 @@ const handleIINUpdate = async () => {
 			/>
 			<Input
 				id="name"
-				v-model="form.receiverName"
+				v-model="form.paymentPurposes"
 				:label="$t('EXTERNAL.FORM.PAYMENT_PURPOSES')"
-				:invalid="!!externalStore.errors.receiverName"
-				:helper-text="!!externalStore.errors.receiverName ? $t(externalStore.errors.receiverName) : ''"
-				@update:model-value="externalStore.clearErrors('receiverName')"
+				:invalid="!!externalStore.errors.paymentPurposes"
+				:helper-text="!!externalStore.errors.paymentPurposes ? $t(externalStore.errors.paymentPurposes) : ''"
+				@update:model-value="externalStore.clearErrors('paymentPurposes')"
 			/>
 			<CurrencyInput
 				id="amount"
@@ -202,6 +230,7 @@ const handleIINUpdate = async () => {
 	flex-direction: column;
 	display: flex;
 	gap: var(--space-3);
+	padding: var(--space-4) 0;
 }
 
 .form__submit {

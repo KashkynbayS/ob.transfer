@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { reactive, ref } from 'vue'
+import { reactive, ref, watch } from 'vue'
 
 import { onBeforeRouteLeave, useRouter } from 'vue-router'
 
@@ -13,18 +13,27 @@ import KnpDropdown from '@/components/KnpDropdown.vue'
 
 import { ACCOUNTS_GROUPS } from '@/mocks/internal'
 
+import { CURRENCY_SYMBOL } from '@/constants'
+
 import { useIbanStore } from '@/stores/iban.ts'
+import { useStatusStore } from '@/stores/status'
+import { useSuccessStore } from '@/stores/success'
+import { useApplicationIDStore } from '@/stores/useApplicationIDStore'
 
 import { handleTransferSSEResponse } from '@/services/sse.service'
 import { TransferService } from '@/services/transfer.service'
+import { CURRENCY } from '@/types'
 import { FORM_STATE } from '@/types/form'
 import { IbanForm } from '@/types/iban'
 import { Knp } from '@/types/knp'
 import { TypeOfTransfer } from '@/types/transfer'
 
-import { validateInternalIban } from '@/helpers/internal-form-helper'
+// import { validateInternalIban } from '@/helpers/internal-form-helper'
 
 const IbanStore = useIbanStore()
+const successStore = useSuccessStore()
+const statusStore = useStatusStore()
+const applicationIDStore = useApplicationIDStore()
 
 IbanStore.clearErrors()
 
@@ -66,7 +75,7 @@ onBeforeRouteLeave((to1, _, next) => {
 
 const form = ref<IbanForm>({
 	from: undefined,
-	to: '',
+	to: 'KZ95888AB22040000170',
 	receiverName: '',
 	knp: null,
 	paymentPurposes: '',
@@ -74,25 +83,88 @@ const form = ref<IbanForm>({
 	transferType: 'iban'
 })
 
+watch(
+	() => IbanStore.state,
+	(state) => {
+		const currency = form.value.from ? form.value.from?.currency : CURRENCY.KZT
+
+		switch (state) {
+			case FORM_STATE.SUCCESS:
+				successStore.setDetails(Number(form.value.amount), currency, [
+					{ name: 'Сумма списания', value: `${form.value.amount} ${CURRENCY_SYMBOL[currency]}` },
+					{ name: 'Статус', value: 'Исполнено', colored: true },
+					{ name: 'Номер квитанции', value: '56789900' },
+					{ name: 'Счет списания', value: 'KZ****4893' },
+					{ name: 'Счет зачисления', value: 'KZ****4893' },
+					{ name: 'Дата', value: '11.04.2023' }
+				])
+				router.push('/Success')
+				break
+
+			case FORM_STATE.ERROR:
+				statusStore.$state = {
+					class: 'error',
+					title: 'Перевод не совершён',
+					description: 'Ошибка',
+					showAs: 'fullpage',
+					actions: [
+						{
+							title: 'Вернуться на главную',
+							type: 'secondary',
+							target: '_self',
+							url: 'https://online-dev.kmf.kz/app/bank/actions/close'
+						},
+						{ title: 'Обновить документ', type: 'primary', target: '_self', url: '' }
+					]
+				}
+				router.push({
+					name: 'Status'
+				})
+				break
+
+			case FORM_STATE.INITIAL:
+			default:
+				break
+		}
+
+		if (state) {
+			console.log(state)
+		}
+	}
+)
+
 // Submit handler
 const handleSubmit = async (e: Event | null = null) => {
 	e?.preventDefault()
-
+	
 	try {
-		await validateInternalIban(form.value)
+		// await validateInternalIban(form.value)
 		IbanStore.clearErrors()
 		IbanStore.setState(FORM_STATE.LOADING)
 		isLeaveConfirmed = true
 
+		console.log("Clicked try");
+
 		TransferService.initWithSSE(
 			{
-				iban: form.value.from!.iban,
-				recIban: form.value.to,
+				iban:"KZ84888AB22040000174",
+				recIban:"KZ95888AB22040000170",
+				recIin: "910503300507",
 				recFio: form.value.receiverName,
 				amount: String(form.value.amount),
 				typeOfTransfer: TypeOfTransfer.InternalByAccount,
-				paymentPurposes: form.value.paymentPurposes !== null ? form.value.paymentPurposes : undefined,
-				knp: form.value.knp !== null ? String(form.value.knp) : undefined
+				
+				// iban: 'KZ84888AB22040000174',
+				// // iban: form.value.from!.iban,
+				// recIban: 'KZ95888AB22040000170',
+				// // recIban: form.value.to,
+				// recIin: '910503300507',
+				
+				// recFio: form.value.receiverName,
+				// amount: String(form.value.amount),
+				// typeOfTransfer: TypeOfTransfer.InternalByAccount,
+				// paymentPurposes: form.value.paymentPurposes !== null ? form.value.paymentPurposes : undefined,
+				// knp: form.value.knp !== null ? String(form.value.knp) : undefined
 			},
 			(event) => {
 				IbanStore.setState(FORM_STATE.SUCCESS)
@@ -102,6 +174,8 @@ const handleSubmit = async (e: Event | null = null) => {
 			.then((e) => {
 				IbanStore.applicationId = e.applicationID
 				sessionStorage.setItem('uuid', e.applicationID)
+				IbanStore.setState(FORM_STATE.SUCCESS)
+				applicationIDStore.setApplicationID(e.applicationID)
 			})
 			.catch(() => {
 				IbanStore.setState(FORM_STATE.ERROR)

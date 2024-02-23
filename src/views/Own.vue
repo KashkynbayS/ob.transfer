@@ -14,26 +14,33 @@ import { CURRENCY_SYMBOL } from '@/constants'
 import { Account, AccountsGroup, CURRENCY, LAST_UPDATED, OwnForm } from '@/types'
 
 import { validateOwnForm } from '@/helpers/own-form.helper'
+
 import { handleTransferSSEResponse } from '@/services/sse.service.ts'
 import { TransferService } from '@/services/transfer.service'
-import { useLoadingStore } from '@/stores/loading'
+
+// import { useLoadingStore } from '@/stores/loading'
 import { useOwnStore } from '@/stores/own.ts'
 import { useRateStore } from '@/stores/rate.ts'
 import { useStatusStore } from '@/stores/status'
+import { useSuccessStore } from '@/stores/success'
+import { useApplicationIDStore } from '@/stores/useApplicationIDStore'
+
 import { FORM_STATE } from '@/types/form'
-// import { TypeOfTransfer } from '@/types/transfer'
+import { TypeOfTransfer } from '@/types/transfer'
 import { extractCurrencyFromAmount } from '@/utils/currencies'
 
 const router = useRouter()
 
 const ownStore = useOwnStore()
+const successStore = useSuccessStore()
 const rateStore = useRateStore()
 const statusStore = useStatusStore()
+const applicationIDStore = useApplicationIDStore()
 
 // временно отключаем по задаче: DBO-1037 - Отключение функционала Конвертации
 const IS_CONVERSION_DISABLED = false
 
-const { setLoading } = useLoadingStore()
+// const { setLoading } = useLoadingStore()
 
 ownStore.clearErrors()
 
@@ -53,7 +60,7 @@ const myAccounts = ref<Account[]>([
 		id: 'kzt-account',
 		currency: CURRENCY.KZT,
 		amount: 389000.01,
-		iban: 'KZ59888AA22040000144',
+		iban: 'KZ84888AB22040000174',
 		title: 'ACCOUNTS_GROUPS.ACCOUNT_KZT'
 	}
 ])
@@ -63,7 +70,7 @@ const myDeposits = ref<Account[]>([
 		id: 'kzt-deposit',
 		currency: CURRENCY.KZT,
 		amount: 1345098.45,
-		iban: 'KZ59888AA22040000300',
+		iban: 'KZ34888AB22060000146',
 		title: 'ACCOUNTS_GROUPS.DEPOSIT_KZT'
 	}
 ])
@@ -142,21 +149,21 @@ const handleEnrollmentAmountChange = (event: InputEvent) => {
 }
 
 // TO DO Вынести отдельно
-// const determineTypeOfTransfer = () => {
-// 	if (form.value.from?.currency !== form.value.to?.currency) {
-// 		return TypeOfTransfer.BetweenMyAccountsConversionUSD
-// 	} else if (form.value.from?.id === 'kzt-account' && form.value.to?.id === 'kzt-deposit') {
-// 		return TypeOfTransfer.BetweenMyAccountsDepositReplenishment
-// 	} else {
-// 		return TypeOfTransfer.BetweenMyAccountsWithdrawalFromDeposit
-// 	}
-// }
+const determineTypeOfTransfer = () => {
+	if (form.value.from?.currency !== form.value.to?.currency) {
+		return TypeOfTransfer.BetweenMyAccountsConversionUSD
+	} else if (form.value.from?.id === 'kzt-account' && form.value.to?.id === 'kzt-deposit') {
+		return TypeOfTransfer.BetweenMyAccountsDepositReplenishment
+	} else {
+		return TypeOfTransfer.BetweenMyAccountsWithdrawalFromDeposit
+	}
+}
 
 const handleSubmit = async (e: Event | null = null) => {
 	e?.preventDefault()
 
 	try {
-		setLoading(true)
+		// setLoading(true)
 		await validateOwnForm(form.value)
 		ownStore.clearErrors()
 		ownStore.setState(FORM_STATE.LOADING)
@@ -164,11 +171,17 @@ const handleSubmit = async (e: Event | null = null) => {
 		// Mock for UL
 		TransferService.initWithSSE(
 			{
-				iban: form.value.from!.iban,
-				recIban: form.value.to!.iban,
+				iban:"KZ84888AB22040000174",
+    			depositNumber: "10-24/KMF01FL-00118",
+				recIban: "KZ34888AB22060000146",
 				amount: String(form.value.amount),
-				recMobileNumber: '77772165656',
-				typeOfTransfer: 2
+				typeOfTransfer: determineTypeOfTransfer()
+				
+				// iban: form.value.from!.iban,
+				// recIban: form.value.to!.iban,
+				// amount: String(form.value.amount),
+				// recMobileNumber: '77772165656',
+				// typeOfTransfer: 2
 			},
 			(event) => {
 				handleTransferSSEResponse(form.value, event, router)
@@ -178,6 +191,7 @@ const handleSubmit = async (e: Event | null = null) => {
 				ownStore.applicationId = e.applicationID
 				sessionStorage.setItem('uuid', e.applicationID)
 				ownStore.setState(FORM_STATE.SUCCESS)
+				applicationIDStore.setApplicationID(e.applicationID)
 			})
 			.catch(() => {
 				ownStore.setState(FORM_STATE.ERROR)
@@ -272,15 +286,15 @@ watch(
 	(state) => {
 		switch (state) {
 			case FORM_STATE.SUCCESS:
-				// successStore.setDetails(Number(form.value.amount), form.value.from?.currency || CURRENCY.KZT, [
-				// 	{ name: 'Сумма списания', value: '100 $' },
-				// 	{ name: 'Статус', value: 'Исполнено', colored: true },
-				// 	{ name: 'Номер квитанции', value: '56789900' },
-				// 	{ name: 'Счет списания', value: 'KZ****4893' },
-				// 	{ name: 'Счет зачисления', value: 'KZ****4893' },
-				// 	{ name: 'Дата', value: '11.04.2023' }
-				// ])
-				// router.push('Success')
+				successStore.setDetails(Number(form.value.amount), form.value.from?.currency || CURRENCY.KZT, [
+					{ name: 'Сумма списания', value: '100 $' },
+					{ name: 'Статус', value: 'Исполнено', colored: true },
+					{ name: 'Номер квитанции', value: '56789900' },
+					{ name: 'Счет списания', value: 'KZ****4893' },
+					{ name: 'Счет зачисления', value: 'KZ****4893' },
+					{ name: 'Дата', value: '11.04.2023' }
+				])
+				router.push('Success')
 				break
 
 			case FORM_STATE.ERROR:
@@ -315,15 +329,15 @@ watch(
 )
 
 onMounted(async () => {
-	const deals = await TransferService.fetchDealsList()
+	// const deals = await TransferService.fetchDealsList()
 
-	myAccounts.value = deals.accounts.map((account) => ({
-		id: account.id,
-		currency: account.currency.name.toLowerCase() as CURRENCY,
-		iban: account.accNumber,
-		title: `ACCOUNTS_GROUPS.ACCOUNT_${account.currency.name.toUpperCase()}`,
-		amount: account.amount
-	}))
+	// myAccounts.value = deals.accounts.map((account) => ({
+	// 	id: account.id,
+	// 	currency: account.currency.name.toLowerCase() as CURRENCY,
+	// 	iban: account.accNumber,
+	// 	title: `ACCOUNTS_GROUPS.ACCOUNT_${account.currency.name.toUpperCase()}`,
+	// 	amount: account.amount
+	// }))
 })
 </script>
 

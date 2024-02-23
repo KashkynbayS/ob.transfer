@@ -9,7 +9,7 @@ import { CURRENCY_SYMBOL } from '@/constants'
 import { useHistoryStore } from '@/stores/history.ts'
 import { Tag, TransactionGroup } from '@/types'
 import { TypeOfTransfer } from '@/types/transfer.ts'
-import AccountNewIcon from '@ui-kit/kmf-icons/finance/accounts/account-new.svg'
+// import AccountNewIcon from '@ui-kit/kmf-icons/finance/accounts/account-new.svg'
 import TransfersIcon from '@ui-kit/kmf-icons/finance/transfers/transfers.svg'
 import { Cell, CellGroup } from '@ui-kit/ui-kit'
 import { computed, onMounted, ref } from 'vue'
@@ -18,23 +18,31 @@ import { useRouter } from 'vue-router'
 const router = useRouter()
 const historyStore = useHistoryStore()
 
-// TODO: вынести локализацию
 const typeMapping: Record<TypeOfTransfer, string> = {
-	[TypeOfTransfer.BetweenMyAccountsConversionUSD]:'Конвертация',
-	[TypeOfTransfer.BetweenMyAccountsDepositReplenishment]:'Пополнение депозита',
-	[TypeOfTransfer.BetweenMyAccountsWithdrawalFromDeposit]:'Снятие с депозита',
-	[TypeOfTransfer.InternalByPhone]:'По номеру телефона',
-	[TypeOfTransfer.InternalByAccount]:'По номеру счета',
-	[TypeOfTransfer.External]: 'Внешний'
+	[TypeOfTransfer.BetweenMyAccountsConversionUSD]:'HISTORY.TYPE_OF_TRANSFER.USD_CONVERTION',
+	[TypeOfTransfer.BetweenMyAccountsDepositReplenishment]:'HISTORY.TYPE_OF_TRANSFER.OWN',
+	[TypeOfTransfer.BetweenMyAccountsWithdrawalFromDeposit]:'HISTORY.TYPE_OF_TRANSFER.OWN',
+	[TypeOfTransfer.InternalByPhone]:'HISTORY.TYPE_OF_TRANSFER.INTERNAL',
+	[TypeOfTransfer.InternalByAccount]:'HISTORY.TYPE_OF_TRANSFER.INTERNAL',
+	[TypeOfTransfer.External]: 'HISTORY.TYPE_OF_TRANSFER.EXTERNAL'
+}
+
+const transferMapping: Record<TypeOfTransfer, string> = {
+	[TypeOfTransfer.BetweenMyAccountsConversionUSD]:'HISTORY.TYPE_OF_TRANSFER.USD_CONVERTION',
+	[TypeOfTransfer.BetweenMyAccountsDepositReplenishment]:'Счет KZT —> Депозит',
+	[TypeOfTransfer.BetweenMyAccountsWithdrawalFromDeposit]:'Депозит —> Счет KZT',
+	[TypeOfTransfer.InternalByPhone]:`Счет KZT —> Дастан Р`,
+	[TypeOfTransfer.InternalByAccount]:'Счет KZT —> Дастан Р.',
+	[TypeOfTransfer.External]: 'Halyk bank *8701'
 }
 
 const typeIconMapping: Record<TypeOfTransfer, string> = {
 	[TypeOfTransfer.BetweenMyAccountsConversionUSD]:ArrowRoundIcon,
-	[TypeOfTransfer.BetweenMyAccountsDepositReplenishment]:ArrowRoundIcon,
-	[TypeOfTransfer.BetweenMyAccountsWithdrawalFromDeposit]:ArrowRoundIcon,
+	[TypeOfTransfer.BetweenMyAccountsDepositReplenishment]:TransfersIcon,
+	[TypeOfTransfer.BetweenMyAccountsWithdrawalFromDeposit]:TransfersIcon,
 	[TypeOfTransfer.InternalByPhone]:TransfersIcon,
 	[TypeOfTransfer.InternalByAccount]:TransfersIcon,
-	[TypeOfTransfer.External]: AccountNewIcon
+	[TypeOfTransfer.External]: TransfersIcon
 }
 
 const history = computed<TransactionGroup[]>(() => historyStore.transformedHistory)
@@ -93,10 +101,10 @@ onMounted(() => {
 			<div class="transaction-group__title">
 				{{ $t(transactionGroup.title) }}
 			</div>
-			<Cell
+			<Cell reverse 
 				v-for="transaction in transactionGroup.list"
 				:key="transaction.id"
-				left-color="var(--low-contrast)"
+				left-color="var(--text-low-contrast)"
 				left-type="icon"
 				left-bg="var(--bg-dark)"
 				@click="openDetails(transaction.id)"
@@ -104,8 +112,8 @@ onMounted(() => {
 				<template #left>
 					<Component :is="typeIconMapping[transaction.type]" />
 				</template>
-				<template #title>{{ $t(typeMapping[transaction.type]) }}</template>
-				<template #subtitle>{{ $t(transaction.caption) }}</template>
+				<template #title>{{ $t(transferMapping[transaction.type]) }}</template>
+				<template #subtitle><span class="text-caption">{{ $t(typeMapping[transaction.type]) }}</span></template>
 				<template #right>
 					<div class="history__value">
 						<TransactionValue :transaction="transaction" />

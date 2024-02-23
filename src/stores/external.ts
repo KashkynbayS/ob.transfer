@@ -37,7 +37,8 @@ export const useExternalStore = defineStore('external', {
 			knp: '',
 			iin: '',
 			receiverName: '',
-			amount: ''
+			paymentPurposes: '',
+			amount: '',
 		}
 	}),
 	actions: {
@@ -69,6 +70,7 @@ export const useExternalStore = defineStore('external', {
 					knp: '',
 					iin: '',
 					receiverName: '',
+					paymentPurposes: '',
 					amount: ''
 				}
 			}

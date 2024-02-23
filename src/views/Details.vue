@@ -87,8 +87,8 @@ onMounted(() => {
 					{{ $t('HISTORY.DETAILS.SHARE') }}
 				</Button>
 				<Button id="repeat-details-btn" type="secondary-gray" @click="repeatAction">
-					<ArrowRoundIcon />
-					{{ $t('HISTORY.DETAILS.REPEAT') }}
+					<ArrowRoundIcon color="var(--text-low-contrast)" />
+					<span class="text-low-contrast">{{ $t('HISTORY.DETAILS.REPEAT') }}</span>
 				</Button>
 			</div>
 
@@ -110,15 +110,27 @@ onMounted(() => {
 				<CellGroupHeader>
 					<template #title>{{ $t('HISTORY.DETAILS.RECEIVER') }}</template>
 				</CellGroupHeader>
-				<Cell>
+				<Cell v-if="details.recIban">
 					<template #subtitle>{{ $t('HISTORY.DETAILS.ACCOUNT_ENROLLMENT') }}</template>
 					<template #title>{{ formatIban(details.recIban) }}</template>
 				</Cell>
-				<Cell>
+				<Cell v-if="details.knp">
+					<template #subtitle>{{ $t('HISTORY.DETAILS.KNP') }}</template>
+					<template #title>{{ details.knp }}</template>
+				</Cell>
+				<Cell v-if="details.receiptNumber">
 					<template #subtitle>{{ $t('HISTORY.DETAILS.RECEIPT_NUMBER') }}</template>
 					<template #title>{{ details.receiptNumber }}</template>
 				</Cell>
-				<Cell>
+				<Cell v-if="details.recIin">
+					<template #subtitle>{{ $t('HISTORY.DETAILS.RECEIVER_IIN') }}</template>
+					<template #title>{{ details.recIin }}</template>
+				</Cell>
+				<Cell v-if="details.recMobileNumber">
+					<template #subtitle>{{ $t('HISTORY.DETAILS.RECEIVER_PHONE') }}</template>
+					<template #title>+{{ details.recMobileNumber }}</template>
+				</Cell>
+				<Cell v-if="details.recFio">
 					<template #subtitle>{{ $t('HISTORY.DETAILS.RECEIVER_NAME') }}</template>
 					<template #title>{{ details.recFio }}</template>
 				</Cell>
