@@ -1,0 +1,20 @@
+nameOverride: deployment-name
+fullnameOverride: deployment-name
+image:
+  repository: registry.kmf.kz/namespace-name/servicename
+  tag: cicd_app_version
+replicaCount: '2'
+ingress:
+  enabled: true
+  urlIsOnline:
+    enabled: true
+  rewrite: /
+  base: branch-name
+  fullPrefix: /remote/transfers
+secondIngress:
+  enabled: true
+  urlIsOnline:
+    enabled: true
+  base: branch-name
+  rewrite: /assets/
+  fullPrefix: /bank/transfers/assets
