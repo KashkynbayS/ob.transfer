@@ -18,6 +18,7 @@ import { useStatusStore } from '@/stores/status'
 import { useSuccessStore } from '@/stores/success'
 import { useApplicationIDStore } from '@/stores/useApplicationIDStore'
 
+import { getFIOByPhone } from '@/services/phone.service'
 import { handleTransferSSEResponse } from '@/services/sse.service'
 import { TransferService } from '@/services/transfer.service'
 
@@ -28,7 +29,6 @@ import { TypeOfTransfer } from '@/types/transfer'
 
 import { validateInternalPhone } from '@/helpers/internal-form.helper'
 
-
 const phoneStore = usePhoneStore()
 const successStore = useSuccessStore()
 const statusStore = useStatusStore()
@@ -38,8 +38,8 @@ phoneStore.clearErrors()
 
 const form = ref<PhoneForm>({
 	from: undefined,
-	phoneNumber: '+77072165757',
-	receiverName: 'Дастан Р.',
+	phoneNumber: '',
+	receiverName: '',
 	iin: '910503300507', 
 	amount: null,
 	transferType: 'phone'
@@ -182,6 +182,20 @@ const handleSubmit = async (e: Event | null = null) => {
 // 	}
 // };
 
+
+const handleNameUpdate = async () => {
+	form.value.receiverName = '';
+    try {
+		if (form.value.phoneNumber.length === 16) {
+            const response = await getFIOByPhone.get(form.value.phoneNumber.split(' ').join(''))
+            const receiverName = `${response.firstname.RU} ${response.lastname.RU[0]}.`;
+            form.value.receiverName = receiverName;
+        }
+    } catch (error) {
+        console.error('Ошибка при получении данных о получателе:', error)
+    }
+}
+
 // _________________________________________
 </script>
 
@@ -196,7 +210,7 @@ const handleSubmit = async (e: Event | null = null) => {
 					:label="$t('OWN.FORM.FROM')"
 				/>
 
-				<SelectContactInput v-model="form.phoneNumber" />
+				<SelectContactInput v-model="form.phoneNumber" @input="handleNameUpdate()" :helperText="form.receiverName"/>
 
 				<CurrencyInput
 					id="123"
