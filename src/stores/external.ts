@@ -8,6 +8,7 @@ import {
 	validateAmount,
 	validateIban,
 	validateIin,
+	validateKbe,
 	validateKnp,
 	validateReceiverName
 } from '@/utils/validators'
@@ -17,6 +18,7 @@ export interface ExternalStore extends FormStore {}
 // TODO: Добавить остальную валидацию после внедрения ТЗ и реализации API
 const formSchema = object({
 	iban: validateIban('iban', 'EXTERNAL.FORM.ERRORS.EMPTY_IBAN'),
+	kbe: validateKbe('kbe', 'KBE.TITLE'),
 	knp: validateKnp('knp', 'KNP.TITLE'),
 	iin: validateIin('iin', 'EXTERNAL.FORM.ERRORS.EMPTY_IIN'),
 	receiverName: validateReceiverName('receiverName', 'EXTERNAL.FORM.ERRORS.EMPTY_RECEIVER_NAME'),
@@ -34,6 +36,7 @@ export const useExternalStore = defineStore('external', {
 		state: FORM_STATE.INITIAL,
 		errors: {
 			iban: '',
+			kbe: '',
 			knp: '',
 			iin: '',
 			receiverName: '',
@@ -67,6 +70,7 @@ export const useExternalStore = defineStore('external', {
 			} else {
 				this.errors = {
 					iban: '',
+					kbe: '',
 					knp: '',
 					iin: '',
 					receiverName: '',

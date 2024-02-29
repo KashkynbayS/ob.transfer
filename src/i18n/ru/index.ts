@@ -3,6 +3,7 @@ import { ERROR } from './error'
 import { EXTERNAL } from './external'
 import { HISTORY } from './history'
 import { INTERNAL } from './internal'
+import { KBE } from './kbe'
 import { KNP } from './knp'
 import { OTP } from './otp'
 import { OWN } from './own'
@@ -16,6 +17,7 @@ export const I18N = {
 	OWN,
 	SUCCESS,
 	EXTERNAL,
+	KBE,
 	KNP,
 	ACCOUNTS_GROUPS,
 	TRANSFER_DETAILS,
