@@ -2,12 +2,15 @@
 import RejectedIcon from '@/assets/icons/rejected.svg';
 import TimeIcon from '@/assets/icons/time.svg';
 
-import { CURRENCY_SYMBOL } from '@/constants';
 import { CURRENCY, HistoryItem } from '@/types';
 
-defineProps<{
+import { useFormattedCurrency } from '@/hooks/useFormattedCurrency';
+
+const props = defineProps<{
 	transaction: HistoryItem
 }>()
+
+const formattedAmount = useFormattedCurrency(props.transaction.amount, CURRENCY.KZT).formattedCurrency
 
 const mapIcon = (transaction: HistoryItem) => {
 	switch (transaction.status) {
@@ -25,11 +28,10 @@ const mapIcon = (transaction: HistoryItem) => {
 </script>
 
 <template>
-	<span class="transaction-value" :class="transaction.status">
-		<Component :is="mapIcon(transaction)" />
+	<span class="transaction-value" :class="props.transaction.status">
+		<Component :is="mapIcon(props.transaction)" />
 		<span>
-			{{ transaction.amount }}
-			{{ CURRENCY_SYMBOL[CURRENCY.KZT] }}
+			{{ formattedAmount }}
 		</span>
 	</span>
 </template>

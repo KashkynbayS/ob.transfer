@@ -1,13 +1,15 @@
 <script setup lang="ts">
-import Error from '@/assets/images/error.png'
-import Info from '@/assets/images/info.svg'
-import Success from '@/assets/images/success.png'
-import StatusPageLayout from '@/layouts/StatusPageLayout.vue'
-import { useStatusStore } from '@/stores/status.ts'
-import { SseResponseStatusAction } from '@/types'
 import { Button } from '@ui-kit/ui-kit'
 import { computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
+
+import Error from '@/assets/images/error.png'
+import Info from '@/assets/images/info.svg'
+import Success from '@/assets/images/success.png'
+
+import StatusPageLayout from '@/layouts/StatusPageLayout.vue'
+import { useStatusStore } from '@/stores/status.ts'
+import { SseResponseStatusAction } from '@/types'
 
 const router = useRouter()
 
@@ -38,13 +40,8 @@ onMounted(() => {
 <template>
 	<StatusPageLayout :image="image" :title="statusStore.title" title-width="80%" :text="statusStore.description">
 		<template #footer>
-			<Button
-				v-for="action in statusStore.actions"
-				id="status-action"
-				:key="action.url"
-				:type="action.type === 'secondary' ? 'ghost' : 'primary'"
-				@click="handleClick(action)"
-			>
+			<Button v-for="action in statusStore.actions" id="status-action" :key="action.url"
+				:type="action.type === 'secondary' ? 'ghost' : 'primary'" @click="handleClick(action)">
 				{{ action.title }}
 			</Button>
 		</template>
