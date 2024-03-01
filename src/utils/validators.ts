@@ -10,6 +10,9 @@ export const validateToFunc = (value: string | undefined) => !value
 // Functions of validation IBAN
 export const validateIbanFunc = (value: string | undefined) => !value
 
+// Functions of validation KBE
+export const validateKbeFunc = (value: object | undefined | null) => !value
+
 // Functions of validation KNP
 export const validateKnpFunc = (value: object | undefined | null) => !value
 
@@ -79,6 +82,14 @@ export const validateIban = (field: string, errorText: string) =>
 	string().test(field, errorText, function (value) {
 		return !validateIbanFunc(value)
 	})
+
+// Validation KBE
+export const validateKbe = (field: string, errorText: string) =>
+	object()
+		.nullable()
+		.test(field, errorText, function (value) {
+			return !validateKbeFunc(value)
+		})
 
 // Validation KNP
 export const validateKnp = (field: string, errorText: string) =>

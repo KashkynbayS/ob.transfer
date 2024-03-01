@@ -7,6 +7,7 @@ import PageTemplate from '@/layouts/PageTemplate.vue'
 
 import AccountDropdown from '@/components/AccountDropdown.vue'
 import AppNavbar from '@/components/AppNavbar.vue'
+import KbeDropdown from '@/components/KbeDropdown.vue'
 import KnpDropdown from '@/components/KnpDropdown.vue'
 
 import { ACCOUNTS_GROUPS } from '@/mocks/internal'
@@ -27,6 +28,7 @@ import { useApplicationIDStore } from '@/stores/useApplicationIDStore'
 import { CURRENCY } from '@/types'
 import { ExternalForm } from '@/types/external'
 import { FORM_STATE } from '@/types/form'
+import { Kbe } from '@/types/kbe'
 import { Knp } from '@/types/knp'
 import { TypeOfTransfer } from '@/types/transfer'
 
@@ -42,6 +44,7 @@ externalStore.clearErrors()
 const form = ref<ExternalForm>({
 	from: undefined,
 	iban: formData.value?.recIban || 'KZ86601A871003328701',
+	kbe: null,
 	knp: null,
 	iin: formData.value?.recIin || '910503300507',
 	receiverName: formData.value?.recFio || '',
@@ -142,6 +145,10 @@ const handleSubmit = (e: Event | null = null) => {
 	})
 }
 
+const handleKbeUpdate = () => {
+	externalStore.clearErrors('kbe')
+}
+
 const handleKnpUpdate = () => {
 	externalStore.clearErrors('knp')
 }
@@ -191,6 +198,13 @@ const handleIINUpdate = async () => {
 				:helper-text="!!externalStore.errors.iin ? $t(externalStore.errors.iin) : ''"
 				@update:model-value="externalStore.clearErrors('iin')"
 				@input="handleIINUpdate"
+			/>
+			<KbeDropdown
+				id="kbe"
+				v-model="form.kbe as Kbe | null"
+				:error-invalid="!!externalStore.errors.kbe"
+				:helper-text="!!externalStore.errors.kbe ? $t(externalStore.errors.kbe) : ''"
+				:update-field="handleKbeUpdate"
 			/>
 			<KnpDropdown
 				id="knp"
