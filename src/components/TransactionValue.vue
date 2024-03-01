@@ -1,33 +1,53 @@
 <script setup lang="ts">
-import { Transaction } from '@/types'
-import TimeIcon from '@/assets/icons/time.svg'
-import { CURRENCY_SYMBOL } from '@/constants'
+import RejectedIcon from '@/assets/icons/rejected.svg';
+import TimeIcon from '@/assets/icons/time.svg';
+
+import { CURRENCY_SYMBOL } from '@/constants';
+import { CURRENCY, HistoryItem } from '@/types';
 
 defineProps<{
-	transaction: Transaction
+	transaction: HistoryItem
 }>()
+
+const mapIcon = (transaction: HistoryItem) => {
+	switch (transaction.status) {
+		case 'waiting':
+		case 'in_progress':
+			return TimeIcon;
+		case 'rejected':
+		case 'removed':
+			return RejectedIcon;
+		default:
+			return null;
+	}
+}
+
 </script>
 
 <template>
 	<span class="transaction-value" :class="transaction.status">
-		<TimeIcon v-if="transaction.status === 'waiting'" />
-		{{ transaction.status === 'credited' ? '+' : transaction.status === 'removed' ? '-' : '' }}
-		{{ transaction.value }}
-		{{ CURRENCY_SYMBOL[transaction.currency] }}
+		<Component :is="mapIcon(transaction)" />
+		<span>
+			{{ transaction.amount }}
+			{{ CURRENCY_SYMBOL[CURRENCY.KZT] }}
+		</span>
 	</span>
 </template>
 
 <style scoped lang="scss">
 .transaction-value {
-	&.credited {
-		color: var(--text-green);
+	display: flex;
+	gap: var(--space-1);
+	align-items: center;
+
+	&.removed,
+	&.rejected {
+		color: var(--text-error);
 	}
 
-	&.waiting {
-		display: flex;
-		align-items: center;
+	&.waiting,
+	&.in_progress {
 		color: #ffd500;
-		gap: var(--space-1);
 	}
 }
 </style>

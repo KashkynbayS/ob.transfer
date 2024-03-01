@@ -6,7 +6,7 @@ export const HISTORY = {
         REPLENISHMENT: 'Депозит {deposit}',
         WITHDRAWAL: 'Счет {currency}',
         CONVERSION: 'Счет {currency}',
-        EXTERNAL: 'Клиенту другого Банка',
+        EXTERNAL: 'Счет {iban}',
         PHONE: 'По номеру {phone}',
         UNKNOWN: 'Счет {currency}',
     },

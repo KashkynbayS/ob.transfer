@@ -2,7 +2,7 @@ import { HistoryFilter } from '@/stores/history.ts'
 import { CURRENCY } from '@/types/index.ts'
 import { TypeOfTransfer } from '@/types/transfer.ts'
 
-export type TransactionStatus = 'success' | 'in_progress' | 'waiting' | 'credited' | 'removed'
+export type TransactionStatus = 'success' | 'in_progress' | 'waiting' | 'credited' | 'removed' | 'rejected'
 
 export interface Transaction {
 	type: TypeOfTransfer
