@@ -4,3 +4,4 @@ export const ERROR = {
 	RETURN_TO_HOMEPAGE: 'Вернуться на главную',
 	REPEAT: 'Повторить',
 }
+

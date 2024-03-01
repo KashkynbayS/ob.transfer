@@ -1,57 +1,118 @@
 <script setup lang="ts">
+import { computed, onMounted, ref, watchEffect } from 'vue'
+import { useRouter } from 'vue-router'
+
+import DepositIcon from '@/assets/icons/deposit.svg'
+import TransfersIcon from '@ui-kit/kmf-icons/finance/transfers/transfers.svg'
+
+import KmfSemifilledIcon from '@ui-kit/kmf-icons/logos/kmf-semifilled.svg'
+import { Cell, CellGroup } from '@ui-kit/ui-kit'
+
+
 import ArrowRoundIcon from '@/assets/icons/arrow-round.svg'
 import FiltersIcon from '@/assets/icons/filters.svg'
 import AppNavbar from '@/components/AppNavbar.vue'
 import AppTags from '@/components/AppTags.vue'
 import HistorySettings from '@/components/HistorySettings.vue'
-import TransactionValue from '@/components/TransactionValue.vue'
-import { CURRENCY_SYMBOL } from '@/constants'
 import { useHistoryStore } from '@/stores/history.ts'
-import { Tag, TransactionGroup } from '@/types'
+import { CURRENCY, HistoryGroup, HistoryItem, Tag } from '@/types'
 import { TypeOfTransfer } from '@/types/transfer.ts'
+import { maskIban, maskPhoneNumber } from '@/utils'
+import { useI18n } from 'vue-i18n'
 // import AccountNewIcon from '@ui-kit/kmf-icons/finance/accounts/account-new.svg'
-import TransfersIcon from '@ui-kit/kmf-icons/finance/transfers/transfers.svg'
-import { Cell, CellGroup } from '@ui-kit/ui-kit'
-import { computed, onMounted, ref } from 'vue'
-import { useRouter } from 'vue-router'
 
+const { t } = useI18n();
 const router = useRouter()
 const historyStore = useHistoryStore()
 
-const typeMapping: Record<TypeOfTransfer, string> = {
-	[TypeOfTransfer.BetweenMyAccountsConversionUSD]:'HISTORY.TYPE_OF_TRANSFER.USD_CONVERTION',
-	[TypeOfTransfer.BetweenMyAccountsDepositReplenishment]:'HISTORY.TYPE_OF_TRANSFER.OWN',
-	[TypeOfTransfer.BetweenMyAccountsWithdrawalFromDeposit]:'HISTORY.TYPE_OF_TRANSFER.OWN',
-	[TypeOfTransfer.InternalByPhone]:'HISTORY.TYPE_OF_TRANSFER.INTERNAL',
-	[TypeOfTransfer.InternalByAccount]:'HISTORY.TYPE_OF_TRANSFER.INTERNAL',
-	[TypeOfTransfer.External]: 'HISTORY.TYPE_OF_TRANSFER.EXTERNAL'
+// const typeMapping: Record<TypeOfTransfer, string> = {
+// 	[TypeOfTransfer.Conversion]: 'HISTORY.TYPE_OF_TRANSFER.USD_CONVERTION',
+// 	[TypeOfTransfer.DepositReplenishment]: 'HISTORY.TYPE_OF_TRANSFER.OWN',
+// 	[TypeOfTransfer.DepositWithdrawal]: 'HISTORY.TYPE_OF_TRANSFER.OWN',
+// 	[TypeOfTransfer.InternalPhone]: 'HISTORY.TYPE_OF_TRANSFER.INTERNAL',
+// 	[TypeOfTransfer.InternalIban]: 'HISTORY.TYPE_OF_TRANSFER.INTERNAL',
+// 	[TypeOfTransfer.External]: 'HISTORY.TYPE_OF_TRANSFER.EXTERNAL'
+// }
+
+// const transferMapping: Record<TypeOfTransfer, string> = {
+// 	[TypeOfTransfer.Conversion]: 'HISTORY.TYPE_OF_TRANSFER.USD_CONVERTION',
+// 	[TypeOfTransfer.DepositReplenishment]: 'HISTORY.TYPE_OF_TRANSFER.OWN',
+// 	[TypeOfTransfer.DepositWithdrawal]: 'HISTORY.TYPE_OF_TRANSFER.OWN',
+// 	[TypeOfTransfer.InternalPhone]: 'HISTORY.TYPE_OF_TRANSFER.INTERNAL',
+// 	[TypeOfTransfer.InternalIban]: 'HISTORY.TYPE_OF_TRANSFER.INTERNAL',
+// 	[TypeOfTransfer.External]: 'HISTORY.TYPE_OF_TRANSFER.EXTERNAL'
+// }
+
+const mapDescription = (transaction: HistoryItem) => {
+	switch (transaction.typeOfTransfer) {
+		case TypeOfTransfer.Conversion:
+			return 'HISTORY.TRANSACTION_DESCRIPTION.CONVERSION'
+		case TypeOfTransfer.DepositReplenishment:
+			return 'HISTORY.TRANSACTION_DESCRIPTION.REPLENISHMENT'
+		case TypeOfTransfer.DepositWithdrawal:
+			return 'HISTORY.TRANSACTION_DESCRIPTION.WITHDRAWAL'
+		case TypeOfTransfer.InternalPhone:
+		case TypeOfTransfer.InternalIban:
+			return 'HISTORY.TRANSACTION_DESCRIPTION.INTERNAL'
+		case TypeOfTransfer.External:
+			return 'HISTORY.TRANSACTION_DESCRIPTION.EXTERNAL'
+		default:
+			return 'HISTORY.TRANSACTION_DESCRIPTION.UNKNOWN'
+	}
 }
 
-const transferMapping: Record<TypeOfTransfer, string> = {
-	[TypeOfTransfer.BetweenMyAccountsConversionUSD]:'HISTORY.TYPE_OF_TRANSFER.USD_CONVERTION',
-	[TypeOfTransfer.BetweenMyAccountsDepositReplenishment]:'Счет KZT —> Депозит',
-	[TypeOfTransfer.BetweenMyAccountsWithdrawalFromDeposit]:'Депозит —> Счет KZT',
-	[TypeOfTransfer.InternalByPhone]:`Счет KZT —> Дастан Р`,
-	[TypeOfTransfer.InternalByAccount]:'Счет KZT —> Дастан Р.',
-	[TypeOfTransfer.External]: 'Halyk bank *8701'
+const mapInternalTitle = (transaction: HistoryItem) => {
+	if (transaction.recFio) {
+		return transaction.recFio
+	}
+	if (transaction.recMobileNumber) {
+		return t('HISTORY.TRANSACTION_TITLE.PHONE', { phone: maskPhoneNumber(transaction.recMobileNumber) })
+	}
+	return t('HISTORY.TRANSACTION_TITLE.UNKNOWN', { currency: CURRENCY.KZT.toUpperCase() })
 }
 
-const typeIconMapping: Record<TypeOfTransfer, string> = {
-	[TypeOfTransfer.BetweenMyAccountsConversionUSD]:ArrowRoundIcon,
-	[TypeOfTransfer.BetweenMyAccountsDepositReplenishment]:TransfersIcon,
-	[TypeOfTransfer.BetweenMyAccountsWithdrawalFromDeposit]:TransfersIcon,
-	[TypeOfTransfer.InternalByPhone]:TransfersIcon,
-	[TypeOfTransfer.InternalByAccount]:TransfersIcon,
-	[TypeOfTransfer.External]: TransfersIcon
+const mapTitle = (transaction: HistoryItem) => {
+	switch (transaction.typeOfTransfer) {
+		case TypeOfTransfer.Conversion:
+			return t('HISTORY.TRANSACTION_TITLE.CONVERSION', { currency: CURRENCY.KZT.toUpperCase() })
+		case TypeOfTransfer.DepositReplenishment:
+			return t('HISTORY.TRANSACTION_TITLE.REPLENISHMENT', { deposit: `*${transaction.recIban?.slice(-4)}` })
+		case TypeOfTransfer.DepositWithdrawal:
+			return t('HISTORY.TRANSACTION_TITLE.WITHDRAWAL', { currency: CURRENCY.KZT.toUpperCase() })
+		case TypeOfTransfer.InternalPhone:
+		case TypeOfTransfer.InternalIban:
+			return mapInternalTitle(transaction)
+		case TypeOfTransfer.External:
+			return t('HISTORY.TRANSACTION_TITLE.EXTERNAL', { account: transaction.recIban ? maskIban(transaction.recIban) : '' })
+		default:
+			return t('HISTORY.TRANSACTION_TITLE.UNKNOWN', { currency: CURRENCY.KZT.toUpperCase() })
+	}
 }
 
-const history = computed<TransactionGroup[]>(() => historyStore.transformedHistory)
+const mapIcon = (type: TypeOfTransfer) => {
+	switch (type) {
+		case TypeOfTransfer.Conversion:
+			return ArrowRoundIcon
+		case TypeOfTransfer.DepositReplenishment:
+		case TypeOfTransfer.DepositWithdrawal:
+			return DepositIcon
+		case TypeOfTransfer.External:
+			return TransfersIcon
+		case TypeOfTransfer.InternalPhone:
+		case TypeOfTransfer.InternalIban:
+			return KmfSemifilledIcon
+		default:
+			return ArrowRoundIcon
+	}
+}
+
+const history = computed<HistoryGroup[]>(() => historyStore.transformedHistory)
 
 const openDetails = (id: string) => {
 	router.push({
-		name: 'TransactionDetails',
+		name: 'Details',
 		params: {
-			transactionId: id
+			id
 		}
 	})
 }
@@ -82,12 +143,18 @@ const removeHandler = (filterValue: string) => {
 onMounted(() => {
 	historyStore.fetchHistory()
 })
+
+watchEffect(() => {
+	console.log(historyStore.transformedHistory)
+})
 </script>
 
 <template>
 	<div class="history">
 		<AppNavbar>
-			<template #title><h5>{{ $t('HISTORY.TITLE') }}</h5></template>
+			<template #title>
+				<h5>{{ $t('HISTORY.TITLE') }}</h5>
+			</template>
 			<template #label>
 				<button id="history-filters-btn" class="history__filters" @click="openSettings">
 					<FiltersIcon />
@@ -97,23 +164,19 @@ onMounted(() => {
 
 		<AppTags class="history__tags" :tags="filters" @removed="removeHandler" />
 
-		<CellGroup v-for="transactionGroup in history" :key="transactionGroup.title" class="transaction-group">
+		<CellGroup v-for="group in history" :key="group.title" class="transaction-group">
 			<div class="transaction-group__title">
-				{{ $t(transactionGroup.title) }}
+				{{ group.isTitleWithTranslation ? $t(group.title) : group.title }}
 			</div>
-			<Cell reverse 
-				v-for="transaction in transactionGroup.list"
-				:key="transaction.id"
-				left-color="var(--text-low-contrast)"
-				left-type="icon"
-				left-bg="var(--bg-dark)"
-				@click="openDetails(transaction.id)"
-			>
+			<Cell reverse v-for="item in group.list" :key="item.id" left-color="var(--text-low-contrast)" left-type="icon"
+				left-bg="var(--bg-dark)" @click="openDetails(item.id)">
 				<template #left>
-					<Component :is="typeIconMapping[transaction.type]" />
+					{{ item.typeOfTransfer }}
+					<Component :is="mapIcon(item.typeOfTransfer)" />
 				</template>
-				<template #title>{{ $t(transferMapping[transaction.type]) }}</template>
-				<template #subtitle><span class="text-caption">{{ $t(typeMapping[transaction.type]) }}</span></template>
+				<template #title>{{ mapTitle(item) }}</template>
+				<template #subtitle><span class="text-caption">{{ $t(mapDescription(item)) }}</span></template>
+				<!-- 
 				<template #right>
 					<div class="history__value">
 						<TransactionValue :transaction="transaction" />
@@ -122,7 +185,7 @@ onMounted(() => {
 							{{ CURRENCY_SYMBOL[transaction.currency] }}
 						</span>
 					</div>
-				</template>
+				</template> -->
 			</Cell>
 		</CellGroup>
 

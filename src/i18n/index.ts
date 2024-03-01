@@ -14,6 +14,7 @@ const I18N_DEFAULT_LANG = 'ru'
 const I18N_FALLBACK_LANG = 'en'
 
 export const i18nPlugin = createI18n({
+	legacy: false,
 	locale: I18N_DEFAULT_LANG,
 	messages: I18N_MESSAGES,
 	fallbackLocale: I18N_FALLBACK_LANG

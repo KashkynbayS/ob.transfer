@@ -11,3 +11,8 @@ export function maskAmount(amount: number | null = null, currency: CURRENCY = CU
 export function maskIban(iban: string) {
 	return iban.substring(0, 2) + '****' + iban.slice(-4)
 }
+
+export function maskPhoneNumber(number: string) {
+	const numStr = number.toString();
+	return `+7 (${numStr.substring(1, 4)}) ${numStr.substring(4, 7)} ${numStr.substring(7)}`;
+}

@@ -1,19 +1,22 @@
 <script setup lang="ts">
-import ArrowRoundIcon from '@/assets/icons/arrow-round.svg'
-import ShareIcon from '@/assets/icons/share.svg'
+import { Button, Cell, CellGroup, CellGroupHeader } from '@ui-kit/ui-kit'
+import { computed, onMounted } from 'vue'
+import { useRoute } from 'vue-router'
+
 import AppNavbar from '@/components/AppNavbar.vue'
 import { useFormAutoFill } from '@/helpers/useFormAutoFill.ts'
 import { useHistoryStore } from '@/stores/history.ts'
 import { FormParams, TransactionStatus } from '@/types'
-import { Button, Cell, CellGroup, CellGroupHeader } from '@ui-kit/ui-kit'
-import { computed, onMounted } from 'vue'
-import { useRoute } from 'vue-router'
+import { formatDateTime } from '@/utils'
+
+import ArrowRoundIcon from '@/assets/icons/arrow-round.svg'
+import ShareIcon from '@/assets/icons/share.svg'
 
 const route = useRoute()
 const historyStore = useHistoryStore()
 const { routerPushWithData } = useFormAutoFill()
 
-const transactionId = computed(() => route.params.transactionId as string)
+const transactionId = computed(() => route.params.id as string)
 const details = computed(() => historyStore.getTransactionById(transactionId.value))
 
 const statuses: Record<TransactionStatus, string> = {
@@ -24,29 +27,14 @@ const statuses: Record<TransactionStatus, string> = {
 	removed: 'HISTORY.STATUS.REMOVED'
 }
 
-function formatDateTime(inputString: string | undefined): string {
-	if (!inputString) {
-		return ''
-	}
-
-	const date = new Date(inputString)
-	const options: Intl.DateTimeFormatOptions = {
-		day: 'numeric',
-		month: 'long',
-		hour: '2-digit',
-		minute: '2-digit'
-	}
-	return date.toLocaleDateString('ru-RU', options)
-}
-
 const formattedDateTime = computed(() => formatDateTime(details.value?.createdAt))
 
 function formatIban(input: string): string {
 	if (input.length !== 20) {
-		throw new Error('Неверный формат IBAN')
+		return input
 	}
 
-	return `${input.slice(0, 4)} ${input.slice(4, 8)} ${input.slice(8, 12)} ${input.slice(12, 16)} ${input.slice(16)}`
+	return input.match(/.{1,4}/g)?.join(' ') || '';
 }
 
 function repeatAction() {
@@ -70,7 +58,9 @@ onMounted(() => {
 <template>
 	<div class="details">
 		<AppNavbar>
-			<template #title><h5>{{ $t('HISTORY.DETAILS.TITLE') }}</h5></template>
+			<template #title>
+				<h5>{{ $t('HISTORY.DETAILS.TITLE') }}</h5>
+			</template>
 		</AppNavbar>
 
 		<template v-if="details">

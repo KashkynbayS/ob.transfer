@@ -9,7 +9,7 @@ const page = ref(route.name === 'InternalPhone' ? 'phone' : 'account')
 
 watch(page, () => {
 	router.replace({
-		name: page.value === 'phone' ? 'InternalPhone' : 'InternalAccount'
+		name: page.value === 'phone' ? 'InternalPhone' : 'InternalIban'
 	})
 })
 </script>
@@ -22,23 +22,20 @@ watch(page, () => {
 			</template>
 		</AppNavbar>
 		<div class="internal">
-			<SegmentedControl
-				v-model="page"
-				:options="[
-					{
-						id: 'phone',
-						value: 'phone',
-						label: $t('INTERNAL.TABS.PHONE'),
-						disabled: false
-					},
-					{
-						id: 'account',
-						value: 'account',
-						label: $t('INTERNAL.TABS.IBAN'),
-						disabled: false
-					}
-				]"
-			/>
+			<SegmentedControl v-model="page" :options="[
+				{
+					id: 'phone',
+					value: 'phone',
+					label: $t('INTERNAL.TABS.PHONE'),
+					disabled: false
+				},
+				{
+					id: 'account',
+					value: 'account',
+					label: $t('INTERNAL.TABS.IBAN'),
+					disabled: false
+				}
+			]" />
 		</div>
 
 		<router-view></router-view>

@@ -1,7 +1,8 @@
 import { CURRENCY_SYMBOL } from '@/constants'
 import { HistoryService } from '@/services/history.service.ts'
 import { useLoadingStore } from '@/stores/loading.ts'
-import { BaseError, CURRENCY, HistoryParams, Tag, Transaction, TransactionFromApi, TransactionGroup } from '@/types'
+import { BaseError, CURRENCY, HistoryGroup, HistoryItem, HistoryParams, Tag } from '@/types'
+import { TypeOfTransfer } from '@/types/transfer'
 import { useDateFormat } from '@vueuse/core'
 import { defineStore } from 'pinia'
 import { reactive } from 'vue'
@@ -33,7 +34,7 @@ export const filters = reactive<Filter[]>([
 
 interface HistorySchema {
 	settings: HistorySettings
-	history: TransactionFromApi[]
+	history: HistoryItem[]
 	errorMsg: string
 }
 
@@ -109,7 +110,7 @@ export const useHistoryStore = defineStore('history', {
 			return (transactionId: string) => this.history.find((transaction) => transaction.id === transactionId)
 		},
 		transformedHistory() {
-			const output: TransactionGroup[] = []
+			const output: HistoryGroup[] = []
 
 			this.history.forEach((transfer) => {
 				const date = new Date(transfer.createdAt)
@@ -119,40 +120,90 @@ export const useHistoryStore = defineStore('history', {
 				const dayBeforeYesterday = new Date()
 				dayBeforeYesterday.setDate(today.getDate() - 2)
 
-				let caption = ''
+				let title = ''
+				let isTitleWithTranslation = false;
 				if (date.toDateString() === yesterday.toDateString()) {
-					caption = 'HISTORY.YESTERDAY'
+					title = 'HISTORY.YESTERDAY'
+					isTitleWithTranslation = true;
 				} else if (date.toDateString() === dayBeforeYesterday.toDateString()) {
-					caption = 'HISTORY.DAY_BEFORE_YESTERDAY'
+					title = 'HISTORY.DAY_BEFORE_YESTERDAY'
+					isTitleWithTranslation = true;
 				} else {
 					const options: Intl.DateTimeFormatOptions = { day: 'numeric', month: 'long' }
-					caption = date.toLocaleDateString('ru-RU', options)
+					title = date.toLocaleDateString('ru-RU', options)
 				}
 
-				let group = output.find((g) => g.title === caption)
+				let group = output.find((g) => g.title === title)
 
 				if (!group) {
 					group = {
-						title: caption,
-						list: []
+						title,
+						isTitleWithTranslation,
+						list: [
+							{
+								status: 'in_progress',
+								amount: 0,
+								createdAt: new Date(),
+								iban: "KZ48888AA22040000148",
+								id: "efd6ee40-4762-4348-a6cc-00e269dde945",
+								kbe: "",
+								knp: "",
+								recBin: "",
+								recCompany: "",
+								recFio: "",
+								recIban: "KZ86125KZT5004100100",
+								recIin: "930603350424",
+								typeOfTransfer: TypeOfTransfer.DepositReplenishment
+							},
+							{
+								status: 'in_progress',
+								amount: 0,
+								createdAt: new Date(),
+								iban: "KZ48888AA22040000148",
+								id: "efd6ee40-4762-4348-a6cc-00e269dde945",
+								kbe: "",
+								knp: "",
+								recBin: "",
+								recCompany: "",
+								recFio: "",
+								recIban: "KZ86125KZT5004100100",
+								recIin: "930603350424",
+								typeOfTransfer: TypeOfTransfer.DepositWithdrawal
+							},
+							{
+								status: 'in_progress',
+								amount: 0,
+								createdAt: new Date(),
+								iban: "KZ48888AA22040000148",
+								id: "efd6ee40-4762-4348-a6cc-00e269dde945",
+								kbe: "",
+								knp: "",
+								recBin: "",
+								recCompany: "",
+								recFio: "",
+								recIban: "KZ86125KZT5004100100",
+								recIin: "930603350424",
+								typeOfTransfer: TypeOfTransfer.External
+							},
+						]
 					}
 					output.push(group)
 				}
 
-				const outputTransfer: Transaction = {
-					id: transfer.id,
-					currency: CURRENCY.KZT, // todo Необходимо уточнить, откуда брать валюту
-					caption: date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-					value: transfer.amount,
-					status: transfer.status,
-					type: transfer.typeOfTransfer
-				}
+				// const outputTransfer: Transaction = {
+				// 	id: transfer.id,
+				// 	currency: CURRENCY.KZT, // todo Необходимо уточнить, откуда брать валюту
+				// 	caption: date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+				// 	value: transfer.amount,
+				// 	status: transfer.status,
+				// 	type: transfer.typeOfTransfer
+				// }
 
-				if (transfer.commission) {
-					outputTransfer.commission = parseFloat(transfer.commission)
-				}
+				// if (transfer.commission) {
+				// 	outputTransfer.commission = parseFloat(transfer.commission)
+				// }
 
-				group.list.push(outputTransfer)
+				group.list.push(transfer)
 			})
 
 			return output

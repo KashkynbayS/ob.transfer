@@ -123,13 +123,13 @@ const rateHelperArgs = computed(() => {
 
 	return from.amount < to.amount
 		? {
-				from: `${from.amount} ${CURRENCY_SYMBOL[from.currency]}`,
-				to: `${to.amount} ${CURRENCY_SYMBOL[to.currency]}`
-		  }
+			from: `${from.amount} ${CURRENCY_SYMBOL[from.currency]}`,
+			to: `${to.amount} ${CURRENCY_SYMBOL[to.currency]}`
+		}
 		: {
-				to: `${from.amount} ${CURRENCY_SYMBOL[from.currency]}`,
-				from: `${to.amount} ${CURRENCY_SYMBOL[to.currency]}`
-		  }
+			to: `${from.amount} ${CURRENCY_SYMBOL[from.currency]}`,
+			from: `${to.amount} ${CURRENCY_SYMBOL[to.currency]}`
+		}
 })
 
 const handleWriteOffAmountChange = (event: InputEvent) => {
@@ -151,11 +151,11 @@ const handleEnrollmentAmountChange = (event: InputEvent) => {
 // TO DO Вынести отдельно
 const determineTypeOfTransfer = () => {
 	if (form.value.from?.currency !== form.value.to?.currency) {
-		return TypeOfTransfer.BetweenMyAccountsConversionUSD
+		return TypeOfTransfer.Conversion
 	} else if (form.value.from?.id === 'kzt-account' && form.value.to?.id === 'kzt-deposit') {
-		return TypeOfTransfer.BetweenMyAccountsDepositReplenishment
+		return TypeOfTransfer.DepositReplenishment
 	} else {
-		return TypeOfTransfer.BetweenMyAccountsWithdrawalFromDeposit
+		return TypeOfTransfer.DepositWithdrawal
 	}
 }
 
@@ -171,12 +171,12 @@ const handleSubmit = async (e: Event | null = null) => {
 		// Mock for UL
 		TransferService.initWithSSE(
 			{
-				iban:"KZ84888AB22040000174",
-    			depositNumber: "10-24/KMF01FL-00118",
+				iban: "KZ84888AB22040000174",
+				depositNumber: "10-24/KMF01FL-00118",
 				recIban: "KZ34888AB22060000146",
 				amount: String(form.value.amount),
 				typeOfTransfer: determineTypeOfTransfer()
-				
+
 				// iban: form.value.from!.iban,
 				// recIban: form.value.to!.iban,
 				// amount: String(form.value.amount),
@@ -352,55 +352,31 @@ onMounted(async () => {
 		</template>
 
 		<form class="form" @submit="handleSubmit">
-			<AccountDropdown
-				id="from"
-				v-model="form.from"
-				:accounts-groups="accountsGroups"
-				:label="$t('OWN.FORM.FROM')"
-				:disabled="form.to"
-				:error-invalid="!!ownStore.errors.from"
+			<AccountDropdown id="from" v-model="form.from" :accounts-groups="accountsGroups" :label="$t('OWN.FORM.FROM')"
+				:disabled="form.to" :error-invalid="!!ownStore.errors.from"
 				:helper-text="!!ownStore.errors.from ? $t(ownStore.errors.from) : ''"
-				:update-field="() => handleSelectsUpdate('from')"
-			/>
-			<AccountDropdown
-				id="to"
-				v-model="form.to"
-				:accounts-groups="accountsGroups"
-				:label="$t('OWN.FORM.TO')"
-				:disabled="form.from"
-				:error-invalid="!!ownStore.errors.to"
+				:update-field="() => handleSelectsUpdate('from')" />
+			<AccountDropdown id="to" v-model="form.to" :accounts-groups="accountsGroups" :label="$t('OWN.FORM.TO')"
+				:disabled="form.from" :error-invalid="!!ownStore.errors.to"
 				:helper-text="!!ownStore.errors.to ? $t(ownStore.errors.to) : ''"
-				:update-field="() => handleSelectsUpdate('to')"
-			/>
+				:update-field="() => handleSelectsUpdate('to')" />
 
 			<template v-if="hasDifferentCurrencies">
-				<CurrencyInput
-					id="writeOffAmount"
-					v-model="form.writeOffAmount"
+				<CurrencyInput id="writeOffAmount" v-model="form.writeOffAmount"
 					:label="$t('OWN.FORM.WRITE_OFF_AMOUNT', { currency: $t(writeOffCurrency) })"
 					:invalid="!!ownStore.errors.writeOffAmount"
 					:helper-text="ownStore.errors.writeOffAmount ? $t(ownStore.errors.writeOffAmount) : ''"
-					@input="handleWriteOffAmountChange"
-					@update:model-value="ownStore.clearErrors('writeOffAmount')"
-				/>
-				<CurrencyInput
-					id="enrollmentAmount"
-					v-model="form.enrollmentAmount"
+					@input="handleWriteOffAmountChange" @update:model-value="ownStore.clearErrors('writeOffAmount')" />
+				<CurrencyInput id="enrollmentAmount" v-model="form.enrollmentAmount"
 					:label="$t('OWN.FORM.ENROLLMENT_AMOUNT', { currency: $t(enrollmentCurrency) })"
-					:helper-text="$t('OWN.FORM.RATE', rateHelperArgs)"
-					@input="handleEnrollmentAmountChange"
-				/>
+					:helper-text="$t('OWN.FORM.RATE', rateHelperArgs)" @input="handleEnrollmentAmountChange" />
 			</template>
 
 			<template v-else>
-				<CurrencyInput
-					id="amount"
-					v-model="form.amount"
-					:label="$t('OWN.FORM.AMOUNT')"
+				<CurrencyInput id="amount" v-model="form.amount" :label="$t('OWN.FORM.AMOUNT')"
 					:invalid="!!ownStore.errors.amount"
 					:helper-text="ownStore.errors.amount ? $t(ownStore.errors.amount) : $t('OWN.FORM.COMMISSION', rateHelperArgs)"
-					@update:model-value="ownStore.clearErrors('amount')"
-				/>
+					@update:model-value="ownStore.clearErrors('amount')" />
 			</template>
 
 			<Button id="ownSubmit" class="form__submit" type="primary" attr-type="submit" @click="handleSubmit">

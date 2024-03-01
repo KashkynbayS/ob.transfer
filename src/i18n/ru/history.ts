@@ -1,17 +1,27 @@
 export const HISTORY = {
-	TITLE: 'История',
+    TITLE: 'История',
     YESTERDAY: 'Вчера',
     DAY_BEFORE_YESTERDAY: 'Позавчера',
-    TYPE_OF_TRANSFER: {
-        OWN: 'Между своими счетами',
-        USD_CONVERTION: 'Конвертация',
+    TRANSACTION_TITLE: {
+        REPLENISHMENT: 'Депозит {deposit}',
+        WITHDRAWAL: 'Счет {currency}',
+        CONVERSION: 'Счет {currency}',
+        EXTERNAL: 'Клиенту другого Банка',
+        PHONE: 'По номеру {phone}',
+        UNKNOWN: 'Счет {currency}',
+    },
+    TRANSACTION_DESCRIPTION: {
+        REPLENISHMENT: 'Пополнение депозита',
+        WITHDRAWAL: 'Частичное снятие с депозита',
+        CONVERSION: 'Конвертация',
         INTERNAL: 'Клиенту КМФ',
         EXTERNAL: 'Клиенту другого Банка',
+        UNKNOWN: 'Другие переводы',
     },
-	DETAILS: {
-		TITLE: 'Детали платежа',
+    DETAILS: {
+        TITLE: 'Детали платежа',
         SHARE: 'Поделиться',
-		REPEAT: 'Повторить',
+        REPEAT: 'Повторить',
         WRITE_OFF_DETAILS: 'Детали списания',
         COMMISSION: 'Комиссия',
         RECEIPT_NUMBER: 'Номер квитанции',

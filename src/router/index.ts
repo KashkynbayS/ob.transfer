@@ -45,7 +45,7 @@ router.addRoute({
 				},
 				{
 					path: 'account',
-					name: 'InternalAccount',
+					name: 'InternalIban',
 					component: () => import('@/views/Internal/Iban.vue')
 				}
 			]
@@ -71,8 +71,8 @@ router.addRoute({
 			component: () => import('@/views/History.vue')
 		},
 		{
-			path: 'details/:transactionId',
-			name: 'TransactionDetails',
+			path: 'history/:id',
+			name: 'Details',
 			component: () => import('@/views/Details.vue')
 		},
 		{

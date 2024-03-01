@@ -14,9 +14,37 @@ export interface Transaction {
 	status: TransactionStatus
 }
 
+export interface HistoryItem {
+	amount: number;
+	bin?: string;
+	commission?: string;
+	createdAt: Date;
+	iban?: string;
+	id: string;
+	kbe?: string;
+	knp?: string;
+	recBin?: string;
+	recCompany?: string;
+	recFio?: string;
+	recIban?: string;
+	recIin?: string;
+	recMobileNumber?: string;
+	receiptNumber?: string;
+	status: TransactionStatus;
+	transferDescription?: string;
+	typeOfTransfer: number;
+}
+
 export interface TransactionGroup {
 	title: string
+	isTitleWithTranslation: boolean
 	list: Transaction[]
+}
+
+export interface HistoryGroup {
+	title: string
+	isTitleWithTranslation: boolean
+	list: HistoryItem[]
 }
 
 export interface TransactionFromApi {

@@ -40,7 +40,7 @@ const form = ref<PhoneForm>({
 	from: undefined,
 	phoneNumber: '',
 	receiverName: '',
-	iin: '910503300507', 
+	iin: '910503300507',
 	amount: null,
 	transferType: 'phone'
 })
@@ -148,7 +148,7 @@ const handleSubmit = async (e: Event | null = null) => {
 				// recIin: "910503300507",
 				recFio: form.value.receiverName,
 				amount: String(form.value.amount),
-				typeOfTransfer: TypeOfTransfer.InternalByPhone
+				typeOfTransfer: TypeOfTransfer.InternalPhone
 			},
 			(event) => {
 				phoneStore.setState(FORM_STATE.SUCCESS)
@@ -185,15 +185,15 @@ const handleSubmit = async (e: Event | null = null) => {
 
 const handleNameUpdate = async () => {
 	form.value.receiverName = '';
-    try {
+	try {
 		if (form.value.phoneNumber.length === 16) {
-            const response = await getFIOByPhone.get(form.value.phoneNumber.split(' ').join(''))
-            const receiverName = `${response.firstname.RU} ${response.lastname.RU[0]}.`;
-            form.value.receiverName = receiverName;
-        }
-    } catch (error) {
-        console.error('Ошибка при получении данных о получателе:', error)
-    }
+			const response = await getFIOByPhone.get(form.value.phoneNumber.split(' ').join(''))
+			const receiverName = `${response.firstname.RU} ${response.lastname.RU[0]}.`;
+			form.value.receiverName = receiverName;
+		}
+	} catch (error) {
+		console.error('Ошибка при получении данных о получателе:', error)
+	}
 }
 
 // _________________________________________
@@ -203,24 +203,16 @@ const handleNameUpdate = async () => {
 	<div>
 		<form class="internal-phone-form">
 			<div class="internal-phone-form-top">
-				<AccountDropdown
-					id="from"
-					v-model="form.from"
-					:accounts-groups="ACCOUNTS_GROUPS"
-					:label="$t('OWN.FORM.FROM')"
-				/>
+				<AccountDropdown id="from" v-model="form.from" :accounts-groups="ACCOUNTS_GROUPS"
+					:label="$t('OWN.FORM.FROM')" />
 
-				<SelectContactInput v-model="form.phoneNumber" @input="handleNameUpdate()" :helperText="form.receiverName"/>
+				<SelectContactInput v-model="form.phoneNumber" @input="handleNameUpdate()"
+					:helperText="form.receiverName" />
 
-				<CurrencyInput
-					id="123"
-					v-model="form.amount"
-					class="form-field"
-					:label="$t('INTERNAL.PHONE.FORM.SUM')"
+				<CurrencyInput id="123" v-model="form.amount" class="form-field" :label="$t('INTERNAL.PHONE.FORM.SUM')"
 					:invalid="!!phoneStore.errors.amount"
 					:helper-text="phoneStore.errors.amount ? $t(phoneStore.errors.amount) : ''"
-					@update:model-value="phoneStore.clearErrors('amount')"
-				/>
+					@update:model-value="phoneStore.clearErrors('amount')" />
 			</div>
 			<div class="internal-phone-form-bottom">
 				<Button id="123" type="primary" @click="handleSubmit"> {{ $t('INTERNAL.PHONE.FORM.SUBMIT') }} </Button>
