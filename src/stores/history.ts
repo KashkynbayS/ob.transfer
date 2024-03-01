@@ -2,7 +2,6 @@ import { CURRENCY_SYMBOL } from '@/constants'
 import { HistoryService } from '@/services/history.service.ts'
 import { useLoadingStore } from '@/stores/loading.ts'
 import { BaseError, CURRENCY, HistoryGroup, HistoryItem, HistoryParams, Tag } from '@/types'
-import { TypeOfTransfer } from '@/types/transfer'
 import { useDateFormat } from '@vueuse/core'
 import { defineStore } from 'pinia'
 import { reactive } from 'vue'
@@ -139,53 +138,7 @@ export const useHistoryStore = defineStore('history', {
 					group = {
 						title,
 						isTitleWithTranslation,
-						list: [
-							{
-								status: 'in_progress',
-								amount: 0,
-								createdAt: new Date(),
-								iban: "KZ48867AA22040000148",
-								id: "efd6ee40-4762-4348-a6cc-00e269dde945",
-								kbe: "",
-								knp: "",
-								recBin: "",
-								recCompany: "",
-								recFio: "",
-								recIban: "KZ86125KZT5004100100",
-								recIin: "930603350424",
-								typeOfTransfer: TypeOfTransfer.DepositReplenishment
-							},
-							{
-								status: 'in_progress',
-								amount: 0,
-								createdAt: new Date(),
-								iban: "KZ48867AA22040000148",
-								id: "efd6ee40-4762-4348-a6cc-00e269dde945",
-								kbe: "",
-								knp: "",
-								recBin: "",
-								recCompany: "",
-								recFio: "",
-								recIban: "KZ86125KZT5004100100",
-								recIin: "930603350424",
-								typeOfTransfer: TypeOfTransfer.DepositWithdrawal
-							},
-							{
-								status: 'in_progress',
-								amount: 0,
-								createdAt: new Date(),
-								iban: "KZ48826AA22040000148",
-								id: "efd6ee40-4762-4348-a6cc-00e269dde945",
-								kbe: "",
-								knp: "",
-								recBin: "",
-								recCompany: "",
-								recFio: "",
-								recIban: "KZ86601KZT5004100100",
-								recIin: "930603350424",
-								typeOfTransfer: TypeOfTransfer.External
-							},
-						]
+						list: []
 					}
 					output.push(group)
 				}

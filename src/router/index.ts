@@ -73,7 +73,7 @@ router.addRoute({
 		{
 			path: 'history/:id',
 			name: 'Details',
-			component: () => import('@/views/Details.vue')
+			component: () => import('@/views/History/Details.vue')
 		},
 		{
 			path: 'status',

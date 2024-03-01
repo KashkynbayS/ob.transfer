@@ -24,10 +24,11 @@ const statuses: Record<TransactionStatus, string> = {
 	in_progress: 'HISTORY.STATUS.IN_PROCESSING',
 	waiting: 'HISTORY.STATUS.WAITING',
 	credited: 'HISTORY.STATUS.CREDITED',
-	removed: 'HISTORY.STATUS.REMOVED'
+	removed: 'HISTORY.STATUS.REMOVED',
+	rejected: 'HISTORY.STATUS.REJECTED'
 }
 
-const formattedDateTime = computed(() => formatDateTime(details.value?.createdAt))
+const formattedDateTime = computed(() => details.value ? formatDateTime(details.value.createdAt) : '')
 
 function formatIban(input: string): string {
 	if (input.length !== 20) {
@@ -88,7 +89,7 @@ onMounted(() => {
 				</CellGroupHeader>
 				<Cell>
 					<template #subtitle>{{ $t('HISTORY.DETAILS.WRITE_OFF_ACCOUNT') }}</template>
-					<template #title>{{ formatIban(details.iban) }}</template>
+					<template #title>{{ details.iban ? formatIban(details.iban) : '' }}</template>
 				</Cell>
 				<Cell>
 					<template #subtitle>{{ $t('HISTORY.DETAILS.COMMISSION') }}</template>

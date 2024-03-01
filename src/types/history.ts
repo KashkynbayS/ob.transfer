@@ -18,7 +18,7 @@ export interface HistoryItem {
 	amount: number;
 	bin?: string;
 	commission?: string;
-	createdAt: Date;
+	createdAt: string;
 	iban?: string;
 	id: string;
 	kbe?: string;
