@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { reactive, ref, watch } from 'vue'
+import { computed, onMounted, reactive, ref, watch } from 'vue'
 
 import { onBeforeRouteLeave, useRouter } from 'vue-router'
 
@@ -9,7 +9,6 @@ import { SelectContactInput } from '@ui-kit/ui-kit/dist/widgets'
 
 import AccountDropdown from '@/components/AccountDropdown.vue'
 
-import { ACCOUNTS_GROUPS } from '@/mocks/internal'
 
 import { CURRENCY_SYMBOL } from '@/constants'
 
@@ -22,7 +21,7 @@ import { getFIOByPhone } from '@/services/phone.service'
 import { handleTransferSSEResponse } from '@/services/sse.service'
 import { TransferService } from '@/services/transfer.service'
 
-import { CURRENCY } from '@/types'
+import { Account, AccountsGroup, CURRENCY } from '@/types'
 import { FORM_STATE } from '@/types/form'
 import { PhoneForm } from '@/types/phone'
 import { TypeOfTransfer } from '@/types/transfer'
@@ -44,6 +43,16 @@ const form = ref<PhoneForm>({
 	amount: null,
 	transferType: 'phone'
 })
+
+const myAccounts = ref<Account[]>([])
+
+const accountsGroups = computed<AccountsGroup[]>(() => [
+	{
+		id: 'my-accounts',
+		title: 'ACCOUNTS_GROUPS.MY_ACCOUNTS',
+		list: myAccounts.value
+	}
+])
 
 // Modal
 const modal = ref<InstanceType<typeof Modal> | null>(null)
@@ -170,19 +179,6 @@ const handleSubmit = async (e: Event | null = null) => {
 	}
 }
 
-// const handleIINUpdate = async () => {
-// 	try {
-// 		if (form.value.iin.length === 12) {
-// 			const response = await getFioByIin.post(form.value.iin);
-// 			const { full_name: receiverName } = response;
-// 			form.value.receiverName = receiverName;
-// 		}
-// 	} catch (error) {
-// 		console.error('Ошибка при выполнении запроса:', error);
-// 	}
-// };
-
-
 const handleNameUpdate = async () => {
 	form.value.receiverName = '';
 	try {
@@ -196,6 +192,17 @@ const handleNameUpdate = async () => {
 	}
 }
 
+onMounted(async () => {
+	const deals = await TransferService.fetchDealsList()
+
+	myAccounts.value = deals.accounts.map((account) => ({
+		id: account.id,
+		currency: account.currency.name.toLowerCase() as CURRENCY,
+		iban: account.accNumber,
+		title: `ACCOUNTS_GROUPS.ACCOUNT_${account.currency.name.toUpperCase()}`,
+		amount: account.amount
+	}))
+})
 // _________________________________________
 </script>
 
@@ -203,7 +210,7 @@ const handleNameUpdate = async () => {
 	<div>
 		<form class="internal-phone-form">
 			<div class="internal-phone-form-top">
-				<AccountDropdown id="from" v-model="form.from" :accounts-groups="ACCOUNTS_GROUPS"
+				<AccountDropdown id="from" v-model="form.from" :accounts-groups="accountsGroups"
 					:label="$t('OWN.FORM.FROM')" />
 
 				<SelectContactInput v-model="form.phoneNumber" @input="handleNameUpdate()"
@@ -221,6 +228,7 @@ const handleNameUpdate = async () => {
 
 		<Modal ref="modal" v-bind="{ asd: 'asdasd' }" :actions="actions" close-on-outline-click>
 			<template #title>{{ $t('INTERNAL.MODAL.LEAVE_WHEN_FORM_IS_DIRTY.TITLE') }}</template>
+
 			<template #body>{{ $t('INTERNAL.MODAL.LEAVE_WHEN_FORM_IS_DIRTY.SUBTITLE') }}</template>
 		</Modal>
 	</div>

@@ -55,15 +55,7 @@ const form = ref<OwnForm>({
 	receiverName: 'Между своими счетами'
 })
 
-const myAccounts = ref<Account[]>([
-	{
-		id: 'kzt-account',
-		currency: CURRENCY.KZT,
-		amount: 389000.01,
-		iban: 'KZ84888AB22040000174',
-		title: 'ACCOUNTS_GROUPS.ACCOUNT_KZT'
-	}
-])
+const myAccounts = ref<Account[]>([])
 
 const myDeposits = ref<Account[]>([
 	{
@@ -329,15 +321,15 @@ watch(
 )
 
 onMounted(async () => {
-	// const deals = await TransferService.fetchDealsList()
+	const deals = await TransferService.fetchDealsList()
 
-	// myAccounts.value = deals.accounts.map((account) => ({
-	// 	id: account.id,
-	// 	currency: account.currency.name.toLowerCase() as CURRENCY,
-	// 	iban: account.accNumber,
-	// 	title: `ACCOUNTS_GROUPS.ACCOUNT_${account.currency.name.toUpperCase()}`,
-	// 	amount: account.amount
-	// }))
+	myAccounts.value = deals.accounts.map((account) => ({
+		id: account.id,
+		currency: account.currency.name.toLowerCase() as CURRENCY,
+		iban: account.accNumber,
+		title: `ACCOUNTS_GROUPS.ACCOUNT_${account.currency.name.toUpperCase()}`,
+		amount: account.amount
+	}))
 })
 </script>
 
@@ -352,8 +344,8 @@ onMounted(async () => {
 		</template>
 
 		<form class="form" @submit="handleSubmit">
-			<AccountDropdown id="from" v-model="form.from" :accounts-groups="accountsGroups" :label="$t('OWN.FORM.FROM')"
-				:disabled="form.to" :error-invalid="!!ownStore.errors.from"
+			<AccountDropdown id="from" v-model="form.from" :accounts-groups="accountsGroups"
+				:label="$t('OWN.FORM.FROM')" :disabled="form.to" :error-invalid="!!ownStore.errors.from"
 				:helper-text="!!ownStore.errors.from ? $t(ownStore.errors.from) : ''"
 				:update-field="() => handleSelectsUpdate('from')" />
 			<AccountDropdown id="to" v-model="form.to" :accounts-groups="accountsGroups" :label="$t('OWN.FORM.TO')"
