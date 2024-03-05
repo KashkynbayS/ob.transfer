@@ -12,7 +12,7 @@ const props = defineProps<{
 
 const formattedAmount = useFormattedCurrency(props.transaction.amount, CURRENCY.KZT).formattedCurrency
 
-const mapIcon = (transaction: HistoryItem) => {
+const mapIcon = (transaction: HistoryItem): typeof TimeIcon | typeof RejectedIcon | string => {
 	switch (transaction.status) {
 		case 'waiting':
 		case 'in_progress':
@@ -21,7 +21,7 @@ const mapIcon = (transaction: HistoryItem) => {
 		case 'removed':
 			return RejectedIcon;
 		default:
-			return null;
+			return 'span';
 	}
 }
 
