@@ -1,15 +1,19 @@
-import * as dayjs from 'dayjs';
-
-import * as timezone from 'dayjs/plugin/timezone';
-
-dayjs.extend(timezone)
-
-const tz = "Asia/Oral"
-
 export function formatDateTime(inputString: string | undefined): string {
     if (!inputString) {
         return ''
     }
 
-    return dayjs(inputString).tz(tz).format('DD.MM.YYYY HH:mm')
+    const date = new Date(inputString);
+
+    const options: Intl.DateTimeFormatOptions = {
+        timeZone: 'Asia/Aqtau',
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: false
+    };
+
+    return date.toLocaleString('ru-RU', options).replace(/\//g, '.');
 }
