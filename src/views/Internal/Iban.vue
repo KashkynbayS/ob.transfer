@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { reactive, ref, watch } from 'vue'
+import { computed, onMounted, reactive, ref, watch } from 'vue'
 
 import { onBeforeRouteLeave, useRouter } from 'vue-router'
 
@@ -11,7 +11,6 @@ import KnpDropdown from '@/components/KnpDropdown.vue'
 
 // import { addToFrequents } from '@/services/frequentService'
 
-import { ACCOUNTS_GROUPS } from '@/mocks/internal'
 
 import { CURRENCY_SYMBOL } from '@/constants'
 
@@ -22,7 +21,7 @@ import { useApplicationIDStore } from '@/stores/useApplicationIDStore'
 
 import { handleTransferSSEResponse } from '@/services/sse.service'
 import { TransferService } from '@/services/transfer.service'
-import { CURRENCY } from '@/types'
+import { Account, AccountsGroup, CURRENCY } from '@/types'
 import { FORM_STATE } from '@/types/form'
 import { IbanForm } from '@/types/iban'
 import { Knp } from '@/types/knp'
@@ -82,6 +81,16 @@ const form = ref<IbanForm>({
 	amount: null,
 	transferType: 'iban'
 })
+
+const myAccounts = ref<Account[]>([])
+
+const accountsGroups = computed<AccountsGroup[]>(() => [
+	{
+		id: 'my-accounts',
+		title: 'ACCOUNTS_GROUPS.MY_ACCOUNTS',
+		list: myAccounts.value
+	}
+])
 
 watch(
 	() => IbanStore.state,
@@ -190,15 +199,28 @@ const handleSubmit = async (e: Event | null = null) => {
 const handleKnpUpdate = () => {
 	IbanStore.clearErrors('knp')
 }
+
+onMounted(async () => {
+	const deals = await TransferService.fetchDealsList()
+
+	myAccounts.value = deals.accounts.map((account) => ({
+		id: account.id,
+		currency: account.currency.name.toLowerCase() as CURRENCY,
+		iban: account.accNumber,
+		title: `ACCOUNTS_GROUPS.ACCOUNT_${account.currency.name.toUpperCase()}`,
+		amount: account.amount
+	}))
+})
 </script>
 
 <template>
 	<div>
 		<form class="internal-iban-form" @submit="handleSubmit">
 			<div class="internal-iban-form-top">
-				<AccountDropdown v-model="form.from" :accounts-groups="ACCOUNTS_GROUPS" :label="$t('OWN.FORM.FROM')" />
-				<IbanInput id="recieverNameModel" v-model:model-value="form.to" :label="$t('INTERNAL.IBAN.FORM.ACCOUNT_TO')"
-					:invalid="!!IbanStore.errors.to" :helper-text="IbanStore.errors.to ? $t(IbanStore.errors.to) : ''"
+				<AccountDropdown v-model="form.from" :accounts-groups="accountsGroups" :label="$t('OWN.FORM.FROM')" />
+				<IbanInput id="recieverNameModel" v-model:model-value="form.to"
+					:label="$t('INTERNAL.IBAN.FORM.ACCOUNT_TO')" :invalid="!!IbanStore.errors.to"
+					:helper-text="IbanStore.errors.to ? $t(IbanStore.errors.to) : ''"
 					@update:model-value="IbanStore.clearErrors('to')" />
 				<Input id="123" v-model:model-value="form.receiverName" :label="$t('INTERNAL.IBAN.FORM.RECIEVER_NAME')"
 					:invalid="!!IbanStore.errors.receiverName"
@@ -206,9 +228,11 @@ const handleKnpUpdate = () => {
 					@update:model-value="IbanStore.clearErrors('receiverName')" />
 				<KnpDropdown v-if="form.to == 'KZ1111' && form.to !== null" id="knp" v-model="form.knp as Knp | null"
 					:error-invalid="!!IbanStore.errors.knp"
-					:helper-text="!!IbanStore.errors.knp ? $t(IbanStore.errors.knp) : ''" :update-field="handleKnpUpdate" />
-				<Input v-if="form.to == 'KZ1111' && form.to !== null" id="paymentPurposes" v-model="form.paymentPurposes"
-					:label="$t('EXTERNAL.FORM.PAYMENT_PURPOSES')" :invalid="!!IbanStore.errors.paymentPurposes"
+					:helper-text="!!IbanStore.errors.knp ? $t(IbanStore.errors.knp) : ''"
+					:update-field="handleKnpUpdate" />
+				<Input v-if="form.to == 'KZ1111' && form.to !== null" id="paymentPurposes"
+					v-model="form.paymentPurposes" :label="$t('EXTERNAL.FORM.PAYMENT_PURPOSES')"
+					:invalid="!!IbanStore.errors.paymentPurposes"
 					:helper-text="!!IbanStore.errors.paymentPurposes ? $t(IbanStore.errors.paymentPurposes) : ''"
 					@update:model-value="IbanStore.clearErrors('paymentPurposes')" />
 				<CurrencyInput id="amount" v-model:model-value="form.amount" :label="$t('INTERNAL.IBAN.FORM.SUM')"
@@ -225,6 +249,7 @@ const handleKnpUpdate = () => {
 
 		<Modal ref="modal" :actions="actions" close-on-outline-click>
 			<template #title>{{ $t('INTERNAL.MODAL.LEAVE_WHEN_FORM_IS_DIRTY.TITLE') }}</template>
+
 			<template #body>{{ $t('INTERNAL.MODAL.LEAVE_WHEN_FORM_IS_DIRTY.SUBTITLE') }}</template>
 		</Modal>
 	</div>

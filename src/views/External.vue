@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 
 import { Button, CurrencyInput, IbanInput, Input } from '@ui-kit/ui-kit'
 
@@ -10,7 +10,6 @@ import AppNavbar from '@/components/AppNavbar.vue'
 import KbeDropdown from '@/components/KbeDropdown.vue'
 import KnpDropdown from '@/components/KnpDropdown.vue'
 
-import { ACCOUNTS_GROUPS } from '@/mocks/internal'
 
 import { CURRENCY_SYMBOL } from '@/constants'
 
@@ -25,7 +24,7 @@ import { useStatusStore } from '@/stores/status'
 import { useSuccessStore } from '@/stores/success'
 import { useApplicationIDStore } from '@/stores/useApplicationIDStore'
 
-import { CURRENCY } from '@/types'
+import { Account, AccountsGroup, CURRENCY } from '@/types'
 import { ExternalForm } from '@/types/external'
 import { FORM_STATE } from '@/types/form'
 import { Kbe } from '@/types/kbe'
@@ -52,6 +51,16 @@ const form = ref<ExternalForm>({
 	paymentPurposes: formData.value?.paymentPurposes || '019'
 })
 
+const myAccounts = ref<Account[]>([])
+
+const accountsGroups = computed<AccountsGroup[]>(() => [
+	{
+		id: 'my-accounts',
+		title: 'ACCOUNTS_GROUPS.MY_ACCOUNTS',
+		list: myAccounts.value
+	}
+])
+
 watch(
 	() => externalStore.state,
 	(state) => {
@@ -68,7 +77,7 @@ watch(
 					{ name: 'Дата', value: '11.04.2023' }
 				])
 				router.push('/Success')
-				break		
+				break
 
 			case FORM_STATE.ERROR:
 				statusStore.$state = {
@@ -107,7 +116,7 @@ const handleSubmit = (e: Event | null = null) => {
 
 	externalStore.clearErrors()
 	externalStore.setState(FORM_STATE.LOADING)
-	
+
 	externalStore.validate(form.value).then(() => {
 		const mapped: any = {
 
@@ -164,6 +173,18 @@ const handleIINUpdate = async () => {
 		console.error('Ошибка при выполнении запроса:', error);
 	}
 };
+
+onMounted(async () => {
+	const deals = await TransferService.fetchDealsList()
+
+	myAccounts.value = deals.accounts.map((account) => ({
+		id: account.id,
+		currency: account.currency.name.toLowerCase() as CURRENCY,
+		iban: account.accNumber,
+		title: `ACCOUNTS_GROUPS.ACCOUNT_${account.currency.name.toUpperCase()}`,
+		amount: account.amount
+	}))
+})
 </script>
 
 <template>
@@ -176,59 +197,29 @@ const handleIINUpdate = async () => {
 			</AppNavbar>
 		</template>
 		<form class="form" @submit="handleSubmit">
-			<AccountDropdown
-				id="from"
-				v-model="form.from"
-				:accounts-groups="ACCOUNTS_GROUPS"
-				:label="$t('EXTERNAL.FORM.FROM')"
-			/>
-			<IbanInput
-				id="iban"
-				v-model="form.iban"
-				:label="$t('EXTERNAL.FORM.IBAN')"
+			<AccountDropdown id="from" v-model="form.from" :accounts-groups="accountsGroups"
+				:label="$t('EXTERNAL.FORM.FROM')" />
+			<IbanInput id="iban" v-model="form.iban" :label="$t('EXTERNAL.FORM.IBAN')"
 				:invalid="!!externalStore.errors.iban"
 				:helper-text="!!externalStore.errors.iban ? $t(externalStore.errors.iban) : ''"
-				@update:model-value="externalStore.clearErrors('iban')"
-			/>
-			<Input
-				id="iin"
-				v-model="form.iin"
-				:label="$t('EXTERNAL.FORM.IIN')"
-				:invalid="!!externalStore.errors.iin"
+				@update:model-value="externalStore.clearErrors('iban')" />
+			<Input id="iin" v-model="form.iin" :label="$t('EXTERNAL.FORM.IIN')" :invalid="!!externalStore.errors.iin"
 				:helper-text="!!externalStore.errors.iin ? $t(externalStore.errors.iin) : ''"
-				@update:model-value="externalStore.clearErrors('iin')"
-				@input="handleIINUpdate"
-			/>
-			<KbeDropdown
-				id="kbe"
-				v-model="form.kbe as Kbe | null"
-				:error-invalid="!!externalStore.errors.kbe"
+				@update:model-value="externalStore.clearErrors('iin')" @input="handleIINUpdate" />
+			<KbeDropdown id="kbe" v-model="form.kbe as Kbe | null" :error-invalid="!!externalStore.errors.kbe"
 				:helper-text="!!externalStore.errors.kbe ? $t(externalStore.errors.kbe) : ''"
-				:update-field="handleKbeUpdate"
-			/>
-			<KnpDropdown
-				id="knp"
-				v-model="form.knp as Knp | null"
-				:error-invalid="!!externalStore.errors.knp"
+				:update-field="handleKbeUpdate" />
+			<KnpDropdown id="knp" v-model="form.knp as Knp | null" :error-invalid="!!externalStore.errors.knp"
 				:helper-text="!!externalStore.errors.knp ? $t(externalStore.errors.knp) : ''"
-				:update-field="handleKnpUpdate"
-			/>
-			<Input
-				id="name"
-				v-model="form.paymentPurposes"
-				:label="$t('EXTERNAL.FORM.PAYMENT_PURPOSES')"
+				:update-field="handleKnpUpdate" />
+			<Input id="name" v-model="form.paymentPurposes" :label="$t('EXTERNAL.FORM.PAYMENT_PURPOSES')"
 				:invalid="!!externalStore.errors.paymentPurposes"
 				:helper-text="!!externalStore.errors.paymentPurposes ? $t(externalStore.errors.paymentPurposes) : ''"
-				@update:model-value="externalStore.clearErrors('paymentPurposes')"
-			/>
-			<CurrencyInput
-				id="amount"
-				v-model="form.amount"
-				:label="$t('EXTERNAL.FORM.AMOUNT')"
+				@update:model-value="externalStore.clearErrors('paymentPurposes')" />
+			<CurrencyInput id="amount" v-model="form.amount" :label="$t('EXTERNAL.FORM.AMOUNT')"
 				:invalid="!!externalStore.errors.amount"
 				:helper-text="!!externalStore.errors.amount ? $t(externalStore.errors.amount) : ''"
-				@update:model-value="externalStore.clearErrors('amount')"
-			/>
+				@update:model-value="externalStore.clearErrors('amount')" />
 
 			<Button id="externalSubmit" class="form__submit" type="primary" attr-type="submit" @click="handleSubmit">
 				{{ $t('EXTERNAL.SUBMIT') }}

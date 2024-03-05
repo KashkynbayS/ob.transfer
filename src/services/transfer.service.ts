@@ -18,14 +18,14 @@ export const TransferService = {
 				callback(event)
 			})
 			console.log("SSE success");
-			
+
 		}
 
 		return res.data
 	},
 
 	async fetchDealsList(): Promise<IDealsResponse> {
-		const response = await axiosInstance.get<BaseResponse<IDealsResponse>>('https://dev-svc.kmf.kz/api/bank/deals/list')
+		const response = await axiosInstance.get<BaseResponse<IDealsResponse>>('https://dev-api.kmf.kz/svc/bank/deals/list')
 
 		return response.data.data
 	}
