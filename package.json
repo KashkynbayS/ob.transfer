@@ -22,6 +22,7 @@
 		"@vee-validate/yup": "^4.11.8",
 		"@vueuse/core": "^10.7.0",
 		"axios": "^1.6.2",
+		"luxon": "^3.4.4",
 		"pinia": "^2.1.6",
 		"single-spa-vue": "^3.0.0",
 		"vee-validate": "^4.11.8",
@@ -31,10 +32,11 @@
 		"vue-router": "^4.2.4"
 	},
 	"devDependencies": {
+		"@types/luxon": "^3.4.2",
 		"@types/node": "^20.5.2",
 		"@typescript-eslint/eslint-plugin": "^6.12.0",
 		"@typescript-eslint/parser": "^6.12.0",
-		"@vitejs/plugin-vue": "^4.2.3",
+		"@vitejs/plugin-vue": "^4.6.2",
 		"@vue/eslint-config-prettier": "^8.0.0",
 		"@vue/eslint-config-typescript": "^11.0.3",
 		"eslint": "^8.54.0",

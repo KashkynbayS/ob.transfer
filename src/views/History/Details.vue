@@ -1,16 +1,18 @@
 <script setup lang="ts">
-import { Button, Cell, CellGroup, CellGroupHeader } from '@ui-kit/ui-kit'
-import { computed, onMounted } from 'vue'
-import { useRoute } from 'vue-router'
+import { Button, Cell, CellGroup, CellGroupHeader } from '@ui-kit/ui-kit';
+// import { format } from 'date-fns';
+// import { ru } from 'date-fns/locale';
+import { DateTime } from 'luxon';
+import { computed, onMounted } from 'vue';
+import { useRoute } from 'vue-router';
 
-import AppNavbar from '@/components/AppNavbar.vue'
-import { useFormAutoFill } from '@/helpers/useFormAutoFill.ts'
-import { useHistoryStore } from '@/stores/history.ts'
-import { FormParams, TransactionStatus } from '@/types'
-import { formatDateTime } from '@/utils'
+import AppNavbar from '@/components/AppNavbar.vue';
+import { useFormAutoFill } from '@/helpers/useFormAutoFill.ts';
+import { useHistoryStore } from '@/stores/history.ts';
+import { FormParams, TransactionStatus } from '@/types';
 
-import ArrowRoundIcon from '@/assets/icons/arrow-round.svg'
-import ShareIcon from '@/assets/icons/share.svg'
+import ArrowRoundIcon from '@/assets/icons/arrow-round.svg';
+import ShareIcon from '@/assets/icons/share.svg';
 
 const route = useRoute()
 const historyStore = useHistoryStore()
@@ -28,7 +30,16 @@ const statuses: Record<TransactionStatus, string> = {
 	rejected: 'HISTORY.STATUS.REJECTED'
 }
 
-const formattedDateTime = computed(() => details.value ? formatDateTime(details.value.createdAt) : '')
+const formattedDateTime = computed(
+	() => {
+		if (!details.value) {
+			return '';
+		}
+
+		const date = DateTime.fromISO(details.value.createdAt).setZone('Asia/Aqtau');
+		return date.setLocale('ru').toFormat('d MMMM HH:mm');;
+	}
+)
 
 function formatIban(input: string): string {
 	if (input.length !== 20) {
@@ -48,6 +59,7 @@ function repeatAction() {
 	if (details.value?.recFio) params.recFio = details.value.recFio
 	if (details.value?.iban) params.iban = details.value.iban
 	if (details.value?.kbe) params.kbe = details.value.kbe
+
 	routerPushWithData('External', params)
 }
 
@@ -88,41 +100,58 @@ onMounted(() => {
 					<template #title>{{ $t('HISTORY.DETAILS.WRITE_OFF_DETAILS') }}</template>
 				</CellGroupHeader>
 				<Cell>
+
 					<template #subtitle>{{ $t('HISTORY.DETAILS.WRITE_OFF_ACCOUNT') }}</template>
+
 					<template #title>{{ details.iban ? formatIban(details.iban) : '' }}</template>
 				</Cell>
 				<Cell>
+
 					<template #subtitle>{{ $t('HISTORY.DETAILS.COMMISSION') }}</template>
+
 					<template #title>{{ details.commission || 0 }} ₸</template>
 				</Cell>
 			</CellGroup>
 
 			<CellGroup type="island">
 				<CellGroupHeader>
+
 					<template #title>{{ $t('HISTORY.DETAILS.RECEIVER') }}</template>
 				</CellGroupHeader>
 				<Cell v-if="details.recIban">
+
 					<template #subtitle>{{ $t('HISTORY.DETAILS.ACCOUNT_ENROLLMENT') }}</template>
+
 					<template #title>{{ formatIban(details.recIban) }}</template>
 				</Cell>
 				<Cell v-if="details.knp">
+
 					<template #subtitle>{{ $t('HISTORY.DETAILS.KNP') }}</template>
+
 					<template #title>{{ details.knp }}</template>
 				</Cell>
 				<Cell v-if="details.receiptNumber">
+
 					<template #subtitle>{{ $t('HISTORY.DETAILS.RECEIPT_NUMBER') }}</template>
+
 					<template #title>{{ details.receiptNumber }}</template>
 				</Cell>
 				<Cell v-if="details.recIin">
+
 					<template #subtitle>{{ $t('HISTORY.DETAILS.RECEIVER_IIN') }}</template>
+
 					<template #title>{{ details.recIin }}</template>
 				</Cell>
 				<Cell v-if="details.recMobileNumber">
+
 					<template #subtitle>{{ $t('HISTORY.DETAILS.RECEIVER_PHONE') }}</template>
+
 					<template #title>+{{ details.recMobileNumber }}</template>
 				</Cell>
 				<Cell v-if="details.recFio">
+
 					<template #subtitle>{{ $t('HISTORY.DETAILS.RECEIVER_NAME') }}</template>
+
 					<template #title>{{ details.recFio }}</template>
 				</Cell>
 			</CellGroup>
