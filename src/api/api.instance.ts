@@ -15,7 +15,7 @@ interface CustomAxiosRequestConfig extends AxiosRequestConfig {
 // }
 
 const refreshToken = async () => {
-	const url = 'https://dev-api.kmf.kz/svc/bank/sso/customer/authorize'
+	const url = 'https://dev-svc.kmf.kz/api/bank/sso/internal/customer/authorize'
 	const formData = {
 		phone: '+77053811230',
 		password: 'ssssssss8'

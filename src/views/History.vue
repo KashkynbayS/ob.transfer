@@ -1,19 +1,18 @@
 <script setup lang="ts">
-import { computed, onMounted, ref, watchEffect } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 
 import { CellGroup } from '@ui-kit/ui-kit'
 
 import FiltersIcon from '@/assets/icons/filters.svg'
+
 import AppNavbar from '@/components/AppNavbar.vue'
 import AppTags from '@/components/AppTags.vue'
 import HistoryItem from '@/components/HistoryItem.vue'
 import HistorySettings from '@/components/HistorySettings.vue'
 
 import { useHistoryStore } from '@/stores/history.ts'
-import { HistoryGroup, Tag } from '@/types'
-
-
+import { HistoryGroup } from '@/types'
 
 const router = useRouter()
 const historyStore = useHistoryStore()
@@ -29,35 +28,27 @@ const openDetails = (id: string) => {
 	})
 }
 
-const settings = ref(false)
-const filters = ref<Tag[]>([])
+const isSettingsShown = ref(false)
 
-const openSettings = () => {
-	settings.value = true
+const onSettingsButtonClick = () => {
+	isSettingsShown.value = true
 }
 
-const closeSettings = () => {
-	settings.value = false
+const onSettingsClose = () => {
+	isSettingsShown.value = false
 }
 
-const applySettings = () => {
-	filters.value = historyStore.filterTags
-	closeSettings()
+const onSettingsApply = () => {
+	onSettingsClose()
 	historyStore.fetchHistory()
 }
 
-const removeHandler = (filterValue: string) => {
+const onTagRemove = (filterValue: string) => {
 	historyStore.disableFilter(filterValue)
-	filters.value = historyStore.filterTags
-	historyStore.fetchHistory()
 }
 
 onMounted(() => {
 	historyStore.fetchHistory()
-})
-
-watchEffect(() => {
-	console.log(historyStore.transformedHistory)
 })
 </script>
 
@@ -67,14 +58,15 @@ watchEffect(() => {
 			<template #title>
 				<h5>{{ $t('HISTORY.TITLE') }}</h5>
 			</template>
+
 			<template #label>
-				<button id="history-filters-btn" class="history__filters" @click="openSettings">
+				<button id="history-filters-btn" class="history__filters" @click="onSettingsButtonClick">
 					<FiltersIcon />
 				</button>
 			</template>
 		</AppNavbar>
 
-		<AppTags class="history__tags" :tags="filters" @removed="removeHandler" />
+		<AppTags class="history__tags" :tags="historyStore.filterTags" @removed="onTagRemove" />
 
 		<CellGroup v-for="group in history" :key="group.title" class="transaction-group">
 			<div class="transaction-group__title">
@@ -85,7 +77,7 @@ watchEffect(() => {
 
 		<div v-if="historyStore.errorMsg" class="history__error">{{ historyStore.errorMsg }}</div>
 
-		<HistorySettings :show="settings" @closed="closeSettings" @apply="applySettings" />
+		<HistorySettings :show="isSettingsShown" @closed="onSettingsClose" @apply="onSettingsApply" />
 	</div>
 </template>
 

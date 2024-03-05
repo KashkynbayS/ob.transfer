@@ -1,9 +1,11 @@
 <script setup lang="ts">
-import { HistoryFilter, filters, useHistoryStore } from '@/stores/history.ts'
+import { computed, ref, watch } from 'vue'
+
 import CalendarIcon from '@ui-kit/kmf-icons/others/calendars/calendar.svg'
 import { BottomSheet, Button, Calendar, Input, SelectButton } from '@ui-kit/ui-kit'
 import { ModalAction } from '@ui-kit/ui-kit/dist/ui/components/modal/types'
-import { computed, ref, watch } from 'vue'
+
+import { HistoryFilter, filters, useHistoryStore } from '@/stores/history.ts'
 
 const props = defineProps<{
 	show: boolean
@@ -93,6 +95,7 @@ function onDateSelected(value: Date[]) {
 <template>
 	<BottomSheet ref="bottomSheetRef" :actions="props.actions" @closed="closeHandler">
 		<template #title>{{ $t("HISTORY.FILTER.TITLE") }}</template>
+
 		<template #content>
 			<div class="settings">
 				<div v-if="showCalendar" class="settings__calendar">
@@ -103,26 +106,24 @@ function onDateSelected(value: Date[]) {
 
 				<div v-else class="settings__main">
 					<div class="settings__select-wrapper">
-						<SelectButton
-							v-for="filter in filters"
-							:id="filter.id"
-							:key="filter.id"
-							v-model="filterModel"
-							:value="filter.value"
-							:title="$t(filter.title)"
-						/>
+						<SelectButton v-for="filter in filters" :id="filter.id" :key="filter.id" v-model="filterModel"
+							:value="filter.value" :title="$t(filter.title)" />
 					</div>
-					<Input id="date-input" :model-value="datesString" :label="$t('HISTORY.FILTER.PERIOD.LABEL')" @on-focus="toggleCalendar(true)">
-						<template #append>
-							<CalendarIcon />
-						</template>
+					<Input id="date-input" :model-value="datesString" :label="$t('HISTORY.FILTER.PERIOD.LABEL')"
+						@on-focus="toggleCalendar(true)">
+
+					<template #append>
+						<CalendarIcon />
+					</template>
 					</Input>
 					<div class="settings__sum">
 						<Input id="sumFrom" v-model="sumFrom" :label="$t('HISTORY.FILTER.AMOUNT_FROM')" />
 						<Input id="sumTo" v-model="sumTo" :label="$t('HISTORY.FILTER.AMOUNT_TO')" />
 					</div>
 					<Button id="settings-reset" type="ghost">{{ $t("HISTORY.FILTER.RESET") }}</Button>
-					<Button id="settings-apply" class="settings__apply-btn" @click="applyFilters">{{ $t("HISTORY.FILTER.APPLY") }}</Button>
+					<Button id="settings-apply" class="settings__apply-btn" @click="applyFilters">
+						{{ $t("HISTORY.FILTER.APPLY") }}
+					</Button>
 				</div>
 			</div>
 		</template>

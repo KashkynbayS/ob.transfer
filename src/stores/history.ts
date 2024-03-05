@@ -64,7 +64,6 @@ export const useHistoryStore = defineStore('history', {
 			}
 
 			if (this.datesString) {
-				console.log(this.datesString)
 				tags.push({
 					value: 'date',
 					title: this.datesString
@@ -114,13 +113,16 @@ export const useHistoryStore = defineStore('history', {
 			this.history.forEach((transfer) => {
 				const date = new Date(transfer.createdAt)
 				const today = new Date()
+
 				const yesterday = new Date()
 				yesterday.setDate(today.getDate() - 1)
+
 				const dayBeforeYesterday = new Date()
 				dayBeforeYesterday.setDate(today.getDate() - 2)
 
 				let title = ''
 				let isTitleWithTranslation = false;
+
 				if (date.toDateString() === yesterday.toDateString()) {
 					title = 'HISTORY.YESTERDAY'
 					isTitleWithTranslation = true;
@@ -143,19 +145,6 @@ export const useHistoryStore = defineStore('history', {
 					output.push(group)
 				}
 
-				// const outputTransfer: Transaction = {
-				// 	id: transfer.id,
-				// 	currency: CURRENCY.KZT, // todo Необходимо уточнить, откуда брать валюту
-				// 	caption: date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-				// 	value: transfer.amount,
-				// 	status: transfer.status,
-				// 	type: transfer.typeOfTransfer
-				// }
-
-				// if (transfer.commission) {
-				// 	outputTransfer.commission = parseFloat(transfer.commission)
-				// }
-
 				group.list.push(transfer)
 			})
 
@@ -168,12 +157,12 @@ export const useHistoryStore = defineStore('history', {
 				this.settings.currentFilter = undefined
 			} else if (value === 'date') {
 				this.settings.dates = []
-				console.log(this.settings.dates)
 			} else {
 				this.settings.sum.from = ''
 				this.settings.sum.to = ''
-				console.log(this.settings.sum.from)
 			}
+
+			this.fetchHistory()
 		},
 		async fetchHistory() {
 			loadingStore.setLoading(true)
@@ -190,6 +179,7 @@ export const useHistoryStore = defineStore('history', {
 
 				const startDate = this.settings.dates[0]?.toISOString().split('T')[0]
 				const endDate = this.settings.dates[1]?.toISOString().split('T')[0]
+
 				if (startDate) filters.startDate = startDate
 				if (endDate) filters.startDate = endDate
 

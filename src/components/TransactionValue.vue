@@ -21,7 +21,7 @@ const mapIcon = (transaction: HistoryItem) => {
 		case 'removed':
 			return RejectedIcon;
 		default:
-			return '<span></span>';
+			return null;
 	}
 }
 

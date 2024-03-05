@@ -11,8 +11,7 @@ import BankIcon from '@/components/BankIcon.vue'
 import TransactionValue from '@/components/TransactionValue.vue'
 
 import { CURRENCY_SYMBOL } from '@/constants'
-import { CURRENCY, HistoryItem } from '@/types'
-import { TypeOfTransfer } from '@/types/transfer.ts'
+import { CURRENCY, HistoryItem, TypeOfTransfer } from '@/types'
 import { maskIban, maskPhoneNumber } from '@/utils'
 
 defineProps<{
@@ -85,12 +84,15 @@ const mapIcon = (transaction: HistoryItem) => {
 }
 
 </script>
+
 <template>
     <Cell reverse left-color="var(--text-low-contrast)" left-type="icon" left-bg="var(--bg-dark)">
         <template #left>
             <Component :is="mapIcon(item)" :iban="item.recIban" />
         </template>
+
         <template #title>{{ mapTitle(item) }}</template>
+
         <template #subtitle><span class="text-caption">{{ $t(mapDescription(item)) }}</span></template>
 
         <template #right>

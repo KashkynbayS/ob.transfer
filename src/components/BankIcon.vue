@@ -91,7 +91,6 @@ const BANK_ICONS: BankIcons = {
 };
 
 const bankCode = computed(() => props.iban.substring(4, 7));
-console.log(bankCode.value)
 const iconComponent = computed(() => BANK_ICONS[bankCode.value]);
 
 </script>
