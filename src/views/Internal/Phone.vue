@@ -37,7 +37,7 @@ phoneStore.clearErrors()
 
 const form = ref<PhoneForm>({
 	from: undefined,
-	phoneNumber: '',
+	phoneNumber: '77072165757',
 	receiverName: '',
 	iin: '910503300507',
 	amount: null,
@@ -152,7 +152,7 @@ const handleSubmit = async (e: Event | null = null) => {
 			{
 				iban: 'KZ84888AB22040000174',
 				// iban: form.value.from!.iban,
-				recMobileNumber: '77072165757',
+				recMobileNumber: form.value.phoneNumber,
 				// recMobileNumber: form.value.phoneNumber,
 				// recIin: "910503300507",
 				recFio: form.value.receiverName,
@@ -213,7 +213,7 @@ onMounted(async () => {
 				<AccountDropdown id="from" v-model="form.from" :accounts-groups="accountsGroups"
 					:label="$t('OWN.FORM.FROM')" />
 
-				<SelectContactInput v-model="form.phoneNumber" @input="handleNameUpdate()"
+				<SelectContactInput reverse v-model="form.phoneNumber" @input="handleNameUpdate()"
 					:helperText="form.receiverName" />
 
 				<CurrencyInput id="123" v-model="form.amount" class="form-field" :label="$t('INTERNAL.PHONE.FORM.SUM')"

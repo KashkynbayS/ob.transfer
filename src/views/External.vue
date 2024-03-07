@@ -204,7 +204,7 @@ onMounted(async () => {
 				:helper-text="!!externalStore.errors.iban ? $t(externalStore.errors.iban) : ''"
 				@update:model-value="externalStore.clearErrors('iban')" />
 			<Input id="iin" v-model="form.iin" :label="$t('EXTERNAL.FORM.IIN')" :invalid="!!externalStore.errors.iin"
-				:helper-text="!!externalStore.errors.iin ? $t(externalStore.errors.iin) : ''"
+				:helper-text="!!externalStore.errors.iin ? $t(externalStore.errors.iin) : form.receiverName"
 				@update:model-value="externalStore.clearErrors('iin')" @input="handleIINUpdate" />
 			<KbeDropdown id="kbe" v-model="form.kbe as Kbe | null" :error-invalid="!!externalStore.errors.kbe"
 				:helper-text="!!externalStore.errors.kbe ? $t(externalStore.errors.kbe) : ''"

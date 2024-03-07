@@ -19,8 +19,10 @@ import { useStatusStore } from '@/stores/status'
 import { useSuccessStore } from '@/stores/success'
 import { useApplicationIDStore } from '@/stores/useApplicationIDStore'
 
+import { getFIOByIban } from '@/services/iban.service'
 import { handleTransferSSEResponse } from '@/services/sse.service'
 import { TransferService } from '@/services/transfer.service'
+
 import { Account, AccountsGroup, CURRENCY } from '@/types'
 import { FORM_STATE } from '@/types/form'
 import { IbanForm } from '@/types/iban'
@@ -74,7 +76,7 @@ onBeforeRouteLeave((to1, _, next) => {
 
 const form = ref<IbanForm>({
 	from: undefined,
-	to: 'KZ95888AB22040000170',
+	to: 'KZ84888AB22040000174',
 	receiverName: '',
 	knp: null,
 	paymentPurposes: '',
@@ -200,6 +202,19 @@ const handleKnpUpdate = () => {
 	IbanStore.clearErrors('knp')
 }
 
+const handleNameUpdate = async () => {
+	form.value.receiverName = '';
+	try {
+		if (form.value.to.length === 20) {
+			const response = await getFIOByIban.get(form.value.to.split(' ').join(''))
+			const receiverName = `${response.firstname.RU} ${response.lastname.RU[0]}.`;
+			form.value.receiverName = receiverName;
+		}
+	} catch (error) {
+		console.error('Ошибка при получении данных о получателе:', error)
+	}
+}
+
 onMounted(async () => {
 	const deals = await TransferService.fetchDealsList()
 
@@ -218,23 +233,21 @@ onMounted(async () => {
 		<form class="internal-iban-form" @submit="handleSubmit">
 			<div class="internal-iban-form-top">
 				<AccountDropdown v-model="form.from" :accounts-groups="accountsGroups" :label="$t('OWN.FORM.FROM')" />
-				<IbanInput id="recieverNameModel" v-model:model-value="form.to"
-					:label="$t('INTERNAL.IBAN.FORM.ACCOUNT_TO')" :invalid="!!IbanStore.errors.to"
-					:helper-text="IbanStore.errors.to ? $t(IbanStore.errors.to) : ''"
-					@update:model-value="IbanStore.clearErrors('to')" />
-				<Input id="123" v-model:model-value="form.receiverName" :label="$t('INTERNAL.IBAN.FORM.RECIEVER_NAME')"
-					:invalid="!!IbanStore.errors.receiverName"
-					:helper-text="IbanStore.errors.receiverName ? $t(IbanStore.errors.receiverName) : ''"
-					@update:model-value="IbanStore.clearErrors('receiverName')" />
+
+				<IbanInput id="recieverNameModel" v-model:model-value="form.to" :label="$t('INTERNAL.IBAN.FORM.ACCOUNT_TO')"
+					:invalid="!!IbanStore.errors.to"
+					:helper-text="IbanStore.errors.to ? $t(IbanStore.errors.to) : form.receiverName"
+					@update:model-value="IbanStore.clearErrors('to')" @input="handleNameUpdate()" />
+
 				<KnpDropdown v-if="form.to == 'KZ1111' && form.to !== null" id="knp" v-model="form.knp as Knp | null"
 					:error-invalid="!!IbanStore.errors.knp"
-					:helper-text="!!IbanStore.errors.knp ? $t(IbanStore.errors.knp) : ''"
-					:update-field="handleKnpUpdate" />
-				<Input v-if="form.to == 'KZ1111' && form.to !== null" id="paymentPurposes"
-					v-model="form.paymentPurposes" :label="$t('EXTERNAL.FORM.PAYMENT_PURPOSES')"
-					:invalid="!!IbanStore.errors.paymentPurposes"
+					:helper-text="!!IbanStore.errors.knp ? $t(IbanStore.errors.knp) : ''" :update-field="handleKnpUpdate" />
+
+				<Input v-if="form.to == 'KZ1111' && form.to !== null" id="paymentPurposes" v-model="form.paymentPurposes"
+					:label="$t('EXTERNAL.FORM.PAYMENT_PURPOSES')" :invalid="!!IbanStore.errors.paymentPurposes"
 					:helper-text="!!IbanStore.errors.paymentPurposes ? $t(IbanStore.errors.paymentPurposes) : ''"
 					@update:model-value="IbanStore.clearErrors('paymentPurposes')" />
+
 				<CurrencyInput id="amount" v-model:model-value="form.amount" :label="$t('INTERNAL.IBAN.FORM.SUM')"
 					:invalid="!!IbanStore.errors.amount"
 					:helper-text="IbanStore.errors.amount ? $t(IbanStore.errors.amount) : ''"
