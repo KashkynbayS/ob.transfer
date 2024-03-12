@@ -6,6 +6,7 @@ export interface Account {
 	title: string
 	iban: string
 	amount: number
+	displayName: string
 }
 
 export interface AccountsGroup {

@@ -63,14 +63,8 @@ const onSelect = (item: Account) => {
 
 <template>
 	<div class="accounts">
-		<Dropdown
-			:id="props.id || ''"
-			:value="view.amount"
-			:label="$t(view.label)"
-			:invalid="props.errorInvalid"
-			:helper-text="props.helperText"
-			@on-focus="accountBottomSheetRef?.open()"
-		/>
+		<Dropdown :id="props.id || ''" :value="view.amount" :label="$t(view.label)" :invalid="props.errorInvalid"
+			:helper-text="props.helperText" @on-focus="accountBottomSheetRef?.open()" />
 
 		<BottomSheet ref="accountBottomSheetRef">
 			<template #title>
@@ -84,23 +78,19 @@ const onSelect = (item: Account) => {
 						</template>
 					</CellGroupHeader>
 
-					<Cell
-						v-for="item in group.list"
-						:key="item.id"
-						left-bg="#6E757C"
-						:reverse="true"
-						:class="item.id === props.disabled?.id ? 'cell--disabled' : ''"
-						@click="onSelect(item)"
-					>
+					<Cell v-for="item in group.list" :key="item.id" left-bg="#6E757C" :reverse="true"
+						:class="item.id === props.disabled?.id ? 'cell--disabled' : ''" @click="onSelect(item)">
 						<template #left>
 							<Component :is="CURRENCY_ICON[item.currency]" class="text-white" />
 						</template>
-						<template #title>{{ $t(item.title) }}</template>
+						<template #title>{{ $t(item.displayName) }}</template>
 						<template #subtitle>
 							<span class="text-caption">{{ maskIban(item.iban) }} </span>
 						</template>
 						<template #right>
-							<span v-if="item.id === props.disabled?.id" class="text-green"><CheckIcon /></span>
+							<span v-if="item.id === props.disabled?.id" class="text-green">
+								<CheckIcon />
+							</span>
 							<span v-if="item.id !== props.disabled?.id" class="text-caption color-dark">
 								{{ maskAmount(item.amount, item.currency) }}
 							</span>
@@ -124,6 +114,7 @@ const onSelect = (item: Account) => {
 .header {
 	background-color: transparent;
 }
+
 .group {
 	padding: 0;
 	margin: 0;

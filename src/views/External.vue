@@ -10,7 +10,6 @@ import AppNavbar from '@/components/AppNavbar.vue'
 import KbeDropdown from '@/components/KbeDropdown.vue'
 import KnpDropdown from '@/components/KnpDropdown.vue'
 
-
 import { CURRENCY_SYMBOL } from '@/constants'
 
 import { useFormAutoFill } from '@/helpers/useFormAutoFill.ts'
@@ -120,13 +119,13 @@ const handleSubmit = (e: Event | null = null) => {
 	externalStore.validate(form.value).then(() => {
 		const mapped: any = {
 
-			iban: "KZ84888AB22040000174",
-			recIban: "KZ86601A871003328701",
-			recIin: "910503300507",
+			iban: form.value.from!.iban,
+			recIban: form.value.iban,
+			// recIin: form.value.iin,
 			amount: String(form.value.amount),
 			typeOfTransfer: TypeOfTransfer.External,
 			kbe: '19',
-			recFio: form.value.receiverName,
+			// recFio: form.value.receiverName,
 
 			// recIin: form.value.iin,
 			// knp: form.value.knp,
@@ -182,7 +181,8 @@ onMounted(async () => {
 		currency: account.currency.name.toLowerCase() as CURRENCY,
 		iban: account.accNumber,
 		title: `ACCOUNTS_GROUPS.ACCOUNT_${account.currency.name.toUpperCase()}`,
-		amount: account.amount
+		amount: account.amount,
+		displayName: account.displayName
 	}))
 })
 </script>
@@ -221,7 +221,7 @@ onMounted(async () => {
 				:helper-text="!!externalStore.errors.amount ? $t(externalStore.errors.amount) : ''"
 				@update:model-value="externalStore.clearErrors('amount')" />
 
-			<Button id="externalSubmit" class="form__submit" type="primary" attr-type="submit" @click="handleSubmit">
+			<Button id="externalSubmit" class="form__submit" type="primary" attr-type="submit">
 				{{ $t('EXTERNAL.SUBMIT') }}
 			</Button>
 		</form>

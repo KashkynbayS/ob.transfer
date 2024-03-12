@@ -4,7 +4,6 @@ export interface PhoneForm {
 	from: Account | undefined
 	phoneNumber: string
 	receiverName: string
-	iin: string
+	recIban: string
 	amount: number | null
-	transferType: string
 }

@@ -1,17 +1,17 @@
-import { AccountsGroup, CURRENCY } from '@/types'
+import { AccountsGroup } from '@/types'
 
 export const ACCOUNTS_GROUPS: AccountsGroup[] = [
 	{
 		id: 'my-accounts',
 		title: 'ACCOUNTS_GROUPS.MY_ACCOUNTS',
 		list: [
-			{
-				id: 'kzt-account',
-				currency: CURRENCY.KZT,
-				amount: 389000.01,
-				iban: 'KZ84888AB22040000174',
-				title: 'ACCOUNTS_GROUPS.ACCOUNT_KZT'
-			},
+			// {
+			// 	id: 'kzt-account',
+			// 	currency: CURRENCY.KZT,
+			// 	amount: 389000.01,
+			// 	iban: 'KZ84888AB22040000174',
+			// 	title: 'ACCOUNTS_GROUPS.ACCOUNT_KZT'
+			// },
 			// {
 			// 	id: 'kzt-account',
 			// 	currency: CURRENCY.KZT,

@@ -82,6 +82,8 @@ export interface IAccount {
 	}
 	blocked: boolean
 	displayName: string
+	number: string
+	restHoldSum: number
 }
 
 export interface ILink {
@@ -92,7 +94,7 @@ export interface ILink {
 
 export interface IDealsResponse {
 	loans: ILoan[]
-	deposits: []
+	deposits: IAccount[]
 	accounts: IAccount[]
 	links: ILink[]
 }

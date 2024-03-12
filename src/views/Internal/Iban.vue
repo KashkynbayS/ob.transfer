@@ -11,10 +11,10 @@ import KnpDropdown from '@/components/KnpDropdown.vue'
 
 // import { addToFrequents } from '@/services/frequentService'
 
-
 import { CURRENCY_SYMBOL } from '@/constants'
 
 import { useIbanStore } from '@/stores/iban.ts'
+import { useLoadingStore } from '@/stores/loading'
 import { useStatusStore } from '@/stores/status'
 import { useSuccessStore } from '@/stores/success'
 import { useApplicationIDStore } from '@/stores/useApplicationIDStore'
@@ -35,6 +35,7 @@ const IbanStore = useIbanStore()
 const successStore = useSuccessStore()
 const statusStore = useStatusStore()
 const applicationIDStore = useApplicationIDStore()
+const { setLoading } = useLoadingStore()
 
 IbanStore.clearErrors()
 
@@ -81,7 +82,6 @@ const form = ref<IbanForm>({
 	knp: null,
 	paymentPurposes: '',
 	amount: null,
-	transferType: 'iban'
 })
 
 const myAccounts = ref<Account[]>([])
@@ -153,39 +153,28 @@ const handleSubmit = async (e: Event | null = null) => {
 		IbanStore.clearErrors()
 		IbanStore.setState(FORM_STATE.LOADING)
 		isLeaveConfirmed = true
-
-		console.log("Clicked try");
+		setLoading(true)
 
 		TransferService.initWithSSE(
 			{
-				iban: "KZ84888AB22040000174",
-				recIban: "KZ95888AB22040000170",
-				recIin: "910503300507",
-				recFio: form.value.receiverName,
+				iban: form.value.from!.iban,
+				recIban: form.value.to,
 				amount: String(form.value.amount),
 				typeOfTransfer: TypeOfTransfer.InternalIban,
 
-				// iban: 'KZ84888AB22040000174',
-				// // iban: form.value.from!.iban,
-				// recIban: 'KZ95888AB22040000170',
-				// // recIban: form.value.to,
-				// recIin: '910503300507',
-
-				// recFio: form.value.receiverName,
-				// amount: String(form.value.amount),
-				// typeOfTransfer: TypeOfTransfer.InternalIban,
 				// paymentPurposes: form.value.paymentPurposes !== null ? form.value.paymentPurposes : undefined,
 				// knp: form.value.knp !== null ? String(form.value.knp) : undefined
 			},
 			(event) => {
-				IbanStore.setState(FORM_STATE.SUCCESS)
+				// IbanStore.setState(FORM_STATE.SUCCESS)
 				handleTransferSSEResponse(form.value, event, router)
+				setLoading(false)
 			}
 		)
 			.then((e) => {
 				IbanStore.applicationId = e.applicationID
 				sessionStorage.setItem('uuid', e.applicationID)
-				IbanStore.setState(FORM_STATE.SUCCESS)
+				// IbanStore.setState(FORM_STATE.SUCCESS)
 				applicationIDStore.setApplicationID(e.applicationID)
 			})
 			.catch(() => {
@@ -223,14 +212,15 @@ onMounted(async () => {
 		currency: account.currency.name.toLowerCase() as CURRENCY,
 		iban: account.accNumber,
 		title: `ACCOUNTS_GROUPS.ACCOUNT_${account.currency.name.toUpperCase()}`,
-		amount: account.amount
+		amount: account.amount,
+		displayName: account.displayName
 	}))
 })
 </script>
 
 <template>
 	<div>
-		<form class="internal-iban-form" @submit="handleSubmit">
+		<form class="internal-iban-form">
 			<div class="internal-iban-form-top">
 				<AccountDropdown v-model="form.from" :accounts-groups="accountsGroups" :label="$t('OWN.FORM.FROM')" />
 

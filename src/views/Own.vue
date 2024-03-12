@@ -18,7 +18,7 @@ import { validateOwnForm } from '@/helpers/own-form.helper'
 import { handleTransferSSEResponse } from '@/services/sse.service.ts'
 import { TransferService } from '@/services/transfer.service'
 
-// import { useLoadingStore } from '@/stores/loading'
+import { useLoadingStore } from '@/stores/loading'
 import { useOwnStore } from '@/stores/own.ts'
 import { useRateStore } from '@/stores/rate.ts'
 import { useStatusStore } from '@/stores/status'
@@ -40,7 +40,7 @@ const applicationIDStore = useApplicationIDStore()
 // временно отключаем по задаче: DBO-1037 - Отключение функционала Конвертации
 const IS_CONVERSION_DISABLED = false
 
-// const { setLoading } = useLoadingStore()
+const { setLoading } = useLoadingStore()
 
 ownStore.clearErrors()
 
@@ -51,21 +51,12 @@ const form = ref<OwnForm>({
 	writeOffAmount: '',
 	enrollmentAmount: '',
 	lastUpdated: undefined,
-	transferType: 'own',
 	receiverName: 'Между своими счетами'
 })
 
 const myAccounts = ref<Account[]>([])
 
-const myDeposits = ref<Account[]>([
-	{
-		id: 'kzt-deposit',
-		currency: CURRENCY.KZT,
-		amount: 1345098.45,
-		iban: 'KZ34888AB22060000146',
-		title: 'ACCOUNTS_GROUPS.DEPOSIT_KZT'
-	}
-])
+const myDeposits = ref<Account[]>([])
 
 const accountsGroups = computed<AccountsGroup[]>(() => [
 	{
@@ -144,7 +135,7 @@ const handleEnrollmentAmountChange = (event: InputEvent) => {
 const determineTypeOfTransfer = () => {
 	if (form.value.from?.currency !== form.value.to?.currency) {
 		return TypeOfTransfer.Conversion
-	} else if (form.value.from?.id === 'kzt-account' && form.value.to?.id === 'kzt-deposit') {
+	} else if (form.value.from?.displayName.includes('счет') && form.value.to?.displayName.includes('депозит')) {
 		return TypeOfTransfer.DepositReplenishment
 	} else {
 		return TypeOfTransfer.DepositWithdrawal
@@ -155,18 +146,37 @@ const handleSubmit = async (e: Event | null = null) => {
 	e?.preventDefault()
 
 	try {
-		// setLoading(true)
 		await validateOwnForm(form.value)
 		ownStore.clearErrors()
 		ownStore.setState(FORM_STATE.LOADING)
+		setLoading(true)
 
-		// Mock for UL
+		// TO DO: вынести отдельно
+		let selectedDeposit: string | undefined;
+
+		if (form.value.from?.displayName.includes('депозит')) {
+			selectedDeposit = form.value.from?.iban;
+		}
+		else if (form.value.to?.displayName.includes('депозит')) {
+			selectedDeposit = form.value.to?.iban;
+		}
+
+		let selectedAccount: string | undefined;
+
+		if (form.value.from?.displayName.includes('счет')) {
+			selectedAccount = form.value.from?.iban;
+		}
+		else if (form.value.to?.displayName.includes('счет')) {
+			selectedAccount = form.value.to?.iban;
+		}
+
 		TransferService.initWithSSE(
 			{
-				iban: "KZ84888AB22040000174",
-				depositNumber: "10-24/KMF01FL-00118",
-				recIban: "KZ34888AB22060000146",
+				iban: selectedAccount!,
+				depositNumber: selectedDeposit,
+				// recIban: "KZ34888AB22060000146",
 				amount: String(form.value.amount),
+
 				typeOfTransfer: determineTypeOfTransfer()
 
 				// iban: form.value.from!.iban,
@@ -177,16 +187,18 @@ const handleSubmit = async (e: Event | null = null) => {
 			},
 			(event) => {
 				handleTransferSSEResponse(form.value, event, router)
+				setLoading(false)
 			}
 		)
 			.then((e) => {
 				ownStore.applicationId = e.applicationID
 				sessionStorage.setItem('uuid', e.applicationID)
-				ownStore.setState(FORM_STATE.SUCCESS)
+				// ownStore.setState(FORM_STATE.SUCCESS)
 				applicationIDStore.setApplicationID(e.applicationID)
 			})
 			.catch(() => {
-				ownStore.setState(FORM_STATE.ERROR)
+				// ownStore.setState(FORM_STATE.ERROR)
+
 			})
 	} catch (err) {
 		ownStore.setState(FORM_STATE.INITIAL)
@@ -328,7 +340,17 @@ onMounted(async () => {
 		currency: account.currency.name.toLowerCase() as CURRENCY,
 		iban: account.accNumber,
 		title: `ACCOUNTS_GROUPS.ACCOUNT_${account.currency.name.toUpperCase()}`,
-		amount: account.amount
+		amount: account.amount,
+		displayName: account.displayName
+	}))
+
+	myDeposits.value = deals.deposits.map((deposit) => ({
+		id: deposit.id,
+		currency: deposit.currency.name.toLowerCase() as CURRENCY,
+		iban: deposit.number,
+		title: `ACCOUNTS_GROUPS.ACCOUNT_${deposit.currency.name.toUpperCase()}`,
+		amount: deposit.restHoldSum,
+		displayName: deposit.displayName
 	}))
 })
 </script>
@@ -344,8 +366,8 @@ onMounted(async () => {
 		</template>
 
 		<form class="form" @submit="handleSubmit">
-			<AccountDropdown id="from" v-model="form.from" :accounts-groups="accountsGroups"
-				:label="$t('OWN.FORM.FROM')" :disabled="form.to" :error-invalid="!!ownStore.errors.from"
+			<AccountDropdown id="from" v-model="form.from" :accounts-groups="accountsGroups" :label="$t('OWN.FORM.FROM')"
+				:disabled="form.to" :error-invalid="!!ownStore.errors.from"
 				:helper-text="!!ownStore.errors.from ? $t(ownStore.errors.from) : ''"
 				:update-field="() => handleSelectsUpdate('from')" />
 			<AccountDropdown id="to" v-model="form.to" :accounts-groups="accountsGroups" :label="$t('OWN.FORM.TO')"
@@ -371,7 +393,7 @@ onMounted(async () => {
 					@update:model-value="ownStore.clearErrors('amount')" />
 			</template>
 
-			<Button id="ownSubmit" class="form__submit" type="primary" attr-type="submit" @click="handleSubmit">
+			<Button id="ownSubmit" class="form__submit" type="primary" attr-type="submit">
 				{{ $t('OWN.FORM.SUBMIT') }}
 			</Button>
 		</form>

@@ -9,15 +9,15 @@ import { SelectContactInput } from '@ui-kit/ui-kit/dist/widgets'
 
 import AccountDropdown from '@/components/AccountDropdown.vue'
 
-
 import { CURRENCY_SYMBOL } from '@/constants'
 
+import { useLoadingStore } from '@/stores/loading'
 import { usePhoneStore } from '@/stores/phone.ts'
 import { useStatusStore } from '@/stores/status'
 import { useSuccessStore } from '@/stores/success'
 import { useApplicationIDStore } from '@/stores/useApplicationIDStore'
 
-import { getFIOByPhone } from '@/services/phone.service'
+import { getDataByPhone } from '@/services/phone.service'
 import { handleTransferSSEResponse } from '@/services/sse.service'
 import { TransferService } from '@/services/transfer.service'
 
@@ -32,16 +32,17 @@ const phoneStore = usePhoneStore()
 const successStore = useSuccessStore()
 const statusStore = useStatusStore()
 const applicationIDStore = useApplicationIDStore()
+const { setLoading } = useLoadingStore()
+
 
 phoneStore.clearErrors()
 
 const form = ref<PhoneForm>({
 	from: undefined,
-	phoneNumber: '77072165757',
+	phoneNumber: '',
 	receiverName: '',
-	iin: '910503300507',
-	amount: null,
-	transferType: 'phone'
+	recIban: '',
+	amount: null
 })
 
 const myAccounts = ref<Account[]>([])
@@ -146,28 +147,28 @@ const handleSubmit = async (e: Event | null = null) => {
 		await validateInternalPhone(form.value)
 		phoneStore.clearErrors()
 		phoneStore.setState(FORM_STATE.LOADING)
+		setLoading(true)
 		isLeaveConfirmed = true
 
 		TransferService.initWithSSE(
 			{
-				iban: 'KZ84888AB22040000174',
-				// iban: form.value.from!.iban,
-				recMobileNumber: form.value.phoneNumber,
-				// recMobileNumber: form.value.phoneNumber,
-				// recIin: "910503300507",
-				recFio: form.value.receiverName,
+				// iban: myAccounts.value[0]?.iban,
+				iban: form.value.from!.iban,
+				recIban: form.value.recIban,
 				amount: String(form.value.amount),
-				typeOfTransfer: TypeOfTransfer.InternalPhone
+				typeOfTransfer: TypeOfTransfer.InternalPhone,
+				recMobileNumber: form.value.phoneNumber.split(' ').join('')
 			},
 			(event) => {
-				phoneStore.setState(FORM_STATE.SUCCESS)
 				handleTransferSSEResponse(form.value, event, router)
+				setLoading(false)
+				// phoneStore.setState(FORM_STATE.SUCCESS)
 			}
 		)
 			.then((e) => {
 				phoneStore.applicationId = e.applicationID
 				sessionStorage.setItem('uuid', e.applicationID)
-				phoneStore.setState(FORM_STATE.SUCCESS)
+				// phoneStore.setState(FORM_STATE.SUCCESS)
 				applicationIDStore.setApplicationID(e.applicationID)
 			})
 			.catch(() => {
@@ -179,13 +180,15 @@ const handleSubmit = async (e: Event | null = null) => {
 	}
 }
 
-const handleNameUpdate = async () => {
+const handleDataUpdate = async () => {
 	form.value.receiverName = '';
 	try {
 		if (form.value.phoneNumber.length === 16) {
-			const response = await getFIOByPhone.get(form.value.phoneNumber.split(' ').join(''))
+			const response = await getDataByPhone.get(form.value.phoneNumber.split(' ').join(''))
 			const receiverName = `${response.firstname.RU} ${response.lastname.RU[0]}.`;
+			const recIban = response.iban;
 			form.value.receiverName = receiverName;
+			form.value.recIban = recIban;
 		}
 	} catch (error) {
 		console.error('Ошибка при получении данных о получателе:', error)
@@ -200,7 +203,8 @@ onMounted(async () => {
 		currency: account.currency.name.toLowerCase() as CURRENCY,
 		iban: account.accNumber,
 		title: `ACCOUNTS_GROUPS.ACCOUNT_${account.currency.name.toUpperCase()}`,
-		amount: account.amount
+		amount: account.amount,
+		displayName: account.displayName
 	}))
 })
 // _________________________________________
@@ -213,7 +217,7 @@ onMounted(async () => {
 				<AccountDropdown id="from" v-model="form.from" :accounts-groups="accountsGroups"
 					:label="$t('OWN.FORM.FROM')" />
 
-				<SelectContactInput reverse v-model="form.phoneNumber" @input="handleNameUpdate()"
+				<SelectContactInput reverse v-model="form.phoneNumber" @input="handleDataUpdate()"
 					:helperText="form.receiverName" />
 
 				<CurrencyInput id="123" v-model="form.amount" class="form-field" :label="$t('INTERNAL.PHONE.FORM.SUM')"
