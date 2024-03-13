@@ -77,7 +77,7 @@ onBeforeRouteLeave((to1, _, next) => {
 
 const form = ref<IbanForm>({
 	from: undefined,
-	to: 'KZ84888AB22040000174',
+	to: '',
 	receiverName: '',
 	knp: null,
 	paymentPurposes: '',

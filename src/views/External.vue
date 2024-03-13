@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, ref, watch } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 
 import { Button, CurrencyInput, IbanInput, Input } from '@ui-kit/ui-kit'
 
@@ -10,7 +10,7 @@ import AppNavbar from '@/components/AppNavbar.vue'
 import KbeDropdown from '@/components/KbeDropdown.vue'
 import KnpDropdown from '@/components/KnpDropdown.vue'
 
-import { CURRENCY_SYMBOL } from '@/constants'
+// import { CURRENCY_SYMBOL } from '@/constants'
 
 import { useFormAutoFill } from '@/helpers/useFormAutoFill.ts'
 import router from '@/router'
@@ -19,22 +19,24 @@ import { handleTransferSSEResponse } from '@/services/sse.service'
 import { TransferService } from '@/services/transfer.service'
 
 import { useExternalStore } from '@/stores/external'
-import { useStatusStore } from '@/stores/status'
-import { useSuccessStore } from '@/stores/success'
+import { useLoadingStore } from '@/stores/loading'
+// import { useStatusStore } from '@/stores/status'
+// import { useSuccessStore } from '@/stores/success'
 import { useApplicationIDStore } from '@/stores/useApplicationIDStore'
 
 import { Account, AccountsGroup, CURRENCY } from '@/types'
 import { ExternalForm } from '@/types/external'
-import { FORM_STATE } from '@/types/form'
+// import { FORM_STATE } from '@/types/form'
 import { Kbe } from '@/types/kbe'
 import { Knp } from '@/types/knp'
 import { TypeOfTransfer } from '@/types/transfer'
 
 const externalStore = useExternalStore()
-const successStore = useSuccessStore()
-const statusStore = useStatusStore()
+// const successStore = useSuccessStore()
+// const statusStore = useStatusStore()
 const { formData } = useFormAutoFill()
 const applicationIDStore = useApplicationIDStore()
+const { setLoading } = useLoadingStore()
 
 externalStore.clearErrors()
 
@@ -60,63 +62,64 @@ const accountsGroups = computed<AccountsGroup[]>(() => [
 	}
 ])
 
-watch(
-	() => externalStore.state,
-	(state) => {
-		const currency = form.value.from ? form.value.from?.currency : CURRENCY.KZT
+// watch(
+// 	() => externalStore.state,
+// 	(state) => {
+// 		const currency = form.value.from ? form.value.from?.currency : CURRENCY.KZT
 
-		switch (state) {
-			case FORM_STATE.SUCCESS:
-				successStore.setDetails(Number(form.value.amount), currency, [
-					{ name: 'Сумма списания', value: `${form.value.amount} ${CURRENCY_SYMBOL[currency]}` },
-					{ name: 'Статус', value: 'Исполнено', colored: true },
-					{ name: 'Номер квитанции', value: '56789900' },
-					{ name: 'Счет списания', value: 'KZ****4893' },
-					{ name: 'Счет зачисления', value: 'KZ****4893' },
-					{ name: 'Дата', value: '11.04.2023' }
-				])
-				router.push('/Success')
-				break
+// 		switch (state) {
+// 			case FORM_STATE.SUCCESS:
+// 				successStore.setDetails(Number(form.value.amount), currency, [
+// 					{ name: 'Сумма списания', value: `${form.value.amount} ${CURRENCY_SYMBOL[currency]}` },
+// 					{ name: 'Статус', value: 'Исполнено', colored: true },
+// 					{ name: 'Номер квитанции', value: '56789900' },
+// 					{ name: 'Счет списания', value: 'KZ****4893' },
+// 					{ name: 'Счет зачисления', value: 'KZ****4893' },
+// 					{ name: 'Дата', value: '11.04.2023' }
+// 				])
+// 				router.push('/Success')
+// 				break
 
-			case FORM_STATE.ERROR:
-				statusStore.$state = {
-					class: 'error',
-					title: 'Перевод не совершён',
-					description: 'Ошибка',
-					showAs: 'fullpage',
-					actions: [
-						{
-							title: 'Вернуться на главную',
-							type: 'secondary',
-							target: '_self',
-							url: 'https://online-dev.kmf.kz/app/bank/actions/close'
-						},
-						{ title: 'Обновить документ', type: 'primary', target: '_self', url: '' }
-					]
-				}
-				router.push({
-					name: 'Status'
-				})
-				break
+// 			case FORM_STATE.ERROR:
+// 				statusStore.$state = {
+// 					class: 'error',
+// 					title: 'Перевод не совершён',
+// 					description: 'Ошибка',
+// 					showAs: 'fullpage',
+// 					actions: [
+// 						{
+// 							title: 'Вернуться на главную',
+// 							type: 'secondary',
+// 							target: '_self',
+// 							url: 'https://online-dev.kmf.kz/app/bank/actions/close'
+// 						},
+// 						{ title: 'Обновить документ', type: 'primary', target: '_self', url: '' }
+// 					]
+// 				}
+// 				router.push({
+// 					name: 'Status'
+// 				})
+// 				break
 
-			case FORM_STATE.INITIAL:
-			default:
-				break
-		}
+// 			case FORM_STATE.INITIAL:
+// 			default:
+// 				break
+// 		}
 
-		if (state) {
-			console.log(state)
-		}
-	}
-)
+// 		if (state) {
+// 			console.log(state)
+// 		}
+// 	}
+// )
 
 const handleSubmit = (e: Event | null = null) => {
 	e?.preventDefault()
 
 	externalStore.clearErrors()
-	externalStore.setState(FORM_STATE.LOADING)
+	// externalStore.setState(FORM_STATE.LOADING)
 
 	externalStore.validate(form.value).then(() => {
+		setLoading(true)
 		const mapped: any = {
 
 			iban: form.value.from!.iban,
@@ -124,8 +127,8 @@ const handleSubmit = (e: Event | null = null) => {
 			// recIin: form.value.iin,
 			amount: String(form.value.amount),
 			typeOfTransfer: TypeOfTransfer.External,
-			kbe: '19',
-			// recFio: form.value.receiverName,
+			kbe: (form.value.kbe as Kbe)?.code || '',
+
 
 			// recIin: form.value.iin,
 			// knp: form.value.knp,
@@ -137,18 +140,21 @@ const handleSubmit = (e: Event | null = null) => {
 			// transferDescription: 'отмывание денег',
 		}
 
-		TransferService.initWithSSE(mapped, (event) => {
-			externalStore.setState(FORM_STATE.SUCCESS)
-			handleTransferSSEResponse(mapped, event, router)
-		})
+		TransferService.initWithSSE(
+			mapped,
+			(event) => {
+				// externalStore.setState(FORM_STATE.SUCCESS)
+				handleTransferSSEResponse(mapped, event, router)
+				setLoading(false)
+			})
 			.then((e) => {
 				externalStore.applicationId = e.applicationID
 				sessionStorage.setItem('uuid', e.applicationID)
-				externalStore.setState(FORM_STATE.SUCCESS)
+				// externalStore.setState(FORM_STATE.SUCCESS)
 				applicationIDStore.setApplicationID(e.applicationID)
 			})
 			.catch(() => {
-				externalStore.setState(FORM_STATE.ERROR)
+				// externalStore.setState(FORM_STATE.ERROR)
 			})
 	})
 }

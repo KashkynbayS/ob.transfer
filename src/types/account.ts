@@ -5,6 +5,7 @@ export interface Account {
 	currency: CURRENCY
 	title: string
 	iban: string
+	number?: string
 	amount: number
 	displayName: string
 }

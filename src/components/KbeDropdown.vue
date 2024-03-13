@@ -41,14 +41,8 @@ watchEffect(() => {
 
 <template>
 	<div class="kbe">
-		<Dropdown 
-			:id="props.id" 
-			:value="selectedView" 
-			:label="$t('KBE.LABEL')"
-			@on-focus="bottomSheetRef?.open()" 
-			:invalid="props.errorInvalid"
-			:helper-text="props.helperText"
-		/>
+		<Dropdown :id="props.id" :value="selectedView" :label="$t('KBE.LABEL')" @on-focus="bottomSheetRef?.open()"
+			:invalid="props.errorInvalid" :helper-text="props.helperText" />
 
 		<BottomSheet ref="bottomSheetRef">
 			<template #title>
@@ -57,7 +51,9 @@ watchEffect(() => {
 			<template #content>
 				<section class="kbe__content">
 					<Input id="kbe-dropdown-search" v-model="search" :label="$t('KBE.SEARCH')">
-						<template #prepend><Search /></template>
+					<template #prepend>
+						<Search />
+					</template>
 					</Input>
 					<CellGroup v-if="kbeStore.list.length > 0">
 						<Cell v-for="item in kbeStore.list" :key="item.code" @click="onSelect(item)">

@@ -83,7 +83,7 @@ const onSelect = (item: Account) => {
 						<template #left>
 							<Component :is="CURRENCY_ICON[item.currency]" class="text-white" />
 						</template>
-						<template #title>{{ $t(item.displayName) }}</template>
+						<template #title>{{ $t(item.title) }}</template>
 						<template #subtitle>
 							<span class="text-caption">{{ maskIban(item.iban) }} </span>
 						</template>

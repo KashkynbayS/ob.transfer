@@ -152,13 +152,16 @@ const handleSubmit = async (e: Event | null = null) => {
 		setLoading(true)
 
 		// TO DO: вынести отдельно
-		let selectedDeposit: string | undefined;
+		let selectedDepositNumber: string | undefined;
+		let selectedDepositIban: string | undefined;
 
 		if (form.value.from?.displayName.includes('депозит')) {
-			selectedDeposit = form.value.from?.iban;
+			selectedDepositNumber = form.value.from?.number;
+			selectedDepositIban = form.value.from?.iban;
 		}
 		else if (form.value.to?.displayName.includes('депозит')) {
-			selectedDeposit = form.value.to?.iban;
+			selectedDepositNumber = form.value.to?.number;
+			selectedDepositIban = form.value.to?.iban;
 		}
 
 		let selectedAccount: string | undefined;
@@ -173,17 +176,10 @@ const handleSubmit = async (e: Event | null = null) => {
 		TransferService.initWithSSE(
 			{
 				iban: selectedAccount!,
-				depositNumber: selectedDeposit,
-				// recIban: "KZ34888AB22060000146",
+				depositNumber: selectedDepositNumber,
+				recIban: selectedDepositIban,
 				amount: String(form.value.amount),
-
 				typeOfTransfer: determineTypeOfTransfer()
-
-				// iban: form.value.from!.iban,
-				// recIban: form.value.to!.iban,
-				// amount: String(form.value.amount),
-				// recMobileNumber: '77772165656',
-				// typeOfTransfer: 2
 			},
 			(event) => {
 				handleTransferSSEResponse(form.value, event, router)
@@ -347,8 +343,9 @@ onMounted(async () => {
 	myDeposits.value = deals.deposits.map((deposit) => ({
 		id: deposit.id,
 		currency: deposit.currency.name.toLowerCase() as CURRENCY,
-		iban: deposit.number,
-		title: `ACCOUNTS_GROUPS.ACCOUNT_${deposit.currency.name.toUpperCase()}`,
+		iban: deposit.accountNumber,
+		number: deposit.number,
+		title: `ACCOUNTS_GROUPS.DEPOSIT`,
 		amount: deposit.restHoldSum,
 		displayName: deposit.displayName
 	}))

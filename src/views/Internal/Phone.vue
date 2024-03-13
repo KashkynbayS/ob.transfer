@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, reactive, ref, watch } from 'vue'
+import { computed, onMounted, reactive, ref } from 'vue'
 
 import { onBeforeRouteLeave, useRouter } from 'vue-router'
 
@@ -9,12 +9,12 @@ import { SelectContactInput } from '@ui-kit/ui-kit/dist/widgets'
 
 import AccountDropdown from '@/components/AccountDropdown.vue'
 
-import { CURRENCY_SYMBOL } from '@/constants'
+// import { CURRENCY_SYMBOL } from '@/constants'
 
 import { useLoadingStore } from '@/stores/loading'
 import { usePhoneStore } from '@/stores/phone.ts'
-import { useStatusStore } from '@/stores/status'
-import { useSuccessStore } from '@/stores/success'
+// import { useStatusStore } from '@/stores/status'
+// import { useSuccessStore } from '@/stores/success'
 import { useApplicationIDStore } from '@/stores/useApplicationIDStore'
 
 import { getDataByPhone } from '@/services/phone.service'
@@ -29,8 +29,8 @@ import { TypeOfTransfer } from '@/types/transfer'
 import { validateInternalPhone } from '@/helpers/internal-form.helper'
 
 const phoneStore = usePhoneStore()
-const successStore = useSuccessStore()
-const statusStore = useStatusStore()
+// const successStore = useSuccessStore()
+// const statusStore = useStatusStore()
 const applicationIDStore = useApplicationIDStore()
 const { setLoading } = useLoadingStore()
 
@@ -90,55 +90,55 @@ onBeforeRouteLeave((to, _, next) => {
 	modal.value?.open()
 })
 
-watch(
-	() => phoneStore.state,
-	(state) => {
-		const currency = form.value.from ? form.value.from?.currency : CURRENCY.KZT
+// watch(
+// 	() => phoneStore.state,
+// 	(state) => {
+// 		const currency = form.value.from ? form.value.from?.currency : CURRENCY.KZT
 
-		switch (state) {
-			case FORM_STATE.SUCCESS:
-				successStore.setDetails(Number(form.value.amount), currency, [
-					{ name: 'Сумма списания', value: `${form.value.amount} ${CURRENCY_SYMBOL[currency]}` },
-					{ name: 'Статус', value: 'Исполнено', colored: true },
-					{ name: 'Номер квитанции', value: '56789900' },
-					{ name: 'Счет списания', value: 'KZ****4893' },
-					{ name: 'Счет зачисления', value: 'KZ****4893' },
-					{ name: 'Дата', value: '11.04.2023' }
-				])
-				router.push('/Success')
-				break
+// 		switch (state) {
+// 			case FORM_STATE.SUCCESS:
+// 				successStore.setDetails(Number(form.value.amount), currency, [
+// 					{ name: 'Сумма списания', value: `${form.value.amount} ${CURRENCY_SYMBOL[currency]}` },
+// 					{ name: 'Статус', value: 'Исполнено', colored: true },
+// 					{ name: 'Номер квитанции', value: '56789900' },
+// 					{ name: 'Счет списания', value: 'KZ****4893' },
+// 					{ name: 'Счет зачисления', value: 'KZ****4893' },
+// 					{ name: 'Дата', value: '11.04.2023' }
+// 				])
+// 				router.push('/Success')
+// 				break
 
-			case FORM_STATE.ERROR:
-				statusStore.$state = {
-					class: 'error',
-					title: 'Перевод не совершён',
-					description: 'Ошибка',
-					showAs: 'fullpage',
-					actions: [
-						{
-							title: 'Вернуться на главную',
-							type: 'secondary',
-							target: '_self',
-							url: 'https://online-dev.kmf.kz/app/bank/actions/close'
-						},
-						{ title: 'Обновить документ', type: 'primary', target: '_self', url: '' }
-					]
-				}
-				router.push({
-					name: 'Status'
-				})
-				break
+// 			case FORM_STATE.ERROR:
+// 				statusStore.$state = {
+// 					class: 'error',
+// 					title: 'Перевод не совершён',
+// 					description: 'Ошибка',
+// 					showAs: 'fullpage',
+// 					actions: [
+// 						{
+// 							title: 'Вернуться на главную',
+// 							type: 'secondary',
+// 							target: '_self',
+// 							url: 'https://online-dev.kmf.kz/app/bank/actions/close'
+// 						},
+// 						{ title: 'Обновить документ', type: 'primary', target: '_self', url: '' }
+// 					]
+// 				}
+// 				router.push({
+// 					name: 'Status'
+// 				})
+// 				break
 
-			case FORM_STATE.INITIAL:
-			default:
-				break
-		}
+// 			case FORM_STATE.INITIAL:
+// 			default:
+// 				break
+// 		}
 
-		if (state) {
-			console.log(state)
-		}
-	}
-)
+// 		if (state) {
+// 			console.log(state)
+// 		}
+// 	}
+// )
 
 const handleSubmit = async (e: Event | null = null) => {
 	e?.preventDefault()
@@ -155,9 +155,9 @@ const handleSubmit = async (e: Event | null = null) => {
 				// iban: myAccounts.value[0]?.iban,
 				iban: form.value.from!.iban,
 				recIban: form.value.recIban,
+				recMobileNumber: form.value.phoneNumber.split(' ').join(''),
 				amount: String(form.value.amount),
 				typeOfTransfer: TypeOfTransfer.InternalPhone,
-				recMobileNumber: form.value.phoneNumber.split(' ').join('')
 			},
 			(event) => {
 				handleTransferSSEResponse(form.value, event, router)

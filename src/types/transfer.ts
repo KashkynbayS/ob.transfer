@@ -68,6 +68,7 @@ export interface IAccount {
 	}
 	amount: number
 	accNumber: string
+	accountNumber: string
 	maskerNumber: string
 	currency: {
 		id: number
