@@ -3,7 +3,7 @@
 export enum TypeOfTransfer {
 	Conversion = 1,
 	InternalPhone = 2,
-	InternalIban = 3,
+	InternalIban = 3,	
 	External = 4,
 	DepositReplenishment = 5,
 	DepositWithdrawal = 6,

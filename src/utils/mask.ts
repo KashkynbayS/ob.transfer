@@ -14,5 +14,26 @@ export function maskIban(iban: string) {
 
 export function maskPhoneNumber(number: string) {
 	const numStr = number.toString();
-	return `+7 (${numStr.substring(1, 4)}) ${numStr.substring(4, 7)} ${numStr.substring(7)}`;
+
+	let suffix = '';
+
+	if (numStr.length === 11) {
+		suffix = '+';
+	} else if (numStr.length === 10) {
+		suffix = '+7';
+	}
+
+	if (numStr.length > 10) {
+		return `${numStr.substring(0, 2)} (${numStr.substring(2, 5)}) ${numStr.substring(5, 8)} ${numStr.substring(8)}`;
+	}
+
+	return numStr;
 }
+
+// export function formatIban(input: string): string {
+// 	if (input.length !== 20) {
+// 		return input;
+// 	}
+
+// 	return input.match(/.{1,4}/g)?.join(" ") || "";
+// }

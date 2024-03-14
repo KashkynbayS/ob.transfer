@@ -14,6 +14,7 @@ import HistorySettings from '@/components/HistorySettings.vue'
 import { useHistoryStore } from '@/stores/history.ts'
 import { HistoryGroup } from '@/types'
 
+
 const router = useRouter()
 const historyStore = useHistoryStore()
 
@@ -53,32 +54,32 @@ onMounted(() => {
 </script>
 
 <template>
-	<div class="history">
-		<AppNavbar>
-			<template #title>
-				<h5>{{ $t('HISTORY.TITLE') }}</h5>
-			</template>
+<div class="history">
+	<AppNavbar>
+		<template #title>
+			<h5>{{ $t('HISTORY.TITLE') }}</h5>
+		</template>
 
-			<template #label>
-				<button id="history-filters-btn" class="history__filters" @click="onSettingsButtonClick">
-					<FiltersIcon />
-				</button>
-			</template>
-		</AppNavbar>
+		<template #label>
+			<button id="history-filters-btn" class="history__filters" @click="onSettingsButtonClick">
+				<FiltersIcon />
+			</button>
+		</template>
+	</AppNavbar>
 
-		<AppTags class="history__tags" :tags="historyStore.filterTags" @removed="onTagRemove" />
+	<AppTags class="history__tags" :tags="historyStore.filterTags" @removed="onTagRemove" />
 
-		<CellGroup v-for="group in history" :key="group.title" class="transaction-group">
-			<div class="transaction-group__title">
-				{{ group.isTitleWithTranslation ? $t(group.title) : group.title }}
-			</div>
-			<HistoryItem :item="item" v-for="item in group.list" :key="item.id" @click="openDetails(item.id)" />
-		</CellGroup>
+	<CellGroup v-for="group in history" :key="group.title" class="transaction-group">
+		<div class="transaction-group__title">
+			{{ group.isTitleWithTranslation ? $t(group.title) : group.title }}
+		</div>
+		<HistoryItem :item="item" v-for="item in group.list" :key="item.id" @click="openDetails(item.id)" />
+	</CellGroup>
 
-		<div v-if="historyStore.errorMsg" class="history__error">{{ historyStore.errorMsg }}</div>
+	<div v-if="historyStore.errorMsg" class="history__error">{{ historyStore.errorMsg }}</div>
 
-		<HistorySettings :show="isSettingsShown" @closed="onSettingsClose" @apply="onSettingsApply" />
-	</div>
+	<HistorySettings :show="isSettingsShown" @closed="onSettingsClose" @apply="onSettingsApply" />
+</div>
 </template>
 
 <style scoped lang="scss">

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import SuccessImage from '@/assets/images/success.svg'
 
-import { Button } from '@ui-kit/ui-kit'
+import { Button, Cell, CellGroup, Switch } from '@ui-kit/ui-kit'
 
 import TransferDetailsBottomSheet from '@/components/DetailsBottomSheet.vue'
 import { CURRENCY_SYMBOL } from '@/constants'
@@ -9,10 +9,12 @@ import PageTemplate from '@/layouts/PageTemplate.vue'
 import router from '@/router'
 import { useSuccessStore } from '@/stores/success'
 import { useTransferDetailsStore } from '@/stores/transferDetails'
-import { watch } from 'vue'
+import { ref, watch } from 'vue'
 
 const successStore = useSuccessStore()
 const transferDetailsStore = useTransferDetailsStore()
+
+const cellSwitch = ref(false)
 
 const handleReturnToHome = () => {
 	router.push('/')
@@ -27,24 +29,33 @@ watch(
 </script>
 
 <template>
-	<PageTemplate>
-		<section class="success">
-			<SuccessImage class="success__image" />
-			<h2>{{ successStore.amount }} {{ CURRENCY_SYMBOL[successStore.currency] }}</h2>
-			<p class="text-low-contrast">{{ $t('SUCCESS.TITLE') }}</p>
-		</section>
+<PageTemplate>
+	<section class="success">
+		<SuccessImage class="success__image" />
+		<h2>{{ successStore.amount }} {{ CURRENCY_SYMBOL[successStore.currency] }}</h2>
+		<p class="text-low-contrast">{{ $t('SUCCESS.TITLE') }}</p>
+		<CellGroup type="island" class="success__favourite">
+			<Cell rightType="controls">
+				<template #title> Title </template>
 
-		<template #footer>
-			<Button id="ownSubmit" type="ghost" @click="transferDetailsStore.openBottomSheet()">
-				{{ $t('SUCCESS.DETAILS') }}
-			</Button>
-			<Button id="ownSubmit" type="primary" @click="handleReturnToHome()">
-				{{ $t('SUCCESS.RETURN_TO_HOMEPAGE') }}
-			</Button>
-		</template>
+				<template #right>
+					<Switch id="cell-switch" v-model="cellSwitch" />
+				</template>
+			</Cell>
+		</CellGroup>
+	</section>
 
-		<TransferDetailsBottomSheet />
-	</PageTemplate>
+	<template #footer>
+		<Button id="ownSubmit" type="ghost" @click="transferDetailsStore.openBottomSheet()">
+			{{ $t('SUCCESS.DETAILS') }}
+		</Button>
+		<Button id="ownSubmit" type="primary" @click="handleReturnToHome()">
+			{{ $t('SUCCESS.RETURN_TO_HOMEPAGE') }}
+		</Button>
+	</template>
+
+	<TransferDetailsBottomSheet />
+</PageTemplate>
 </template>
 
 <style scoped>
@@ -53,11 +64,17 @@ watch(
 	width: 100%;
 	display: flex;
 	flex-direction: column;
+	justify-content: center;
 	align-items: center;
 	gap: var(--space-4);
 }
 
+.success__favourite {
+	width: 100%;
+	padding: 0;
+}
+
 .success__image {
-	margin: var(--space-20) auto var(--space-12);
+	/* margin: var(--space-20) auto var(--space-12); */
 }
 </style>

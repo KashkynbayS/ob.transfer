@@ -18,6 +18,7 @@ const mapIcon = (transaction: HistoryItem): typeof TimeIcon | typeof RejectedIco
 		case 'in_progress':
 			return TimeIcon;
 		case 'rejected':
+		case 'denied':
 		case 'removed':
 			return RejectedIcon;
 		default:
@@ -27,14 +28,12 @@ const mapIcon = (transaction: HistoryItem): typeof TimeIcon | typeof RejectedIco
 
 </script>
 
-<template>
-	<span class="transaction-value" :class="props.transaction.status">
-		<Component :is="mapIcon(props.transaction)" />
-		<span>
-			{{ formattedAmount }}
-		</span>
+<template><span class="transaction-value" :class="props.transaction.status">
+	<Component :is="mapIcon(props.transaction)" />
+	<span>
+		{{ formattedAmount }}
 	</span>
-</template>
+</span></template>
 
 <style scoped lang="scss">
 .transaction-value {
@@ -43,6 +42,7 @@ const mapIcon = (transaction: HistoryItem): typeof TimeIcon | typeof RejectedIco
 	align-items: center;
 
 	&.removed,
+	&.denied,
 	&.rejected {
 		color: var(--text-error);
 	}
