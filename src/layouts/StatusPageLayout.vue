@@ -1,5 +1,7 @@
 <script setup lang="ts">
-import PageTemplate from '@/layouts/PageTemplate.vue'
+import PageTemplate from '@/layouts/PageTemplate.vue';
+
+import TransferDetailsBottomSheet from '@/components/DetailsBottomSheet.vue';
 
 const props = withDefaults(
 	defineProps<{
@@ -27,6 +29,8 @@ const props = withDefaults(
 			<slot name="footer" />
 		</template>
 	</PageTemplate>
+
+	<TransferDetailsBottomSheet />
 </template>
 
 <style scoped lang="scss">

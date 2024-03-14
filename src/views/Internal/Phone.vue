@@ -156,6 +156,7 @@ const handleSubmit = async (e: Event | null = null) => {
 				iban: form.value.from!.iban,
 				recIban: form.value.recIban,
 				recMobileNumber: form.value.phoneNumber.split(' ').join(''),
+				recFio: form.value.receiverName,
 				amount: String(form.value.amount),
 				typeOfTransfer: TypeOfTransfer.InternalPhone,
 			},

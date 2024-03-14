@@ -159,6 +159,7 @@ const handleSubmit = async (e: Event | null = null) => {
 			{
 				iban: form.value.from!.iban,
 				recIban: form.value.to,
+				recFio: form.value.receiverName,
 				amount: String(form.value.amount),
 				typeOfTransfer: TypeOfTransfer.InternalIban,
 
