@@ -70,16 +70,14 @@ onMounted(async () => {
 
 <template>
 	<CellGroup>
-		<Cell reverse
-			v-for="item in frequents"
-			:key="item.amount"
-			left-type="img"
-			:left-bg="'var(--bg-dark)'"
-			:left-color="'var(--accent-primary)'"
-		>
-			<template #left><Frequent/></template>
-			<template #title> {{ $t(getReceiverNameByTransferType(item.typeOfTransfer, item.recFio || ''))  }} </template>
-			<template #subtitle ><span class="text-caption">{{ $t(getSubtitleByTransferType(item.typeOfTransfer)) }}</span></template>
+		<Cell v-for="item in frequents" :key="item.amount" left-type="img" :left-bg="'var(--bg-dark)'"
+			:left-color="'var(--accent-primary)'">
+			<template #left>
+				<Frequent />
+			</template>
+			<template #title> {{ $t(getReceiverNameByTransferType(item.typeOfTransfer, item.recFio || '')) }} </template>
+			<template #subtitle><span class="text-caption">{{ $t(getSubtitleByTransferType(item.typeOfTransfer))
+			}}</span></template>
 			<template #right-button>
 				<ResetIcon @click="removeFromFavoritesHandler(item.id)" width="20" height="20" />
 			</template>

@@ -88,22 +88,22 @@ const formattedCommission = useFormattedCurrency(props.item.commission, CURRENCY
 </script>
 
 <template>
-<Cell reverse left-color="var(--text-low-contrast)" left-type="icon" left-bg="var(--bg-dark)">
-    <template #left>
-        <Component :is="mapIcon(item)" :iban="item.recIban" />
-    </template>
+    <Cell left-color="var(--text-low-contrast)" left-type="icon" left-bg="var(--bg-dark)">
+        <template #left>
+            <Component :is="mapIcon(item)" :iban="item.recIban" />
+        </template>
 
-    <template #title>{{ mapTitle(item) }}</template>
+        <template #title>{{ mapTitle(item) }}</template>
 
-    <template #subtitle><span class="text-caption">{{ $t(mapDescription(item)) }}</span></template>
+        <template #subtitle><span class="text-caption">{{ $t(mapDescription(item)) }}</span></template>
 
-    <template #right>
-        <div class="history__value">
-            <TransactionValue :transaction="item" />
-            <span v-if="item.commission && item.commission > 0" class="history__commission">
-                {{ formattedCommission }}
-            </span>
-        </div>
-    </template>
-</Cell>
+        <template #right>
+            <div class="history__value">
+                <TransactionValue :transaction="item" />
+                <span v-if="item.commission && item.commission > 0" class="history__commission">
+                    {{ formattedCommission }}
+                </span>
+            </div>
+        </template>
+    </Cell>
 </template>
