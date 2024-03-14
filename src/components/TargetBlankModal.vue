@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { Modal } from '@ui-kit/ui-kit'
-import { useTargetBlankStore } from '@/stores/targetBlank.ts'
-import { computed, ref, watch } from 'vue'
-import { useLoadingStore } from '@/stores/loading.ts'
+import { useLoadingStore } from '@/stores/loading.ts';
+import { useTargetBlankStore } from '@/stores/targetBlank.ts';
+import { Modal } from '@ui-kit/ui-kit';
+import { computed, ref, watch } from 'vue';
 
 const targetBlankStore = useTargetBlankStore()
 const loadingStore = useLoadingStore()
@@ -14,7 +14,9 @@ const modal = ref<InstanceType<typeof Modal> | null>(null)
 watch(url, (newUrl) => {
 	console.log('set url', newUrl)
 	if (newUrl) {
-		modal.value?.open()
+		// NOTE: disabled while we don't need for modal
+		// modal.value?.open()
+		window.open(urlForLink.value, '_blank')
 	} else {
 		modal.value?.close()
 	}
@@ -39,13 +41,8 @@ function clickLinkHandler() {
 		<template #title>Подтверждение перехода на сторонний ресурс</template>
 		<template #body>
 			<p>Нажмите кнопку "Подтвердить" чтобы перейти на подписание</p>
-			<a
-				ref="noopener noreferrer"
-				:href="urlForLink"
-				target="_blank"
-				class="button button--primary"
-				@click="clickLinkHandler"
-			>
+			<a ref="noopener noreferrer" :href="urlForLink" target="_blank" class="button button--primary"
+				@click="clickLinkHandler">
 				Подтвердить
 			</a>
 		</template>
