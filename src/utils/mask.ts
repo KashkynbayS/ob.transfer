@@ -24,7 +24,7 @@ export function maskPhoneNumber(number: string) {
 	}
 
 	if (numStr.length > 10) {
-		return `${numStr.substring(0, 2)} (${numStr.substring(2, 5)}) ${numStr.substring(5, 8)} ${numStr.substring(8)}`;
+		return `${suffix}${numStr.substring(0, 2)} (${numStr.substring(2, 5)}) ${numStr.substring(5, 8)} ${numStr.substring(8)}`;
 	}
 
 	return numStr;
