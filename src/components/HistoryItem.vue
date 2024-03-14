@@ -10,11 +10,11 @@ import DepositIcon from '@/assets/icons/deposit.svg'
 import BankIcon from '@/components/BankIcon.vue'
 import TransactionValue from '@/components/TransactionValue.vue'
 
-import { CURRENCY_SYMBOL } from '@/constants'
+import { useFormattedCurrency } from '@/hooks/useFormattedCurrency'
 import { CURRENCY, HistoryItem, TypeOfTransfer } from '@/types'
 import { maskIban, maskPhoneNumber } from '@/utils'
 
-defineProps<{
+const props = defineProps<{
     item: HistoryItem
 }>()
 
@@ -83,26 +83,27 @@ const mapIcon = (transaction: HistoryItem) => {
     }
 }
 
+const formattedCommission = useFormattedCurrency(props.item.commission, CURRENCY.KZT).formattedCurrency
+
 </script>
 
 <template>
-    <Cell reverse left-color="var(--text-low-contrast)" left-type="icon" left-bg="var(--bg-dark)">
-        <template #left>
-            <Component :is="mapIcon(item)" :iban="item.recIban" />
-        </template>
+<Cell reverse left-color="var(--text-low-contrast)" left-type="icon" left-bg="var(--bg-dark)">
+    <template #left>
+        <Component :is="mapIcon(item)" :iban="item.recIban" />
+    </template>
 
-        <template #title>{{ mapTitle(item) }}</template>
+    <template #title>{{ mapTitle(item) }}</template>
 
-        <template #subtitle><span class="text-caption">{{ $t(mapDescription(item)) }}</span></template>
+    <template #subtitle><span class="text-caption">{{ $t(mapDescription(item)) }}</span></template>
 
-        <template #right>
-            <div class="history__value">
-                <TransactionValue :transaction="item" />
-                <span v-if="item.commission" class="history__commission">
-                    -{{ item.commission }}
-                    {{ CURRENCY_SYMBOL[CURRENCY.KZT] }}
-                </span>
-            </div>
-        </template>
-    </Cell>
+    <template #right>
+        <div class="history__value">
+            <TransactionValue :transaction="item" />
+            <span v-if="item.commission && item.commission > 0" class="history__commission">
+                {{ formattedCommission }}
+            </span>
+        </div>
+    </template>
+</Cell>
 </template>

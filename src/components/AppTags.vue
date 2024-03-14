@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { Tag } from '@/types/history'
+import { Tag } from '@/types/history';
 
-import CloseIcon from '@ui-kit/kmf-icons/interface/close/close-medium.svg'
+import CloseIcon from '@ui-kit/kmf-icons/interface/close/close-medium.svg';
 
 const props = defineProps<{
 	tags: Tag[]
@@ -17,12 +17,12 @@ function closeHandler(value: string) {
 </script>
 
 <template>
-	<div class="app-tags">
-		<div v-for="tag in props.tags" :key="tag.value" class="app-tags__item">
-			<span>{{ tag.title }}</span>
-			<CloseIcon class="app-tags__close" @click="closeHandler(tag.value)" />
-		</div>
+<div class="app-tags">
+	<div v-for="tag in props.tags" :key="tag.value" class="app-tags__item">
+		<span>{{ $t(tag.title) }}</span>
+		<CloseIcon class="app-tags__close" @click="closeHandler(tag.value)" />
 	</div>
+</div>
 </template>
 
 <style scoped lang="scss">
@@ -34,11 +34,14 @@ function closeHandler(value: string) {
 	// Скрытие скроллбара
 	-ms-overflow-style: none;
 	scrollbar-width: none;
+
 	&::-webkit-scrollbar {
 		display: none;
 	}
 
 	&__item {
+		font-weight: var(--font-weight-bold);
+		font-size: var(--font-size-caption);
 		height: var(--space-10);
 		padding: 0 var(--space-3);
 		display: flex;

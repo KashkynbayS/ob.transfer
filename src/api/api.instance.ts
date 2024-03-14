@@ -17,8 +17,8 @@ if (import.meta.env.VITE_ENVIRONMENT === 'local') {
 const refreshToken = async () => {
 	const url = 'https://dev-svc.kmf.kz/api/bank/sso/internal/customer/authorize'
 	const formData = {
-		phone: '+77053811230',
-		password: 'ssssssss8'
+		phone: '+77081991418',
+		password: 'Qwerty123'
 	}
 
 	return fetch(url, {
