@@ -10,8 +10,7 @@ const route = useRoute()
 
 
 const goBack = () => {
-	// TODO: вынести в пропсы чтобы вьюха говорила когда нужно выходить из приложения
-	if (route.name === 'Main') {
+	if (route.name === 'New') {
 		closeWindow()
 	} else {
 		router.back()
