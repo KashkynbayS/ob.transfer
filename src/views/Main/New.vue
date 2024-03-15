@@ -34,15 +34,11 @@ const transferTypes = [
 
 <template>
 	<CellGroup class="transfer-types">
-		<Cell reverse
-			v-for="item in transferTypes"
-			:key="item.title"
-			left-type="img"
-			:left-bg="'var(--bg-dark)'"
-			:left-color="'var(--accent-primary)'"
-			@click="router.push(item.link)"
-		>
-			<template #left> <Component :is="item.leftIcon" /> </template>
+		<Cell v-for="item in transferTypes" :key="item.title" left-type="img" :left-bg="'var(--bg-dark)'"
+			:left-color="'var(--accent-primary)'" @click="router.push(item.link)">
+			<template #left>
+				<Component :is="item.leftIcon" />
+			</template>
 			<template #title> {{ $t(item.title) }} </template>
 			<template #subtitle>{{ $t(item.subTitle) }}</template>
 			<template #right-button>

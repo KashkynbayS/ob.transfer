@@ -124,18 +124,20 @@ const handleSubmit = (e: Event | null = null) => {
 
 			iban: form.value.from!.iban,
 			recIban: form.value.iban,
-			// recIin: form.value.iin,
-			amount: String(form.value.amount),
-			typeOfTransfer: TypeOfTransfer.External,
+			recIin: form.value.iin,
 			kbe: (form.value.kbe as Kbe)?.code || '',
+			knp: '119',
+			// knp: (form.value.knp as Knp)?.code || '',
+			paymentPurposes: form.value.paymentPurposes,
+			typeOfTransfer: TypeOfTransfer.External,
+			amount: String(form.value.amount),
+			// recFio: form.value.receiverName,
 
 
 			// recIin: form.value.iin,
-			// knp: form.value.knp,
 			// recBin: '871209301136',
 			// recCompany: 'ТОО "АБВГД"',
 			// bin_hardcode: '180541000305',
-			// recFio: form.value.receiverName,
 			// kbe: String(Number(form.value.knp?.code)),
 			// transferDescription: 'отмывание денег',
 		}
