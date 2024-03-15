@@ -17,8 +17,9 @@ watch(url, (newUrl) => {
 		// NOTE: disabled while we don't need for modal
 		// modal.value?.open()
 		window.open(urlForLink.value, '_blank')
+		clickLinkHandler()
 	} else {
-		modal.value?.close()
+		// modal.value?.close()
 	}
 })
 
