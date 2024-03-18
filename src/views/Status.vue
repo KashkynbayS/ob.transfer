@@ -8,12 +8,16 @@ import Info from '@/assets/images/info.png'
 import Success from '@/assets/images/success.png'
 
 import StatusPageLayout from '@/layouts/StatusPageLayout.vue'
+
 import { useStatusStore } from '@/stores/status.ts'
+import { useTransferDetailsStore } from '@/stores/transferDetails'
+
 import { SseResponseStatusAction } from '@/types'
 
 const router = useRouter()
 
 const statusStore = useStatusStore()
+const transferDetailsStore = useTransferDetailsStore()
 
 function handleClick(action: SseResponseStatusAction) {
 	window.location.href = action.url
@@ -38,12 +42,13 @@ onMounted(() => {
 </script>
 
 <template>
-<StatusPageLayout :image="image" :title="statusStore.title" title-width="80%" :text="statusStore.description">
-	<template #footer>
-		<Button v-for="action in statusStore.actions" id="status-action" :key="action.url"
-			:type="action.type === 'secondary' ? 'ghost' : 'primary'" @click="handleClick(action)">
-			{{ action.title }}
-		</Button>
-	</template>
-</StatusPageLayout>
+	<StatusPageLayout :image="image" :title="statusStore.title" title-width="80%" :text="statusStore.description">
+		<template #footer>
+			<Button v-for="action in statusStore.actions" id="status-action" :key="action.url"
+				:type="action.type === 'secondary' ? 'ghost' : 'primary'"
+				@click="action.title === 'Посмотреть детали' ? transferDetailsStore.openBottomSheet() : handleClick(action)">
+				{{ action.title }}
+			</Button>
+		</template>
+	</StatusPageLayout>
 </template>

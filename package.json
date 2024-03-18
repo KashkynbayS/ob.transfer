@@ -15,10 +15,10 @@
 		"update": "npm i @ui-kit/kmf-icons @ui-kit/kmf-styles @ui-kit/ui-kit"
 	},
 	"dependencies": {
-		"@ui-kit/events": "^1.4.1",
-		"@ui-kit/kmf-icons": "^0.3.13",
+		"@ui-kit/events": "^1.4.2",
+		"@ui-kit/kmf-icons": "^1.1.7",
 		"@ui-kit/kmf-styles": "^1.1.1",
-		"@ui-kit/ui-kit": "^1.10.0",
+		"@ui-kit/ui-kit": "^1.11.0",
 		"@vee-validate/yup": "^4.11.8",
 		"@vueuse/core": "^10.7.0",
 		"axios": "^1.6.2",

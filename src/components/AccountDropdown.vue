@@ -78,7 +78,7 @@ const onSelect = (item: Account) => {
 						</template>
 					</CellGroupHeader>
 
-					<Cell v-for="item in group.list" :key="item.id" left-bg="#6E757C" :reverse="true"
+					<Cell v-for="item in group.list" :key="item.id" left-bg="#6E757C"
 						:class="item.id === props.disabled?.id ? 'cell--disabled' : ''" @click="onSelect(item)">
 						<template #left>
 							<Component :is="CURRENCY_ICON[item.currency]" class="text-white" />
