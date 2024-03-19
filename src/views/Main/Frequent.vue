@@ -49,7 +49,7 @@ const getSubtitleByTransferType = (transferType: number): string => {
 const removeFromFavoritesHandler = async (applicationID: string | undefined): Promise<void> => {
 	if (applicationID) {
 		try {
-			await removeFromFavorites.delete(applicationID);
+			await removeFromFavorites(applicationID);
 			frequents.value = frequents.value.filter(item => item.id !== applicationID);
 		} catch (error) {
 			console.error('Ошибка при удалении из избранного:', error);
@@ -69,20 +69,20 @@ onMounted(async () => {
 </script>
 
 <template>
-	<CellGroup>
-		<Cell v-for="item in frequents" :key="item.amount" left-type="img" :left-bg="'var(--bg-dark)'"
-			:left-color="'var(--accent-primary)'">
-			<template #left>
-				<Frequent />
-			</template>
-			<template #title> {{ $t(getReceiverNameByTransferType(item.typeOfTransfer, item.recFio || '')) }} </template>
-			<template #subtitle><span class="text-caption">{{ $t(getSubtitleByTransferType(item.typeOfTransfer))
-			}}</span></template>
-			<template #right-button>
-				<ResetIcon @click="removeFromFavoritesHandler(item.id)" width="20" height="20" />
-			</template>
-		</Cell>
-	</CellGroup>
+<CellGroup>
+	<Cell v-for="item in frequents" :key="item.amount" left-type="img" :left-bg="'var(--bg-dark)'"
+		:left-color="'var(--accent-primary)'">
+		<template #left>
+			<Frequent />
+		</template>
+		<template #title> {{ $t(getReceiverNameByTransferType(item.typeOfTransfer, item.recFio || '')) }} </template>
+		<template #subtitle><span class="text-caption">{{ $t(getSubtitleByTransferType(item.typeOfTransfer))
+				}}</span></template>
+		<template #right-button>
+			<ResetIcon @click="removeFromFavoritesHandler(item.id)" width="20" height="20" />
+		</template>
+	</Cell>
+</CellGroup>
 </template>
 
 <style scoped lang="scss"></style>

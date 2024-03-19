@@ -6,10 +6,9 @@ import { ModalAction } from '@ui-kit/ui-kit/dist/ui/components/modal/types';
 
 
 import { useTransferDetailsStore } from '@/stores/transferDetails.ts';
-import { useApplicationIDStore } from '@/stores/useApplicationIDStore';
 
 const transferDetailsStore = useTransferDetailsStore()
-const applicationIDStore = useApplicationIDStore()
+// const applicationIDStore = useApplicationIDStore()
 
 const conditions = computed(() => transferDetailsStore.conditions)
 
