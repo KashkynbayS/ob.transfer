@@ -13,3 +13,4 @@ run-go-pipeline:
         ref: 'master'
         file: 'nodejs-pipeline.yml'
     strategy: depend
+
