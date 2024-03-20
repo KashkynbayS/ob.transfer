@@ -1,41 +1,34 @@
 <script setup lang="ts">
-import { computed, onMounted, reactive, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue';
+import { useRouter } from "vue-router";
 
-import { onBeforeRouteLeave, useRouter } from 'vue-router'
+import { Button, CurrencyInput } from '@ui-kit/ui-kit';
+import { SelectContactInput } from '@ui-kit/ui-kit/dist/widgets';
 
-import { Button, CurrencyInput, Modal } from '@ui-kit/ui-kit'
-import { ModalAction } from '@ui-kit/ui-kit/dist/ui/components/modal/types'
-import { SelectContactInput } from '@ui-kit/ui-kit/dist/widgets'
+import AccountDropdown from '@/components/AccountDropdown.vue';
+import Guard from '@/components/Guard.vue';
 
-import AccountDropdown from '@/components/AccountDropdown.vue'
+import { useLoadingStore } from '@/stores/loading';
+import { usePhoneStore } from '@/stores/phone.ts';
+import { useApplicationIDStore } from '@/stores/useApplicationIDStore';
 
-// import { CURRENCY_SYMBOL } from '@/constants'
+import { getDataByPhone } from '@/services/phone.service';
+import { handleTransferSSEResponse } from '@/services/sse.service';
+import { TransferService } from '@/services/transfer.service';
 
-import { useLoadingStore } from '@/stores/loading'
-import { usePhoneStore } from '@/stores/phone.ts'
-// import { useStatusStore } from '@/stores/status'
-// import { useSuccessStore } from '@/stores/success'
-import { useApplicationIDStore } from '@/stores/useApplicationIDStore'
+import { Account, AccountsGroup, CURRENCY } from '@/types';
+import { FORM_STATE } from '@/types/form';
+import { PhoneForm } from '@/types/phone';
+import { TypeOfTransfer } from '@/types/transfer';
 
-import { getDataByPhone } from '@/services/phone.service'
-import { handleTransferSSEResponse } from '@/services/sse.service'
-import { TransferService } from '@/services/transfer.service'
-
-import { Account, AccountsGroup, CURRENCY } from '@/types'
-import { FORM_STATE } from '@/types/form'
-import { PhoneForm } from '@/types/phone'
-import { TypeOfTransfer } from '@/types/transfer'
-
-import { validateInternalPhone } from '@/helpers/internal-form.helper'
+import { validateInternalPhone } from '@/helpers/internal-form.helper';
 
 const phoneStore = usePhoneStore()
-// const successStore = useSuccessStore()
-// const statusStore = useStatusStore()
 const applicationIDStore = useApplicationIDStore()
 const { setLoading } = useLoadingStore()
 
-
 phoneStore.clearErrors()
+const router = useRouter()
 
 const form = ref<PhoneForm>({
 	from: undefined,
@@ -55,91 +48,6 @@ const accountsGroups = computed<AccountsGroup[]>(() => [
 	}
 ])
 
-// Modal
-const modal = ref<InstanceType<typeof Modal> | null>(null)
-const router = useRouter()
-let destPath = ''
-let isLeaveConfirmed = false
-const actions = reactive<ModalAction[]>([
-	{
-		mode: 'primary',
-		title: 'Перейти',
-		autoClose: true,
-		action: () => {
-			isLeaveConfirmed = true
-			router.push(destPath)
-		}
-	},
-	{
-		mode: 'ghost',
-		title: 'Остаться',
-		autoClose: true
-	}
-])
-
-// Guard
-onBeforeRouteLeave((to, _, next) => {
-	const { from, phoneNumber, amount } = form.value
-	const isFormDirty = from || phoneNumber || amount
-	destPath = to.fullPath
-
-	if (!isFormDirty || isLeaveConfirmed) {
-		next(true)
-	}
-
-	modal.value?.open()
-})
-
-// watch(
-// 	() => phoneStore.state,
-// 	(state) => {
-// 		const currency = form.value.from ? form.value.from?.currency : CURRENCY.KZT
-
-// 		switch (state) {
-// 			case FORM_STATE.SUCCESS:
-// 				successStore.setDetails(Number(form.value.amount), currency, [
-// 					{ name: 'Сумма списания', value: `${form.value.amount} ${CURRENCY_SYMBOL[currency]}` },
-// 					{ name: 'Статус', value: 'Исполнено', colored: true },
-// 					{ name: 'Номер квитанции', value: '56789900' },
-// 					{ name: 'Счет списания', value: 'KZ****4893' },
-// 					{ name: 'Счет зачисления', value: 'KZ****4893' },
-// 					{ name: 'Дата', value: '11.04.2023' }
-// 				])
-// 				router.push('/Success')
-// 				break
-
-// 			case FORM_STATE.ERROR:
-// 				statusStore.$state = {
-// 					class: 'error',
-// 					title: 'Перевод не совершён',
-// 					description: 'Ошибка',
-// 					showAs: 'fullpage',
-// 					actions: [
-// 						{
-// 							title: 'Вернуться на главную',
-// 							type: 'secondary',
-// 							target: '_self',
-// 							url: 'https://online-dev.kmf.kz/app/bank/actions/close'
-// 						},
-// 						{ title: 'Обновить документ', type: 'primary', target: '_self', url: '' }
-// 					]
-// 				}
-// 				router.push({
-// 					name: 'Status'
-// 				})
-// 				break
-
-// 			case FORM_STATE.INITIAL:
-// 			default:
-// 				break
-// 		}
-
-// 		if (state) {
-// 			console.log(state)
-// 		}
-// 	}
-// )
-
 const handleSubmit = async (e: Event | null = null) => {
 	e?.preventDefault()
 	// handleIINUpdate()
@@ -148,7 +56,7 @@ const handleSubmit = async (e: Event | null = null) => {
 		phoneStore.clearErrors()
 		phoneStore.setState(FORM_STATE.LOADING)
 		setLoading(true)
-		isLeaveConfirmed = true
+		// isLeaveConfirmed = true
 
 		TransferService.initWithSSE(
 			{
@@ -186,7 +94,7 @@ const handleDataUpdate = async () => {
 	try {
 		if (form.value.phoneNumber.length === 16) {
 			const response = await getDataByPhone.get(form.value.phoneNumber.split(' ').join(''))
-			const receiverName = `${response.firstname.RU} ${response.lastname.RU[0]}.`;
+			const receiverName = response.name.RU;
 			const recIban = response.iban;
 			form.value.receiverName = receiverName;
 			form.value.recIban = recIban;
@@ -231,11 +139,7 @@ onMounted(async () => {
 			</div>
 		</form>
 
-		<Modal ref="modal" v-bind="{ asd: 'asdasd' }" :actions="actions" close-on-outline-click>
-			<template #title>{{ $t('INTERNAL.MODAL.LEAVE_WHEN_FORM_IS_DIRTY.TITLE') }}</template>
-
-			<template #body>{{ $t('INTERNAL.MODAL.LEAVE_WHEN_FORM_IS_DIRTY.SUBTITLE') }}</template>
-		</Modal>
+		<Guard :form="form" />
 	</div>
 </template>
 

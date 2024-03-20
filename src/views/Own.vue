@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, ref, watch, watchEffect } from 'vue'
+import { computed, onMounted, ref, watchEffect } from 'vue'
 
 import { useRouter } from 'vue-router'
 
@@ -9,6 +9,7 @@ import PageTemplate from '@/layouts/PageTemplate.vue'
 
 import AccountDropdown from '@/components/AccountDropdown.vue'
 import AppNavbar from '@/components/AppNavbar.vue'
+import Guard from '@/components/Guard.vue'
 
 import { CURRENCY_SYMBOL } from '@/constants'
 import { Account, AccountsGroup, CURRENCY, LAST_UPDATED, OwnForm } from '@/types'
@@ -21,8 +22,6 @@ import { TransferService } from '@/services/transfer.service'
 import { useLoadingStore } from '@/stores/loading'
 import { useOwnStore } from '@/stores/own.ts'
 import { useRateStore } from '@/stores/rate.ts'
-import { useStatusStore } from '@/stores/status'
-import { useSuccessStore } from '@/stores/success'
 import { useApplicationIDStore } from '@/stores/useApplicationIDStore'
 
 import { FORM_STATE } from '@/types/form'
@@ -32,9 +31,7 @@ import { extractCurrencyFromAmount } from '@/utils/currencies'
 const router = useRouter()
 
 const ownStore = useOwnStore()
-const successStore = useSuccessStore()
 const rateStore = useRateStore()
-const statusStore = useStatusStore()
 const applicationIDStore = useApplicationIDStore()
 
 // временно отключаем по задаче: DBO-1037 - Отключение функционала Конвертации
@@ -51,7 +48,6 @@ const form = ref<OwnForm>({
 	writeOffAmount: '',
 	enrollmentAmount: '',
 	lastUpdated: undefined,
-	receiverName: 'Между своими счетами'
 })
 
 const myAccounts = ref<Account[]>([])
@@ -281,53 +277,6 @@ watchEffect(() => {
 	rateStore.fetchRate()
 })
 
-watch(
-	() => ownStore.state,
-	(state) => {
-		switch (state) {
-			case FORM_STATE.SUCCESS:
-				successStore.setDetails(Number(form.value.amount), form.value.from?.currency || CURRENCY.KZT, [
-					{ name: 'Сумма списания', value: '100 $' },
-					{ name: 'Статус', value: 'Исполнено', colored: true },
-					{ name: 'Номер квитанции', value: '56789900' },
-					{ name: 'Счет списания', value: 'KZ****4893' },
-					{ name: 'Счет зачисления', value: 'KZ****4893' },
-					{ name: 'Дата', value: '11.04.2023' }
-				])
-				router.push('Success')
-				break
-
-			case FORM_STATE.ERROR:
-				statusStore.$state = {
-					class: 'error',
-					title: 'Перевод не совершён',
-					description: 'Ошибка',
-					showAs: 'fullpage',
-					actions: [
-						{
-							title: 'Вернуться на главную',
-							type: 'secondary',
-							target: '_self',
-							url: 'https://online-dev.kmf.kz/app/bank/actions/close'
-						},
-						{ title: 'Обновить документ', type: 'primary', target: '_self', url: '' }
-					]
-				}
-				router.push({
-					name: 'Status'
-				})
-				break
-
-			case FORM_STATE.INITIAL:
-			default:
-				break
-		}
-		if (state) {
-			console.log(state)
-		}
-	}
-)
-
 onMounted(async () => {
 	const deals = await TransferService.fetchDealsList()
 
@@ -394,6 +343,8 @@ onMounted(async () => {
 				{{ $t('OWN.FORM.SUBMIT') }}
 			</Button>
 		</form>
+
+		<Guard :form="form" />
 	</PageTemplate>
 </template>
 

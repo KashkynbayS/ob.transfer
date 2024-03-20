@@ -1,79 +1,35 @@
 <script setup lang="ts">
-import { computed, onMounted, reactive, ref, watch } from 'vue'
+import { computed, onMounted, ref } from 'vue';
+import { useRouter } from "vue-router";
 
-import { onBeforeRouteLeave, useRouter } from 'vue-router'
+import Guard from '@/components/Guard.vue';
+import { Button, CurrencyInput, IbanInput, Input } from '@ui-kit/ui-kit';
 
-import { Button, CurrencyInput, IbanInput, Input, Modal } from '@ui-kit/ui-kit'
-import { ModalAction } from '@ui-kit/ui-kit/dist/ui/components/modal/types'
+import AccountDropdown from '@/components/AccountDropdown.vue';
+import KnpDropdown from '@/components/KnpDropdown.vue';
 
-import AccountDropdown from '@/components/AccountDropdown.vue'
-import KnpDropdown from '@/components/KnpDropdown.vue'
+import { useIbanStore } from '@/stores/iban.ts';
+import { useLoadingStore } from '@/stores/loading';
+import { useApplicationIDStore } from '@/stores/useApplicationIDStore';
 
-// import { addToFrequents } from '@/services/frequentService'
+import { getFIOByIban } from '@/services/iban.service';
+import { handleTransferSSEResponse } from '@/services/sse.service';
+import { TransferService } from '@/services/transfer.service';
 
-import { CURRENCY_SYMBOL } from '@/constants'
-
-import { useIbanStore } from '@/stores/iban.ts'
-import { useLoadingStore } from '@/stores/loading'
-import { useStatusStore } from '@/stores/status'
-import { useSuccessStore } from '@/stores/success'
-import { useApplicationIDStore } from '@/stores/useApplicationIDStore'
-
-import { getFIOByIban } from '@/services/iban.service'
-import { handleTransferSSEResponse } from '@/services/sse.service'
-import { TransferService } from '@/services/transfer.service'
-
-import { Account, AccountsGroup, CURRENCY } from '@/types'
-import { FORM_STATE } from '@/types/form'
-import { IbanForm } from '@/types/iban'
-import { Knp } from '@/types/knp'
-import { TypeOfTransfer } from '@/types/transfer'
+import { Account, AccountsGroup, CURRENCY } from '@/types';
+import { FORM_STATE } from '@/types/form';
+import { IbanForm } from '@/types/iban';
+import { Knp } from '@/types/knp';
+import { TypeOfTransfer } from '@/types/transfer';
 
 // import { validateInternalIban } from '@/helpers/internal-form-helper'
 
 const IbanStore = useIbanStore()
-const successStore = useSuccessStore()
-const statusStore = useStatusStore()
 const applicationIDStore = useApplicationIDStore()
 const { setLoading } = useLoadingStore()
+const router = useRouter()
 
 IbanStore.clearErrors()
-
-// Modal
-const modal = ref<InstanceType<typeof Modal> | null>(null)
-const router = useRouter()
-let destPath = ''
-let isLeaveConfirmed = false
-
-const actions = reactive<ModalAction[]>([
-	{
-		mode: 'primary',
-		title: 'Перейти',
-		autoClose: true,
-		action: () => {
-			isLeaveConfirmed = true
-			router.push(destPath)
-		}
-	},
-	{
-		mode: 'ghost',
-		title: 'Остаться',
-		autoClose: true
-	}
-])
-
-// Guard
-onBeforeRouteLeave((to1, _, next) => {
-	const { from, to, receiverName, amount } = form.value
-	const isFormDirty = from || to || receiverName || amount
-	destPath = to1.fullPath
-
-	if (!isFormDirty || isLeaveConfirmed) {
-		next(true)
-	}
-
-	modal.value?.open()
-})
 
 const form = ref<IbanForm>({
 	from: undefined,
@@ -94,56 +50,6 @@ const accountsGroups = computed<AccountsGroup[]>(() => [
 	}
 ])
 
-watch(
-	() => IbanStore.state,
-	(state) => {
-		const currency = form.value.from ? form.value.from?.currency : CURRENCY.KZT
-
-		switch (state) {
-			case FORM_STATE.SUCCESS:
-				successStore.setDetails(Number(form.value.amount), currency, [
-					{ name: 'Сумма списания', value: `${form.value.amount} ${CURRENCY_SYMBOL[currency]}` },
-					{ name: 'Статус', value: 'Исполнено', colored: true },
-					{ name: 'Номер квитанции', value: '56789900' },
-					{ name: 'Счет списания', value: 'KZ****4893' },
-					{ name: 'Счет зачисления', value: 'KZ****4893' },
-					{ name: 'Дата', value: '11.04.2023' }
-				])
-				router.push('/Success')
-				break
-
-			case FORM_STATE.ERROR:
-				statusStore.$state = {
-					class: 'error',
-					title: 'Перевод не совершён',
-					description: 'Ошибка',
-					showAs: 'fullpage',
-					actions: [
-						{
-							title: 'Вернуться на главную',
-							type: 'secondary',
-							target: '_self',
-							url: 'https://online-dev.kmf.kz/app/bank/actions/close'
-						},
-						{ title: 'Обновить документ', type: 'primary', target: '_self', url: '' }
-					]
-				}
-				router.push({
-					name: 'Status'
-				})
-				break
-
-			case FORM_STATE.INITIAL:
-			default:
-				break
-		}
-
-		if (state) {
-			console.log(state)
-		}
-	}
-)
-
 // Submit handler
 const handleSubmit = async (e: Event | null = null) => {
 	e?.preventDefault()
@@ -152,7 +58,7 @@ const handleSubmit = async (e: Event | null = null) => {
 		// await validateInternalIban(form.value)
 		IbanStore.clearErrors()
 		IbanStore.setState(FORM_STATE.LOADING)
-		isLeaveConfirmed = true
+		// isLeaveConfirmed = true
 		setLoading(true)
 
 		TransferService.initWithSSE(
@@ -197,7 +103,7 @@ const handleNameUpdate = async () => {
 	try {
 		if (form.value.to.length === 20) {
 			const response = await getFIOByIban.get(form.value.to.split(' ').join(''))
-			const receiverName = `${response.firstname.RU} ${response.lastname.RU[0]}.`;
+			const receiverName = response.name.RU;
 			form.value.receiverName = receiverName;
 		}
 	} catch (error) {
@@ -251,11 +157,7 @@ onMounted(async () => {
 			</div>
 		</form>
 
-		<Modal ref="modal" :actions="actions" close-on-outline-click>
-			<template #title>{{ $t('INTERNAL.MODAL.LEAVE_WHEN_FORM_IS_DIRTY.TITLE') }}</template>
-
-			<template #body>{{ $t('INTERNAL.MODAL.LEAVE_WHEN_FORM_IS_DIRTY.SUBTITLE') }}</template>
-		</Modal>
+		<Guard :form="form" />
 	</div>
 </template>
 
