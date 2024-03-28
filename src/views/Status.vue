@@ -9,6 +9,7 @@ import Success from '@/assets/images/success.png'
 
 import StatusPageLayout from '@/layouts/StatusPageLayout.vue'
 
+import { useLeaveConfirmedStore } from '@/stores/guard'
 import { useStatusStore } from '@/stores/status.ts'
 import { useTransferDetailsStore } from '@/stores/transferDetails'
 
@@ -18,6 +19,9 @@ const router = useRouter()
 
 const statusStore = useStatusStore()
 const transferDetailsStore = useTransferDetailsStore()
+const leaveConfirmedStore = useLeaveConfirmedStore();
+
+leaveConfirmedStore.setIsLeaveConfirmed(false);
 
 function handleClick(action: SseResponseStatusAction) {
 	window.location.href = action.url

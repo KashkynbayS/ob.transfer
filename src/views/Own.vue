@@ -19,6 +19,7 @@ import { validateOwnForm } from '@/helpers/own-form.helper'
 import { handleTransferSSEResponse } from '@/services/sse.service.ts'
 import { TransferService } from '@/services/transfer.service'
 
+import { useLeaveConfirmedStore } from '@/stores/guard'
 import { useLoadingStore } from '@/stores/loading'
 import { useOwnStore } from '@/stores/own.ts'
 import { useRateStore } from '@/stores/rate.ts'
@@ -33,6 +34,7 @@ const router = useRouter()
 const ownStore = useOwnStore()
 const rateStore = useRateStore()
 const applicationIDStore = useApplicationIDStore()
+const leaveConfirmedStore = useLeaveConfirmedStore();
 
 // временно отключаем по задаче: DBO-1037 - Отключение функционала Конвертации
 const IS_CONVERSION_DISABLED = false
@@ -146,6 +148,7 @@ const handleSubmit = async (e: Event | null = null) => {
 		ownStore.clearErrors()
 		ownStore.setState(FORM_STATE.LOADING)
 		setLoading(true)
+		leaveConfirmedStore.setIsLeaveConfirmed(true);
 
 		// TO DO: вынести отдельно
 		let selectedDepositNumber: string | undefined;

@@ -18,6 +18,7 @@ import { handleTransferSSEResponse } from '@/services/sse.service'
 import { TransferService } from '@/services/transfer.service'
 
 import { useExternalStore } from '@/stores/external'
+import { useLeaveConfirmedStore } from '@/stores/guard'
 import { useLoadingStore } from '@/stores/loading'
 import { useApplicationIDStore } from '@/stores/useApplicationIDStore'
 
@@ -31,6 +32,7 @@ const externalStore = useExternalStore()
 const { formData } = useFormAutoFill()
 const applicationIDStore = useApplicationIDStore()
 const { setLoading } = useLoadingStore()
+const leaveConfirmedStore = useLeaveConfirmedStore();
 
 externalStore.clearErrors()
 
@@ -43,7 +45,7 @@ const form = ref<ExternalForm>({
 	iin: formData.value?.recIin || '910503300507',
 	receiverName: formData.value?.recFio || '',
 	amount: Number(formData.value?.amount) || null,
-	paymentPurposes: formData.value?.paymentPurposes || '019'
+	paymentPurposes: formData.value?.paymentPurposes || ''
 })
 
 const myAccounts = ref<Account[]>([])
@@ -61,6 +63,7 @@ const handleSubmit = (e: Event | null = null) => {
 
 	externalStore.clearErrors()
 	// externalStore.setState(FORM_STATE.LOADING)
+	leaveConfirmedStore.setIsLeaveConfirmed(true);
 
 	externalStore.validate(form.value).then(() => {
 		setLoading(true)

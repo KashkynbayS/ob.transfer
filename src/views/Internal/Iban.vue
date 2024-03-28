@@ -8,6 +8,7 @@ import { Button, CurrencyInput, IbanInput, Input } from '@ui-kit/ui-kit';
 import AccountDropdown from '@/components/AccountDropdown.vue';
 import KnpDropdown from '@/components/KnpDropdown.vue';
 
+import { useLeaveConfirmedStore } from '@/stores/guard';
 import { useIbanStore } from '@/stores/iban.ts';
 import { useLoadingStore } from '@/stores/loading';
 import { useApplicationIDStore } from '@/stores/useApplicationIDStore';
@@ -28,6 +29,7 @@ const IbanStore = useIbanStore()
 const applicationIDStore = useApplicationIDStore()
 const { setLoading } = useLoadingStore()
 const router = useRouter()
+const leaveConfirmedStore = useLeaveConfirmedStore();
 
 IbanStore.clearErrors()
 
@@ -58,8 +60,8 @@ const handleSubmit = async (e: Event | null = null) => {
 		// await validateInternalIban(form.value)
 		IbanStore.clearErrors()
 		IbanStore.setState(FORM_STATE.LOADING)
-		// isLeaveConfirmed = true
 		setLoading(true)
+		leaveConfirmedStore.setIsLeaveConfirmed(true);
 
 		TransferService.initWithSSE(
 			{

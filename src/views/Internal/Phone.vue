@@ -8,6 +8,7 @@ import { SelectContactInput } from '@ui-kit/ui-kit/dist/widgets';
 import AccountDropdown from '@/components/AccountDropdown.vue';
 import Guard from '@/components/Guard.vue';
 
+import { useLeaveConfirmedStore } from '@/stores/guard';
 import { useLoadingStore } from '@/stores/loading';
 import { usePhoneStore } from '@/stores/phone.ts';
 import { useApplicationIDStore } from '@/stores/useApplicationIDStore';
@@ -23,9 +24,11 @@ import { TypeOfTransfer } from '@/types/transfer';
 
 import { validateInternalPhone } from '@/helpers/internal-form.helper';
 
+
 const phoneStore = usePhoneStore()
 const applicationIDStore = useApplicationIDStore()
 const { setLoading } = useLoadingStore()
+const leaveConfirmedStore = useLeaveConfirmedStore();
 
 phoneStore.clearErrors()
 const router = useRouter()
@@ -56,7 +59,7 @@ const handleSubmit = async (e: Event | null = null) => {
 		phoneStore.clearErrors()
 		phoneStore.setState(FORM_STATE.LOADING)
 		setLoading(true)
-		// isLeaveConfirmed = true
+		leaveConfirmedStore.setIsLeaveConfirmed(true);
 
 		TransferService.initWithSSE(
 			{

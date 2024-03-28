@@ -5,6 +5,10 @@ import { onBeforeRouteLeave, useRouter } from 'vue-router';
 import { Modal } from '@ui-kit/ui-kit';
 import { ModalAction } from '@ui-kit/ui-kit/dist/ui/components/modal/types';
 
+import { useLeaveConfirmedStore } from '@/stores/guard';
+
+const leaveConfirmedStore = useLeaveConfirmedStore();
+
 const props = defineProps<{
     form: {},
 }>()
@@ -13,7 +17,6 @@ const props = defineProps<{
 const modal = ref<InstanceType<typeof Modal> | null>(null)
 const router = useRouter()
 let destPath = ''
-let isLeaveConfirmed = false
 
 const actions = reactive<ModalAction[]>([
     {
@@ -21,7 +24,7 @@ const actions = reactive<ModalAction[]>([
         title: 'Перейти',
         autoClose: true,
         action: () => {
-            isLeaveConfirmed = true
+            leaveConfirmedStore.setIsLeaveConfirmed(true);
             router.push(destPath)
         }
     },
@@ -38,10 +41,10 @@ onBeforeRouteLeave((to, _, next) => {
     const isFormDirty = Object.values(form).some(value => value !== undefined && value !== null && value !== '');
     destPath = to.fullPath
 
-    if (!isFormDirty || isLeaveConfirmed) {
+    if (!isFormDirty || leaveConfirmedStore.$state.isLeaveConfirmed) {
         next(true)
     }
-    modal.value?.open()
+    else modal.value?.open()
 })
 
 </script>
