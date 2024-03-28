@@ -1,12 +1,12 @@
 import { CURRENCY_SYMBOL } from '@/constants'
 import { useStatusStore } from '@/stores/status'
+import { useTargetBlankStore } from '@/stores/targetBlank.ts'
 import { CURRENCY, SseResponse, isLinkType, isStatusType } from '@/types'
 import { getRelativeUrl } from '@/utils'
 import { ref } from 'vue'
 import { Router } from 'vue-router'
-import { useTargetBlankStore } from '@/stores/targetBlank.ts'
 
-const SSE_URL = 'https://dev-api.kmf.kz/svc/go-redis-sse/events'
+const SSE_URL = 'https://dev-api.kmf.kz/svc/bank/stream/events'
 
 const targetBlankStore = useTargetBlankStore()
 
