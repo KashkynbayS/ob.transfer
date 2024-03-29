@@ -17,6 +17,7 @@ const props = defineProps<{
 const modal = ref<InstanceType<typeof Modal> | null>(null)
 const router = useRouter()
 let destPath = ''
+leaveConfirmedStore.setIsLeaveConfirmed(false);
 
 const actions = reactive<ModalAction[]>([
     {
