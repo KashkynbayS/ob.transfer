@@ -39,10 +39,10 @@ externalStore.clearErrors()
 // Mock for UL
 const form = ref<ExternalForm>({
 	from: undefined,
-	iban: formData.value?.recIban || 'KZ86601A871003328701',
+	iban: formData.value?.recIban || '',
 	kbe: null,
 	knp: null,
-	iin: formData.value?.recIin || '910503300507',
+	iin: formData.value?.recIin || '',
 	receiverName: formData.value?.recFio || '',
 	amount: Number(formData.value?.amount) || null,
 	paymentPurposes: formData.value?.paymentPurposes || ''
@@ -78,7 +78,8 @@ const handleSubmit = (e: Event | null = null) => {
 			paymentPurposes: form.value.paymentPurposes,
 			typeOfTransfer: TypeOfTransfer.External,
 			amount: String(form.value.amount),
-			// recFio: form.value.receiverName,
+			recFio: form.value.receiverName,
+
 			// recIin: form.value.iin,
 			// recBin: '871209301136',
 			// recCompany: 'ТОО "АБВГД"',
