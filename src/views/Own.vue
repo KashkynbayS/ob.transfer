@@ -292,15 +292,17 @@ onMounted(async () => {
 		displayName: account.displayName
 	}))
 
-	myDeposits.value = deals.deposits.map((deposit) => ({
-		id: deposit.id,
-		currency: deposit.currency.name.toLowerCase() as CURRENCY,
-		iban: deposit.accountNumber,
-		number: deposit.number,
-		title: `ACCOUNTS_GROUPS.DEPOSIT`,
-		amount: deposit.restHoldSum,
-		displayName: deposit.displayName
-	}))
+	myDeposits.value = deals.deposits
+		.filter(deposit => deposit.refillDeposit && deposit.withdrawal)
+		.map((deposit) => ({
+			id: deposit.id,
+			currency: deposit.currency.name.toLowerCase() as CURRENCY,
+			iban: deposit.accountNumber,
+			number: deposit.number,
+			title: `ACCOUNTS_GROUPS.DEPOSIT`,
+			amount: deposit.restHoldSum,
+			displayName: deposit.displayName
+		}))
 })
 </script>
 
