@@ -18,7 +18,7 @@ export const PhoneService = {
 export const getDataByPhone = {
     async get(phoneNumber: string): Promise<any> {
         try {
-            const response = await axiosInstance.get<BaseResponse<any>>(`/main/recipients/by-phone/${encodeURIComponent(phoneNumber)}`);
+            const response = await axiosInstance.get<BaseResponse<any>>(`svc/bank/transfers/main/recipients/by-phone/${encodeURIComponent(phoneNumber)}`);
             return response.data.data;
 
         } catch (error) {

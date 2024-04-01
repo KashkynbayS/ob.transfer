@@ -18,7 +18,7 @@ export const IbanService = {
 export const getFIOByIban = {
 	async get(iban: string): Promise<any> {
 		try {
-			const response = await axiosInstance.get<BaseResponse<any>>(`/main/recipients/by-iban/${iban}`);
+			const response = await axiosInstance.get<BaseResponse<any>>(`svc/bank/transfers/main/recipients/by-iban/${iban}`);
 			return response.data.data;
 
 		} catch (error) {

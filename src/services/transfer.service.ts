@@ -7,7 +7,7 @@ const { axiosInstance } = useAxiosInstance()
 
 export const TransferService = {
 	async init(body: ITransferRequest): Promise<BaseResponse<ITransferResponse>> {
-		const response = await axiosInstance.post<BaseResponse<ITransferResponse>>('/main/init', body)
+		const response = await axiosInstance.post<BaseResponse<ITransferResponse>>('svc/bank/transfers/main/init', body)
 		return response.data
 	},
 
@@ -18,15 +18,13 @@ export const TransferService = {
 				callback(event)
 			})
 			console.log("SSE success");
-
 		}
 
 		return res.data
 	},
 
 	async fetchDealsList(): Promise<IDealsResponse> {
-		const response = await axiosInstance.get<BaseResponse<IDealsResponse>>('https://dev-api.kmf.kz/svc/bank/deals/list')
-
+		const response = await axiosInstance.get<BaseResponse<IDealsResponse>>('svc/bank/deals/list')
 		return response.data.data
 	}
 }

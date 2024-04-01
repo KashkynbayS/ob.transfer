@@ -6,7 +6,8 @@ import { getRelativeUrl } from '@/utils'
 import { ref } from 'vue'
 import { Router } from 'vue-router'
 
-const SSE_URL = 'https://dev-api.kmf.kz/svc/bank/stream/events'
+const BASE_URL = import.meta.env.VITE_BASE_URL || 'https://dev-api.kmf.kz'
+const SSE_URL = `${BASE_URL}/svc/bank/stream/events`
 
 const targetBlankStore = useTargetBlankStore()
 

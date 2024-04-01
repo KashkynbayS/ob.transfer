@@ -5,7 +5,7 @@ const { axiosInstance } = useAxiosInstance()
 
 export const HistoryService = {
 	async fetch(params?: HistoryParams): Promise<HistoryItem[]> {
-		const response = await axiosInstance.get<BaseResponse<HistoryItem[]>>('main/history', {
+		const response = await axiosInstance.get<BaseResponse<HistoryItem[]>>('svc/bank/transfers/main/history', {
 			params
 		})
 		return response.data.data

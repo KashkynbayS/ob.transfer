@@ -1,7 +1,9 @@
 import { tokenExpired } from '@ui-kit/events';
 import axios, { AxiosError, AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios'; // Define the type for your token
 
+const BASE_URL = import.meta.env.VITE_BASE_URL || 'https://dev-api.kmf.kz'
 const LS_TOKEN_KEY = 'accessToken'
+
 interface CustomAxiosRequestConfig extends AxiosRequestConfig {
 	_retry?: boolean
 	retryCount?: number
@@ -15,7 +17,7 @@ if (import.meta.env.VITE_ENVIRONMENT === 'local') {
 }
 
 const refreshToken = async () => {
-	const url = 'https://dev-svc.kmf.kz/api/bank/sso/internal/customer/authorize'
+	const url = `${BASE_URL}/api/bank/sso/internal/customer/authorize`
 	const formData = {
 		phone: '+77081991418',
 		password: 'Qwerty123'
@@ -63,7 +65,7 @@ export default function useAxiosInstance() {
 	const language = 'RU'
 
 	const axiosInstance = axios.create({
-		baseURL: 'https://dev-api.kmf.kz/svc/bank/transfers',
+		baseURL: BASE_URL,
 		headers: {
 			Authorization: getAccessToken(),
 			Lng: `${language}`

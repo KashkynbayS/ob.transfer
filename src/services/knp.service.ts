@@ -1,10 +1,12 @@
-import axios from 'axios'
+import useAxiosInstance from '@/api/api.instance'
 import { KnpApiResult } from './../types/knp'
+
+const { axiosInstance } = useAxiosInstance()
 
 export const KnpService = {
 	getList(): Promise<KnpApiResult> {
-		return axios
-			.get<KnpApiResult>('https://dev-api.kmf.kz/svc/bank/refbook/R_PPC')
+		return axiosInstance
+			.get<KnpApiResult>('svc/bank/refbook/R_PPC')
 			.then((response) => response.data)
 			.catch((error) => {
 				console.error('Error fetching Knp list:', error)
