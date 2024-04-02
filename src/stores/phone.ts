@@ -3,13 +3,15 @@ import { defineStore } from 'pinia'
 import { FORM_STATE, FormStore } from '@/types/form'
 import { extractValidationErrors } from '@/utils/validators'
 
-export interface PhoneStore extends FormStore {}
+export interface PhoneStore extends FormStore { }
 
 export const usePhoneStore = defineStore('phone', {
 	state: (): PhoneStore => ({
 		state: FORM_STATE.INITIAL,
 		applicationId: '',
 		errors: {
+			from: '',
+			phoneNumber: '',
 			amount: ''
 		}
 	}),
@@ -25,6 +27,8 @@ export const usePhoneStore = defineStore('phone', {
 				this.errors[fieldName] = ''
 			} else {
 				this.errors = {
+					from: '',
+					phoneNumber: '',
 					amount: ''
 				}
 			}

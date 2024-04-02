@@ -54,11 +54,6 @@ const onSelect = (item: Account) => {
 		props.updateField()
 	}
 }
-
-// Авто выбор первого элемента в дропдаун
-// if (props.accountsGroups && props.accountsGroups.length > 0 && props.accountsGroups[0].list.length > 0) {
-//     selected.value = props.accountsGroups[0].list[0]
-// }
 </script>
 
 <template>

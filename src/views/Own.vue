@@ -46,7 +46,7 @@ ownStore.clearErrors()
 const form = ref<OwnForm>({
 	from: undefined,
 	to: undefined,
-	amount: null,
+	amount: '',
 	writeOffAmount: '',
 	enrollmentAmount: '',
 	lastUpdated: undefined,
@@ -340,7 +340,7 @@ onMounted(async () => {
 			<template v-else>
 				<CurrencyInput id="amount" v-model="form.amount" :label="$t('OWN.FORM.AMOUNT')"
 					:invalid="!!ownStore.errors.amount"
-					:helper-text="ownStore.errors.amount ? $t(ownStore.errors.amount) : $t('OWN.FORM.COMMISSION', rateHelperArgs)"
+					:helper-text="ownStore.errors.amount ? $t(ownStore.errors.amount) : ''"
 					@update:model-value="ownStore.clearErrors('amount')" />
 			</template>
 

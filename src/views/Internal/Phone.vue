@@ -24,7 +24,6 @@ import { TypeOfTransfer } from '@/types/transfer';
 
 import { validateInternalPhone } from '@/helpers/internal-form.helper';
 
-
 const phoneStore = usePhoneStore()
 const applicationIDStore = useApplicationIDStore()
 const { setLoading } = useLoadingStore()
@@ -38,7 +37,7 @@ const form = ref<PhoneForm>({
 	phoneNumber: '',
 	receiverName: '',
 	recIban: '',
-	amount: null
+	amount: ''
 })
 
 const myAccounts = ref<Account[]>([])
@@ -53,7 +52,7 @@ const accountsGroups = computed<AccountsGroup[]>(() => [
 
 const handleSubmit = async (e: Event | null = null) => {
 	e?.preventDefault()
-	// handleIINUpdate()
+
 	try {
 		await validateInternalPhone(form.value)
 		phoneStore.clearErrors()
@@ -107,6 +106,10 @@ const handleDataUpdate = async () => {
 	}
 }
 
+const handleSelectsUpdate = (value: string) => {
+	phoneStore.clearErrors(value)
+}
+
 onMounted(async () => {
 	const deals = await TransferService.fetchDealsList()
 
@@ -127,10 +130,14 @@ onMounted(async () => {
 		<form class="internal-phone-form">
 			<div class="internal-phone-form-top">
 				<AccountDropdown id="from" v-model="form.from" :accounts-groups="accountsGroups"
-					:label="$t('OWN.FORM.FROM')" />
+					:label="$t('OWN.FORM.FROM')" :error-invalid="!!phoneStore.errors.from"
+					:helper-text="!!phoneStore.errors.from ? $t(phoneStore.errors.from) : ''"
+					:update-field="() => handleSelectsUpdate('from')" />
 
 				<SelectContactInput v-model="form.phoneNumber" @input="handleDataUpdate()"
-					:helperText="form.receiverName" />
+					:invalid="!!phoneStore.errors.phoneNumber"
+					:helper-text="!!phoneStore.errors.phoneNumber ? $t(phoneStore.errors.phoneNumber) : form.receiverName"
+					@update:model-value="phoneStore.clearErrors('phoneNumber')" />
 
 				<CurrencyInput id="123" v-model="form.amount" class="form-field" :label="$t('INTERNAL.PHONE.FORM.SUM')"
 					:invalid="!!phoneStore.errors.amount"

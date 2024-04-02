@@ -5,6 +5,7 @@ import { ExternalForm } from './../types/external'
 import { FORM_STATE, FormStore } from '@/types/form'
 import {
 	extractValidationErrors,
+	validateAccount,
 	validateAmount,
 	validateIban,
 	validateIin,
@@ -13,10 +14,11 @@ import {
 	validateReceiverName
 } from '@/utils/validators'
 
-export interface ExternalStore extends FormStore {}
+export interface ExternalStore extends FormStore { }
 
 // TODO: Добавить остальную валидацию после внедрения ТЗ и реализации API
 const formSchema = object({
+	from: validateAccount('from', 'OWN.FORM.ERRORS.SELECT_ACCOUNT'),
 	iban: validateIban('iban', 'EXTERNAL.FORM.ERRORS.EMPTY_IBAN'),
 	kbe: validateKbe('kbe', 'KBE.TITLE'),
 	knp: validateKnp('knp', 'KNP.TITLE'),
@@ -35,6 +37,7 @@ export const useExternalStore = defineStore('external', {
 		applicationId: '',
 		state: FORM_STATE.INITIAL,
 		errors: {
+			from: '',
 			iban: '',
 			kbe: '',
 			knp: '',
@@ -69,6 +72,7 @@ export const useExternalStore = defineStore('external', {
 				this.errors[fieldName] = ''
 			} else {
 				this.errors = {
+					from: '',
 					iban: '',
 					kbe: '',
 					knp: '',

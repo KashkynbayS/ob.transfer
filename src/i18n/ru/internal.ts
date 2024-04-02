@@ -11,6 +11,9 @@ export const INTERNAL = {
 			SUM: 'Сумма',
 			SUBMIT: 'Отправить',
 			ERRORS: {
+				ENTER_PHONE_NUMBER: 'Введите номер телефона',
+				ACCOUNT_NOT_FOUND: 'По номеру телефона не найден клиент',
+				OWNER_ACCOUNT: 'Вы ввели номер владельца счета',
 				NOT_ENOUGH_MONEY: 'Недостаточно средств',
 				EMPTY_AMOUNT: 'Введите сумму',
 				MIN_AMOUNT: 'Минимальная сумма перевода 100 ₸',
@@ -29,6 +32,7 @@ export const INTERNAL = {
 			SUBMIT: 'Отправить',
 			ERRORS: {
 				EMPTY_TO: 'Введите счет зачисления',
+				ACCOUNT_NOT_FOUND: 'По номеру счета не найден клиент',
 				EMPTY_RECEIVER_NAME: 'Введите имя получателя',
 				EMPTY_COMPANY_NAME: 'Введите наименование',
 				EMPTY_PAYMENT_PURPOSES: 'Введите назначение платежа',
@@ -36,7 +40,7 @@ export const INTERNAL = {
 				EMPTY_AMOUNT: 'Введите сумму',
 				MIN_AMOUNT: 'Минимальная сумма перевода 100 ₸',
 				MAX_AMOUNT: 'Максимальная сумма перевода в день 1 млн ₸'
-				
+
 			}
 		}
 	},

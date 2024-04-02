@@ -23,7 +23,7 @@ import { IbanForm } from '@/types/iban';
 import { Knp } from '@/types/knp';
 import { TypeOfTransfer } from '@/types/transfer';
 
-// import { validateInternalIban } from '@/helpers/internal-form-helper'
+import { validateInternalIban } from '@/helpers/internal-form-helper';
 
 const IbanStore = useIbanStore()
 const applicationIDStore = useApplicationIDStore()
@@ -39,7 +39,7 @@ const form = ref<IbanForm>({
 	receiverName: '',
 	knp: null,
 	paymentPurposes: '',
-	amount: null,
+	amount: '',
 })
 
 const myAccounts = ref<Account[]>([])
@@ -57,7 +57,7 @@ const handleSubmit = async (e: Event | null = null) => {
 	e?.preventDefault()
 
 	try {
-		// await validateInternalIban(form.value)
+		await validateInternalIban(form.value)
 		IbanStore.clearErrors()
 		IbanStore.setState(FORM_STATE.LOADING)
 		setLoading(true)
@@ -100,6 +100,10 @@ const handleKnpUpdate = () => {
 	IbanStore.clearErrors('knp')
 }
 
+const handleSelectsUpdate = (value: string) => {
+	IbanStore.clearErrors(value)
+}
+
 const handleNameUpdate = async () => {
 	form.value.receiverName = '';
 	try {
@@ -131,7 +135,10 @@ onMounted(async () => {
 	<div>
 		<form class="internal-iban-form">
 			<div class="internal-iban-form-top">
-				<AccountDropdown v-model="form.from" :accounts-groups="accountsGroups" :label="$t('OWN.FORM.FROM')" />
+				<AccountDropdown v-model="form.from" :accounts-groups="accountsGroups" :label="$t('OWN.FORM.FROM')"
+					:error-invalid="!!IbanStore.errors.from"
+					:helper-text="!!IbanStore.errors.from ? $t(IbanStore.errors.from) : ''"
+					:update-field="() => handleSelectsUpdate('from')" />
 
 				<IbanInput id="recieverNameModel" v-model:model-value="form.to" :label="$t('INTERNAL.IBAN.FORM.ACCOUNT_TO')"
 					:invalid="!!IbanStore.errors.to"

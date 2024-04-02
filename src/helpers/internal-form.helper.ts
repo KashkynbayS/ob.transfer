@@ -1,8 +1,15 @@
 import { PhoneForm } from '@/types/phone'
-import { validateAmount } from '@/utils'
+import { validateAccount, validateAmount, validatePhone } from '@/utils'
 import { object } from 'yup'
 
 const formSchema = object({
+	from: validateAccount('from', 'OWN.FORM.ERRORS.SELECT_ACCOUNT'),
+	phoneNumber: validatePhone(
+		'phone',
+		'INTERNAL.PHONE.FORM.ERRORS.ENTER_PHONE_NUMBER',
+		'INTERNAL.PHONE.FORM.ERRORS.OWNER_ACCOUNT',
+		'INTERNAL.PHONE.FORM.ERRORS.ACCOUNT_NOT_FOUND',
+	),
 	amount: validateAmount(
 		'amount',
 		'INTERNAL.PHONE.FORM.ERRORS.NOT_ENOUGH_MONEY',

@@ -3,7 +3,7 @@ import { defineStore } from 'pinia'
 import { FORM_STATE, FormStore } from '@/types/form'
 import { extractValidationErrors } from '@/utils/validators'
 
-export interface OwnStore extends FormStore {}
+export interface OwnStore extends FormStore { }
 
 export const useOwnStore = defineStore('own', {
 	state: (): OwnStore => ({

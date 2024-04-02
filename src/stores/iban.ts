@@ -3,15 +3,15 @@ import { defineStore } from 'pinia'
 import { FORM_STATE, FormStore } from '@/types/form'
 import { extractValidationErrors } from '@/utils/validators'
 
-export interface IbanStore extends FormStore {}
+export interface IbanStore extends FormStore { }
 
 export const useIbanStore = defineStore('iban', {
 	state: (): IbanStore => ({
 		state: FORM_STATE.INITIAL,
 		applicationId: '',
 		errors: {
+			from: '',
 			to: '',
-			receiverName: '',
 			knp: '',
 			paymentPurposes: '',
 			amount: ''
@@ -29,8 +29,8 @@ export const useIbanStore = defineStore('iban', {
 				this.errors[fieldName] = ''
 			} else {
 				this.errors = {
+					from: '',
 					to: '',
-					receiverName: '',
 					knp: '',
 					paymentPurposes: '',
 					amount: ''

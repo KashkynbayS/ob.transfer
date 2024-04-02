@@ -9,6 +9,6 @@ export interface ExternalForm {
 	knp: Knp | string | null
 	iin: string
 	receiverName: string
-	amount: number | null
+	amount: string | null
 	paymentPurposes: string
 }

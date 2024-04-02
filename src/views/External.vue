@@ -44,7 +44,7 @@ const form = ref<ExternalForm>({
 	knp: null,
 	iin: formData.value?.recIin || '',
 	receiverName: formData.value?.recFio || '',
-	amount: Number(formData.value?.amount) || null,
+	amount: formData.value?.amount || '',
 	paymentPurposes: formData.value?.paymentPurposes || ''
 })
 
@@ -115,6 +115,10 @@ const handleKnpUpdate = () => {
 	externalStore.clearErrors('knp')
 }
 
+const handleSelectsUpdate = (value: string) => {
+	externalStore.clearErrors(value)
+}
+
 const handleIINUpdate = async () => {
 	try {
 		if (form.value.iin.length === 12) {
@@ -152,7 +156,9 @@ onMounted(async () => {
 		</template>
 		<form class="form" @submit="handleSubmit">
 			<AccountDropdown id="from" v-model="form.from" :accounts-groups="accountsGroups"
-				:label="$t('EXTERNAL.FORM.FROM')" />
+				:label="$t('EXTERNAL.FORM.FROM')" :error-invalid="!!externalStore.errors.from"
+				:helper-text="!!externalStore.errors.from ? $t(externalStore.errors.from) : ''"
+				:update-field="() => handleSelectsUpdate('from')" />
 			<IbanInput id="iban" v-model="form.iban" :label="$t('EXTERNAL.FORM.IBAN')"
 				:invalid="!!externalStore.errors.iban"
 				:helper-text="!!externalStore.errors.iban ? $t(externalStore.errors.iban) : ''"
