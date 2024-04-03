@@ -41,14 +41,8 @@ watchEffect(() => {
 
 <template>
 	<div class="knp">
-		<Dropdown 
-			:id="props.id" 
-			:value="selectedView" 
-			:label="$t('KNP.LABEL')" 
-			@on-focus="bottomSheetRef?.open()" 
-			:invalid="props.errorInvalid"
-			:helper-text="props.helperText"
-		/>
+		<Dropdown :id="props.id" :value="selectedView" :label="$t('KNP.LABEL')" @click="bottomSheetRef?.open()"
+			:invalid="props.errorInvalid" :helper-text="props.helperText" />
 
 		<BottomSheet ref="bottomSheetRef">
 			<template #title>
@@ -57,7 +51,9 @@ watchEffect(() => {
 			<template #content>
 				<section class="knp__content">
 					<Input id="knp-dropdown-search" v-model="search" :label="$t('KNP.SEARCH')">
-						<template #prepend><Search /></template>
+					<template #prepend>
+						<Search />
+					</template>
 					</Input>
 					<CellGroup v-if="knpStore.list.length > 0">
 						<Cell v-for="item in knpStore.list" :key="item.code" @click="onSelect(item)">

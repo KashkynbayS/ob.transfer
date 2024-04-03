@@ -2,8 +2,7 @@
 import { computed, onMounted, ref } from 'vue';
 import { useRouter } from "vue-router";
 
-import { Button, CurrencyInput } from '@ui-kit/ui-kit';
-import { SelectContactInput } from '@ui-kit/ui-kit/dist/widgets';
+import { Button, CurrencyInput, SelectContactInput } from '@ui-kit/ui-kit';
 
 import AccountDropdown from '@/components/AccountDropdown.vue';
 import Guard from '@/components/Guard.vue';

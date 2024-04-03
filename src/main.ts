@@ -1,14 +1,14 @@
 import { createPinia } from 'pinia'
 import { createApp, h } from 'vue'
+import { i18nPlugin } from './i18n'
 
 import singleSpa from 'single-spa-vue'
 
 import App from './App.vue'
 import { router } from './router'
 
-import '@ui-kit/kmf-styles/dist/index.css'
-import '@ui-kit/ui-kit/dist/style.css'
-import { i18nPlugin } from './i18n'
+import '@ui-kit/ui-kit/index.css'
+
 import './style.css'
 
 const pinia = createPinia()

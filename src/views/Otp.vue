@@ -6,7 +6,7 @@ import PageTemplate from '@/layouts/PageTemplate.vue'
 import { checkOtp, resendOtp } from '@/services/otp.service'
 import { useLoadingStore } from '@/stores/loading'
 import { CheckOtpProps } from '@/types/otp'
-import { OtpLayout } from '@ui-kit/ui-kit/dist/layouts'
+import { OtpLayout } from '@ui-kit/ui-kit'
 import { useRoute } from 'vue-router'
 
 const phone = ref('+77771234567')
@@ -101,14 +101,8 @@ function formatPhoneNumber(number: string): string {
 
 <template>
 	<PageTemplate without-paddings>
-		<OtpLayout
-			v-model="code"
-			lng="ru"
-			class="opt__container"
-			:timer-duration="10"
-			@on-code-resend="onCodeResend"
-			@on-complete="onCodeComplete"
-		>
+		<OtpLayout v-model="code" lng="ru" class="opt__container" :timer-duration="10" @on-code-resend="onCodeResend"
+			@on-complete="onCodeComplete">
 			<template #header>
 				<AppNavbar />
 			</template>

@@ -1,8 +1,7 @@
 <script setup lang="ts">
 import { computed, reactive, ref, watch } from 'vue';
 
-import { BottomSheet, Cell, CellGroup } from '@ui-kit/ui-kit';
-import { ModalAction } from '@ui-kit/ui-kit/dist/ui/components/modal/types';
+import { BottomSheet, Cell, CellGroup, ModalAction } from '@ui-kit/ui-kit';
 
 
 import { useTransferDetailsStore } from '@/stores/transferDetails.ts';
@@ -62,22 +61,22 @@ const actions = reactive<ModalAction[]>([
 </script>
 
 <template>
-<BottomSheet ref="bottomSheetRef" :actions="actions" close-on-outline-click class="bottom-sheet"
-	@closed="transferDetailsStore.closeBottomSheet()">
-	<template #title>{{ $t('TRANSFER_DETAILS.TITLE') }}</template>
+	<BottomSheet ref="bottomSheetRef" :actions="actions" close-on-outline-click class="bottom-sheet"
+		@closed="transferDetailsStore.closeBottomSheet()">
+		<template #title>{{ $t('TRANSFER_DETAILS.TITLE') }}</template>
 
-	<template #content>
-		<CellGroup type="full" class="bottom-sheet__content">
-			<Cell v-for="item in conditions" :key="item.key">
-				<template #title>{{ $t(item.key) }}</template>
-				<template #right>
-					<span class="text-low-contrast" :class="{ success: item.status === true }">{{ $t(item.value)
+		<template #content>
+			<CellGroup type="full" class="bottom-sheet__content">
+				<Cell v-for="item in conditions" :key="item.key">
+					<template #title>{{ $t(item.key) }}</template>
+					<template #right>
+						<span class="text-low-contrast" :class="{ success: item.status === true }">{{ $t(item.value)
 						}}</span>
-				</template>
-			</Cell>
-		</CellGroup>
-	</template>
-</BottomSheet>
+					</template>
+				</Cell>
+			</CellGroup>
+		</template>
+	</BottomSheet>
 </template>
 
 <style scoped lang="scss">

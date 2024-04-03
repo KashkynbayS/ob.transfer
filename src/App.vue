@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { useLoadingStore } from '@/stores/loading.ts'
-import { LoaderPage } from '@ui-kit/ui-kit/dist/layouts'
-import TargetBlankModal from '@/components/TargetBlankModal.vue'
+import TargetBlankModal from '@/components/TargetBlankModal.vue';
+import { useLoadingStore } from '@/stores/loading.ts';
+import { LoaderPage } from '@ui-kit/ui-kit';
 
 const loadingStore = useLoadingStore()
 </script>

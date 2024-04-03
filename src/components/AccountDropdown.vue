@@ -59,7 +59,7 @@ const onSelect = (item: Account) => {
 <template>
 	<div class="accounts">
 		<Dropdown :id="props.id || ''" :value="view.amount" :label="$t(view.label)" :invalid="props.errorInvalid"
-			:helper-text="props.helperText" @on-focus="accountBottomSheetRef?.open()" />
+			:helper-text="props.helperText" @click="accountBottomSheetRef?.open()" />
 
 		<BottomSheet ref="accountBottomSheetRef">
 			<template #title>

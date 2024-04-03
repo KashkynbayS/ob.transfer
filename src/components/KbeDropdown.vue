@@ -41,7 +41,7 @@ watchEffect(() => {
 
 <template>
 	<div class="kbe">
-		<Dropdown :id="props.id" :value="selectedView" :label="$t('KBE.LABEL')" @on-focus="bottomSheetRef?.open()"
+		<Dropdown :id="props.id" :value="selectedView" :label="$t('KBE.LABEL')" @click="bottomSheetRef?.open()"
 			:invalid="props.errorInvalid" :helper-text="props.helperText" />
 
 		<BottomSheet ref="bottomSheetRef">
