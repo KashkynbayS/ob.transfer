@@ -10,6 +10,8 @@ import { router } from './router'
 import '@ui-kit/ui-kit/index.css'
 
 import './style.css'
+import axiosInstance from '@/api/api.instance.ts'
+import { loggerPlugin } from '@ui-kit/ui-kit'
 
 const pinia = createPinia()
 
@@ -25,6 +27,9 @@ if (isLocal) {
 	app.use(pinia)
 	app.use(router)
 	app.use(i18nPlugin)
+	app.use(loggerPlugin, {
+		axios: axiosInstance
+	})
 
 	// Mount
 	app.mount('#app')
@@ -40,6 +45,9 @@ if (isLocal) {
 			app.use(pinia)
 			app.use(router)
 			app.use(i18nPlugin)
+			app.use(loggerPlugin, {
+				axios: axiosInstance
+			})
 		}
 	})
 }
