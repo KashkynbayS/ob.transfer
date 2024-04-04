@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import TargetBlankModal from '@/components/TargetBlankModal.vue';
-import { useLoadingStore } from '@/stores/loading.ts';
-import { LoaderPage } from '@ui-kit/ui-kit';
+import TargetBlankModal from '@/components/TargetBlankModal.vue'
+import { useLoadingStore } from '@/stores/loading.ts'
+import { LoaderPage, HttpLogger } from '@ui-kit/ui-kit'
+import { isDebug } from '@/utils'
 
 const loadingStore = useLoadingStore()
 </script>
@@ -16,6 +17,10 @@ const loadingStore = useLoadingStore()
 
 		<transition name="fade" mode="out-in">
 			<LoaderPage v-if="loadingStore.isLoading" />
+		</transition>
+
+		<transition name="fade" mode="out-in">
+			<http-logger v-if="isDebug"></http-logger>
 		</transition>
 
 		<TargetBlankModal />

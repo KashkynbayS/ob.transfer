@@ -9,8 +9,6 @@ import { Router } from 'vue-router'
 const BASE_URL = import.meta.env.VITE_BASE_URL || 'https://dev-api.kmf.kz'
 const SSE_URL = `${BASE_URL}/svc/bank/stream/events`
 
-const targetBlankStore = useTargetBlankStore()
-
 export const initEventSource = (uuidValue: string, callback: (event: MessageEvent<any>) => void) => {
 	const eventSource = ref<EventSource | null>(null)
 
@@ -39,7 +37,7 @@ export const handleTransferSSEResponse = (
 
 	if (isLinkType(eventData)) {
 		if (eventData.data.target === '_blank') {
-			targetBlankStore.setUrl(eventData.data.url)
+			useTargetBlankStore().setUrl(eventData.data.url)
 		} else {
 			const relativeUrl = getRelativeUrl(eventData.data.url)
 			console.log('routing to ', relativeUrl)
