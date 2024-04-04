@@ -13,7 +13,7 @@ const goBack = () => {
 	if (route.name === 'New') {
 		closeWindow()
 	} else {
-		router.back()
+		router.push('/new')
 	}
 }
 
@@ -21,17 +21,17 @@ const slots = useSlots()
 </script>
 
 <template>
-<Navbar platform="ios" class="navbar" @on-left-btn-click="goBack">
-	<template #left>
-		<ArrowLeft class="navbar__back-arrow history-link" />
-	</template>
-	<template v-if="slots.title" #title>
-		<slot name="title" />
-	</template>
-	<template v-if="slots.label" #label>
-		<slot name="label" />
-	</template>
-</Navbar>
+	<Navbar platform="ios" class="navbar" @on-left-btn-click="goBack">
+		<template #left>
+			<ArrowLeft class="navbar__back-arrow history-link" />
+		</template>
+		<template v-if="slots.title" #title>
+			<slot name="title" />
+		</template>
+		<template v-if="slots.label" #label>
+			<slot name="label" />
+		</template>
+	</Navbar>
 </template>
 
 <style scoped lang="scss">
