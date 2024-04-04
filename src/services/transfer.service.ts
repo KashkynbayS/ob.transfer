@@ -1,9 +1,7 @@
-import useAxiosInstance from '@/api/api.instance.ts'
 import { BaseResponse } from '@/types'
 import { IDealsResponse, ITransferRequest, ITransferResponse } from '@/types/transfer'
 import { initEventSource } from './sse.service'
-
-const { axiosInstance } = useAxiosInstance()
+import axiosInstance from '@/api/api.instance.ts'
 
 export const TransferService = {
 	async init(body: ITransferRequest): Promise<BaseResponse<ITransferResponse>> {
@@ -17,7 +15,7 @@ export const TransferService = {
 			initEventSource(res.data.applicationID, (event) => {
 				callback(event)
 			})
-			console.log("SSE success");
+			console.log('SSE success')
 		}
 
 		return res.data

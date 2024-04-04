@@ -1,7 +1,5 @@
-import useAxiosInstance from '@/api/api.instance'
 import { KnpApiResult } from './../types/knp'
-
-const { axiosInstance } = useAxiosInstance()
+import axiosInstance from '@/api/api.instance.ts'
 
 export const KnpService = {
 	getList(): Promise<KnpApiResult> {

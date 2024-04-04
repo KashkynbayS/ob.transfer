@@ -1,8 +1,6 @@
-import useAxiosInstance from '@/api/api.instance.ts'
 import { BaseResponse } from '@/types'
 import { IbanForm } from './../types/iban'
-
-const { axiosInstance } = useAxiosInstance()
+import axiosInstance from '@/api/api.instance.ts'
 
 export const IbanService = {
 	transfer(form: IbanForm): Promise<void> {
@@ -18,12 +16,11 @@ export const IbanService = {
 export const getFIOByIban = {
 	async get(iban: string): Promise<any> {
 		try {
-			const response = await axiosInstance.get<BaseResponse<any>>(`svc/bank/transfers/main/recipients/by-iban/${iban}`);
-			return response.data.data;
-
+			const response = await axiosInstance.get<BaseResponse<any>>(`svc/bank/transfers/main/recipients/by-iban/${iban}`)
+			return response.data.data
 		} catch (error) {
-			console.error('Ошибка при выполнении запроса:', error);
-			throw error;
+			console.error('Ошибка при выполнении запроса:', error)
+			throw error
 		}
-	},
+	}
 }

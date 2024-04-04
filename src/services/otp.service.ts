@@ -1,8 +1,6 @@
-import useAxiosInstance from '@/api/api.instance'
 import { BaseResponse } from '@/types'
 import { CheckOtpProps, CheckOtpResponse, ResendOtpProps } from '@/types/otp'
-
-const { axiosInstance } = useAxiosInstance()
+import axiosInstance from '@/api/api.instance.ts'
 
 // Запрос на проверку OTP
 export async function checkOtp(props: CheckOtpProps): Promise<CheckOtpResponse | null> {

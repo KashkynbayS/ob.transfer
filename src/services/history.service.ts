@@ -1,7 +1,5 @@
-import useAxiosInstance from '@/api/api.instance.ts'
 import { BaseResponse, HistoryItem, HistoryParams } from '@/types'
-
-const { axiosInstance } = useAxiosInstance()
+import axiosInstance from '@/api/api.instance.ts'
 
 export const HistoryService = {
 	async fetch(params?: HistoryParams): Promise<HistoryItem[]> {
