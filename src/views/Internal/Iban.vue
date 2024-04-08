@@ -132,63 +132,48 @@ onMounted(async () => {
 </script>
 
 <template>
-	<div>
-		<form class="internal-iban-form">
-			<div class="internal-iban-form-top">
-				<AccountDropdown v-model="form.from" :accounts-groups="accountsGroups" :label="$t('OWN.FORM.FROM')"
-					:error-invalid="!!IbanStore.errors.from"
-					:helper-text="!!IbanStore.errors.from ? $t(IbanStore.errors.from) : ''"
-					:update-field="() => handleSelectsUpdate('from')" />
+	<form class="internal-iban-form">
+		<AccountDropdown v-model="form.from" :accounts-groups="accountsGroups" :label="$t('OWN.FORM.FROM')"
+			:error-invalid="!!IbanStore.errors.from" :helper-text="!!IbanStore.errors.from ? $t(IbanStore.errors.from) : ''"
+			:update-field="() => handleSelectsUpdate('from')" />
 
-				<IbanInput id="recieverNameModel" v-model:model-value="form.to" :label="$t('INTERNAL.IBAN.FORM.ACCOUNT_TO')"
-					:invalid="!!IbanStore.errors.to"
-					:helper-text="IbanStore.errors.to ? $t(IbanStore.errors.to) : form.receiverName"
-					@update:model-value="IbanStore.clearErrors('to')" @input="handleNameUpdate()" />
+		<IbanInput id="recieverNameModel" v-model:model-value="form.to" :label="$t('INTERNAL.IBAN.FORM.ACCOUNT_TO')"
+			:invalid="!!IbanStore.errors.to"
+			:helper-text="IbanStore.errors.to ? $t(IbanStore.errors.to) : form.receiverName"
+			@update:model-value="IbanStore.clearErrors('to')" @input="handleNameUpdate()" />
 
-				<KnpDropdown v-if="form.to == 'KZ1111' && form.to !== null" id="knp" v-model="form.knp as Knp | null"
-					:error-invalid="!!IbanStore.errors.knp"
-					:helper-text="!!IbanStore.errors.knp ? $t(IbanStore.errors.knp) : ''" :update-field="handleKnpUpdate" />
+		<KnpDropdown v-if="form.to == 'KZ1111' && form.to !== null" id="knp" v-model="form.knp as Knp | null"
+			:error-invalid="!!IbanStore.errors.knp" :helper-text="!!IbanStore.errors.knp ? $t(IbanStore.errors.knp) : ''"
+			:update-field="handleKnpUpdate" />
 
-				<Input v-if="form.to == 'KZ1111' && form.to !== null" id="paymentPurposes" v-model="form.paymentPurposes"
-					:label="$t('EXTERNAL.FORM.PAYMENT_PURPOSES')" :invalid="!!IbanStore.errors.paymentPurposes"
-					:helper-text="!!IbanStore.errors.paymentPurposes ? $t(IbanStore.errors.paymentPurposes) : ''"
-					@update:model-value="IbanStore.clearErrors('paymentPurposes')" />
+		<Input v-if="form.to == 'KZ1111' && form.to !== null" id="paymentPurposes" v-model="form.paymentPurposes"
+			:label="$t('EXTERNAL.FORM.PAYMENT_PURPOSES')" :invalid="!!IbanStore.errors.paymentPurposes"
+			:helper-text="!!IbanStore.errors.paymentPurposes ? $t(IbanStore.errors.paymentPurposes) : ''"
+			@update:model-value="IbanStore.clearErrors('paymentPurposes')" />
 
-				<CurrencyInput id="amount" v-model:model-value="form.amount" :label="$t('INTERNAL.IBAN.FORM.SUM')"
-					:invalid="!!IbanStore.errors.amount"
-					:helper-text="IbanStore.errors.amount ? $t(IbanStore.errors.amount) : ''"
-					@update:model-value="IbanStore.clearErrors('amount')" />
-			</div>
-			<div class="internal-iban-form-bottom">
-				<Button id="internal-iban-submit" type="primary" @click="handleSubmit">
-					{{ $t('INTERNAL.IBAN.FORM.SUBMIT') }}
-				</Button>
-			</div>
-		</form>
+		<CurrencyInput id="amount" v-model:model-value="form.amount" :label="$t('INTERNAL.IBAN.FORM.SUM')"
+			:invalid="!!IbanStore.errors.amount" :helper-text="IbanStore.errors.amount ? $t(IbanStore.errors.amount) : ''"
+			@update:model-value="IbanStore.clearErrors('amount')" />
 
-		<Guard :form="form" />
-	</div>
+		<Button id="externalSubmit" class="form__submit" type="primary" @click="handleSubmit">
+			{{ $t('INTERNAL.IBAN.FORM.SUBMIT') }}
+		</Button>
+	</form>
+
+	<Guard :form="form" />
 </template>
 
 <style scoped lang="scss">
 .internal-iban-form {
-	box-sizing: content-box;
-	padding: var(--space-3) var(--space-4) 0 var(--space-4);
+	width: 100%;
+	height: 100%;
+	flex-direction: column;
+	display: flex;
+	gap: var(--space-3);
+	padding: var(--space-3) 0 var(--space-4) 0;
 
-	&-top {
-		display: flex;
-		flex-direction: column;
-		gap: var(--space-3);
-	}
-
-	.internal-iban-form-bottom {
-		position: absolute;
-		bottom: var(--space-5);
-		width: calc(100% - var(--space-4));
-
-		Button {
-			width: calc(100% - var(--space-4));
-		}
+	.form__submit {
+		margin-top: auto;
 	}
 }
 </style>

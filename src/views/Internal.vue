@@ -15,7 +15,7 @@ watch(page, () => {
 </script>
 
 <template>
-	<div>
+	<div class="internal-block">
 		<AppNavbar>
 			<template #title>
 				<h5>{{ $t('INTERNAL.TITLE') }}</h5>
@@ -41,14 +41,27 @@ watch(page, () => {
 		<router-view></router-view>
 	</div>
 </template>
-<style lang="scss">
+<style scoped lang="scss">
+.internal-block {
+	display: flex;
+	flex-direction: column;
+	height: 100dvh;
+}
+
 .internal {
 	box-sizing: content-box;
-	height: 100%;
 	padding: var(--space-4) var(--space-4) 0 var(--space-4);
 
-	.segment-picker {
-		width: 100%;
-	}
+}
+
+.internal-form {
+	overflow-y: auto;
+	overflow-x: hidden;
+	width: 100%;
+	flex-grow: 1;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	padding: 0 var(--space-4) 0 var(--space-4);
 }
 </style>

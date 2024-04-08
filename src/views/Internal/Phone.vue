@@ -125,54 +125,39 @@ onMounted(async () => {
 </script>
 
 <template>
-	<div>
-		<form class="internal-phone-form">
-			<div class="internal-phone-form-top">
-				<AccountDropdown id="from" v-model="form.from" :accounts-groups="accountsGroups"
-					:label="$t('OWN.FORM.FROM')" :error-invalid="!!phoneStore.errors.from"
-					:helper-text="!!phoneStore.errors.from ? $t(phoneStore.errors.from) : ''"
-					:update-field="() => handleSelectsUpdate('from')" />
+	<form class="internal-phone-form">
+		<AccountDropdown id="from" v-model="form.from" :accounts-groups="accountsGroups" :label="$t('OWN.FORM.FROM')"
+			:error-invalid="!!phoneStore.errors.from"
+			:helper-text="!!phoneStore.errors.from ? $t(phoneStore.errors.from) : ''"
+			:update-field="() => handleSelectsUpdate('from')" />
 
-				<SelectContactInput v-model="form.phoneNumber" @input="handleDataUpdate()"
-					:invalid="!!phoneStore.errors.phoneNumber"
-					:helper-text="!!phoneStore.errors.phoneNumber ? $t(phoneStore.errors.phoneNumber) : form.receiverName"
-					@update:model-value="phoneStore.clearErrors('phoneNumber')" />
+		<SelectContactInput v-model="form.phoneNumber" @input="handleDataUpdate()"
+			:invalid="!!phoneStore.errors.phoneNumber"
+			:helper-text="!!phoneStore.errors.phoneNumber ? $t(phoneStore.errors.phoneNumber) : form.receiverName"
+			@update:model-value="phoneStore.clearErrors('phoneNumber')" />
 
-				<CurrencyInput id="123" v-model="form.amount" class="form-field" :label="$t('INTERNAL.PHONE.FORM.SUM')"
-					:invalid="!!phoneStore.errors.amount"
-					:helper-text="phoneStore.errors.amount ? $t(phoneStore.errors.amount) : ''"
-					@update:model-value="phoneStore.clearErrors('amount')" />
-			</div>
-			<div class="internal-phone-form-bottom">
-				<Button id="123" type="primary" @click="handleSubmit"> {{ $t('INTERNAL.PHONE.FORM.SUBMIT') }} </Button>
-			</div>
-		</form>
+		<CurrencyInput id="123" v-model="form.amount" class="form-field" :label="$t('INTERNAL.PHONE.FORM.SUM')"
+			:invalid="!!phoneStore.errors.amount"
+			:helper-text="phoneStore.errors.amount ? $t(phoneStore.errors.amount) : ''"
+			@update:model-value="phoneStore.clearErrors('amount')" />
+		<Button id="externalSubmit" class="form__submit" type="primary" @click="handleSubmit"> {{
+			$t('INTERNAL.PHONE.FORM.SUBMIT') }} </Button>
+	</form>
 
-		<Guard :form="form" />
-	</div>
+	<Guard :form="form" />
 </template>
 
 <style scoped lang="scss">
 .internal-phone-form {
-	box-sizing: content-box;
-	padding: var(--space-3) var(--space-4) 0 var(--space-4);
+	width: 100%;
+	height: 100%;
+	flex-direction: column;
+	display: flex;
+	gap: var(--space-3);
+	padding: var(--space-3) 0 var(--space-4) 0;
 
-	&-top {
-		width: 100%;
-		height: 100%;
-		display: flex;
-		flex-direction: column;
-		gap: var(--space-3);
-	}
-
-	.internal-phone-form-bottom {
-		position: absolute;
-		bottom: var(--space-5);
-		width: calc(100% - var(--space-4));
-
-		Button {
-			width: calc(100% - var(--space-4));
-		}
+	.form__submit {
+		margin-top: auto;
 	}
 }
 </style>
