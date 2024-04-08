@@ -1,14 +1,14 @@
 <template>
-	<div class="page-template">
-		<slot name="header" />
+<div class="page-template">
+	<slot v-if="$slots.header" name="header" />
 
-		<div class="page-template__main">
-			<slot />
-		</div>
-		<div class="page-template__footer">
-			<slot name="footer" />
-		</div>
+	<div class="page-template__main">
+		<slot />
 	</div>
+	<div v-if="$slots.footer" class="page-template__footer">
+		<slot name="footer" />
+	</div>
+</div>
 </template>
 
 <style scoped lang="scss">
