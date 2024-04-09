@@ -38,7 +38,9 @@ watch(page, () => {
 			]" />
 		</div>
 
-		<router-view></router-view>
+		<div class="internal-form">
+			<router-view></router-view>
+		</div>
 	</div>
 </template>
 <style scoped lang="scss">
