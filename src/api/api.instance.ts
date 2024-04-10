@@ -1,5 +1,5 @@
-import { tokenExpired } from '@ui-kit/events'
-import axios, { AxiosError, AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios' // Define the type for your token
+import axios, { AxiosError, AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios'; // Define the type for your token
+import { requestTokenExpiredInterceptor } from './interceptors/request-token-expired';
 
 const BASE_URL = import.meta.env.VITE_BASE_URL || 'https://dev-api.kmf.kz'
 const LS_TOKEN_KEY = 'accessToken'
@@ -81,16 +81,9 @@ axiosInstance.interceptors.response.use(
 	(response) => {
 		return response
 	},
-	async (error) => {
-		console.error('interceptors error:', error)
 
-		if (error.response.status === 401) {
-			await handleTokenExpiry(error, axiosInstance)
-			tokenExpired()
-		}
-
-		return Promise.reject(error)
-	}
 )
+
+axiosInstance.interceptors.request.use(requestTokenExpiredInterceptor)
 
 export default axiosInstance

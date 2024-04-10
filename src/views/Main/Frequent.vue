@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
 
+import ResetIcon from '@ui-kit/kmf-icons/interface/delete/delete-trash-semifilled.svg';
 import { Cell, CellGroup } from '@ui-kit/ui-kit';
 
 import { getFrequents, removeFromFavorites } from '@/services/frequent.service';
@@ -8,7 +9,6 @@ import { getFrequents, removeFromFavorites } from '@/services/frequent.service';
 import { ITransferRequest } from '@/types/transfer';
 
 import Frequent from '@/assets/icons/frequent.svg';
-import ResetIcon from '@ui-kit/kmf-icons/interface/delete/delete-trash-semifilled.svg';
 
 const frequents = ref<Array<ITransferRequest>>([]);
 
@@ -59,6 +59,7 @@ const removeFromFavoritesHandler = async (applicationID: string | undefined): Pr
 
 onMounted(async () => {
 	try {
+		// TODO: Вынести получение данных в стор
 		const response = await getFrequents.fetch()
 		frequents.value = response.data
 		console.log('Данные об избранных переводах:', response.data)
