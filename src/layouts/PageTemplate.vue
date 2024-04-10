@@ -15,7 +15,7 @@
 .page-template {
 	display: flex;
 	flex-direction: column;
-	// height: 100dvh;
+	height: 100vh;
 
 	&__main {
 		overflow-y: auto;

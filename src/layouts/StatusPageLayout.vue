@@ -71,7 +71,7 @@ const onRemoveFromFavourites = async (applicationID: string) => {
 <template>
 	<PageTemplate>
 		<section class="content-body">
-			<!-- <img :src="props.image" :alt="props.title" :class="props.imageSize" /> -->
+			<img :src="props.image" :alt="props.title" :class="props.imageSize" />
 			<!-- <h3>{{ props.title ? formatter.format(parseFloat(props.title)) : '' }}</h3> -->
 			<h3>{{ typeof props.title === 'number' ? formatter.format(parseFloat(props.title)) : props.title }}</h3>
 
