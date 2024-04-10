@@ -15,10 +15,10 @@
 .page-template {
 	display: flex;
 	flex-direction: column;
-	height: 100dvh;
+	// height: 100dvh;
 
 	&__main {
-		// overflow-y: auto;
+		overflow-y: auto;
 		overflow-x: hidden;
 		width: 100%;
 		flex-grow: 1;
