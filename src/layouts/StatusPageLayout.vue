@@ -88,7 +88,7 @@ const onRemoveFromFavourites = async (applicationID: string) => {
 			</CellGroup>
 		</section>
 		<template #footer>
-			<slot name="footer" />
+			<!-- <slot name="footer" /> -->
 		</template>
 	</PageTemplate>
 
