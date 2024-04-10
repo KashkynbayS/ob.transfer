@@ -72,7 +72,9 @@ const onRemoveFromFavourites = async (applicationID: string) => {
 	<PageTemplate>
 		<section class="content-body">
 			<img :src="props.image" :alt="props.title" :class="props.imageSize" />
-			<h3>{{ props.title ? formatter.format(parseFloat(props.title)) : '' }}</h3>
+			<!-- <h3>{{ props.title ? formatter.format(parseFloat(props.title)) : '' }}</h3> -->
+			<h3>{{ typeof props.title === 'number' ? formatter.format(parseFloat(props.title)) : props.title }}</h3>
+
 			<p class="text-low-contrast">{{ props.text }}</p>
 
 			<CellGroup v-if="statusStore.class == 'success'" type="island" class="success__favourite">
