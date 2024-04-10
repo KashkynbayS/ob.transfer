@@ -1,14 +1,14 @@
 <template>
-<div class="page-template">
-	<slot v-if="$slots.header" name="header" />
+	<div class="page-template">
+		<slot v-if="$slots.header" name="header" />
 
-	<div class="page-template__main">
-		<slot />
+		<div class="page-template__main">
+			<slot />
+		</div>
+		<div v-if="$slots.footer" class="page-template__footer">
+			<slot name="footer" />
+		</div>
 	</div>
-	<div v-if="$slots.footer" class="page-template__footer">
-		<slot name="footer" />
-	</div>
-</div>
 </template>
 
 <style scoped lang="scss">
@@ -18,7 +18,7 @@
 	height: 100dvh;
 
 	&__main {
-		overflow-y: auto;
+		// overflow-y: auto;
 		overflow-x: hidden;
 		width: 100%;
 		flex-grow: 1;
