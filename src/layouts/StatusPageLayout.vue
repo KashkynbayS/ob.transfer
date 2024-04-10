@@ -97,7 +97,8 @@ const onRemoveFromFavourites = async (applicationID: string) => {
 
 <style scoped lang="scss">
 .content-body {
-	flex-grow: 1;
+	// flex-grow: 1;
+	height: 100%;
 	width: 100%;
 	display: flex;
 	flex-direction: column;
