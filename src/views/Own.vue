@@ -46,7 +46,7 @@ ownStore.clearErrors()
 const form = ref<OwnForm>({
 	from: undefined,
 	to: undefined,
-	amount: undefined,
+	amount: null,
 	writeOffAmount: '',
 	enrollmentAmount: '',
 	lastUpdated: undefined,
@@ -327,13 +327,13 @@ onMounted(async () => {
 				:update-field="() => handleSelectsUpdate('to')" />
 
 			<template v-if="hasDifferentCurrencies">
-				<CurrencyInput id="writeOffAmount" :currency-value="form.writeOffAmount"
+				<CurrencyInput id="writeOffAmount" :currency-value="form.amount"
 					:label="$t('OWN.FORM.WRITE_OFF_AMOUNT', { currency: $t(writeOffCurrency) })"
-					:invalid="!!ownStore.errors.writeOffAmount"
-					:helper-text="ownStore.errors.writeOffAmount ? $t(ownStore.errors.writeOffAmount) : ''"
+					:invalid="!!ownStore.errors.amount"
+					:helper-text="ownStore.errors.amount ? $t(ownStore.errors.amount) : ''"
 					@input="handleWriteOffAmountChange"
-					@onChange="(val) => { form.amount = val; ownStore.clearErrors('writeOffAmount') }" />
-				<CurrencyInput id="enrollmentAmount" :currency-value="form.enrollmentAmount"
+					@onChange="(val) => { form.amount = val; ownStore.clearErrors('amount') }" />
+				<CurrencyInput id="enrollmentAmount" :currency-value="form.amount"
 					:label="$t('OWN.FORM.ENROLLMENT_AMOUNT', { currency: $t(enrollmentCurrency) })"
 					:helper-text="$t('OWN.FORM.RATE', rateHelperArgs)" @input="handleEnrollmentAmountChange" />
 			</template>
