@@ -39,7 +39,7 @@ const form = ref<IbanForm>({
 	receiverName: '',
 	knp: null,
 	paymentPurposes: '',
-	amount: '',
+	amount: null,
 })
 
 const myAccounts = ref<Account[]>([])
@@ -151,9 +151,9 @@ onMounted(async () => {
 			:helper-text="!!IbanStore.errors.paymentPurposes ? $t(IbanStore.errors.paymentPurposes) : ''"
 			@update:model-value="IbanStore.clearErrors('paymentPurposes')" />
 
-		<CurrencyInput id="amount" v-model:model-value="form.amount" :label="$t('INTERNAL.IBAN.FORM.SUM')"
+		<CurrencyInput id="amount" :currency-value="form.amount" :label="$t('INTERNAL.IBAN.FORM.SUM')"
 			:invalid="!!IbanStore.errors.amount" :helper-text="IbanStore.errors.amount ? $t(IbanStore.errors.amount) : ''"
-			@update:model-value="IbanStore.clearErrors('amount')" />
+			@onChange="(val) => { form.amount = val; IbanStore.clearErrors('amount') }" />
 
 		<Button id="externalSubmit" class="form__submit" type="primary" @click="handleSubmit">
 			{{ $t('INTERNAL.IBAN.FORM.SUBMIT') }}

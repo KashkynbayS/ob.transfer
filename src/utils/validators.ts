@@ -188,7 +188,7 @@ export const validateReceiverName = (field: string, errorText: string) =>
 // Validation Amount
 export const validateAmount = (field: string, errorText1: string, errorText2: string, errorText3: string) =>
 	string()
-		// .nullable()
+		.nullable()
 		.test(field, errorText1, function (value) {
 			const { fromAccount } = this.options.context as { fromAccount: Account }
 			return validateAmountFromAccount(value, fromAccount)

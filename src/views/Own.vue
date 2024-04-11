@@ -46,7 +46,7 @@ ownStore.clearErrors()
 const form = ref<OwnForm>({
 	from: undefined,
 	to: undefined,
-	amount: '',
+	amount: undefined,
 	writeOffAmount: '',
 	enrollmentAmount: '',
 	lastUpdated: undefined,
@@ -307,50 +307,51 @@ onMounted(async () => {
 </script>
 
 <template>
-<PageTemplate :without-paddings="true">
-	<template #header>
-		<AppNavbar>
-			<template #title>
-				<h5>{{ $t('OWN.TITLE') }}</h5>
+	<PageTemplate :without-paddings="true">
+		<template #header>
+			<AppNavbar>
+				<template #title>
+					<h5>{{ $t('OWN.TITLE') }}</h5>
+				</template>
+			</AppNavbar>
+		</template>
+
+		<form class="form" @submit="handleSubmit">
+			<AccountDropdown id="from" v-model="form.from" :accounts-groups="accountsGroups" :label="$t('OWN.FORM.FROM')"
+				:disabled="form.to" :error-invalid="!!ownStore.errors.from"
+				:helper-text="!!ownStore.errors.from ? $t(ownStore.errors.from) : ''"
+				:update-field="() => handleSelectsUpdate('from')" />
+			<AccountDropdown id="to" v-model="form.to" :accounts-groups="accountsGroups" :label="$t('OWN.FORM.TO')"
+				:disabled="form.from" :error-invalid="!!ownStore.errors.to"
+				:helper-text="!!ownStore.errors.to ? $t(ownStore.errors.to) : ''"
+				:update-field="() => handleSelectsUpdate('to')" />
+
+			<template v-if="hasDifferentCurrencies">
+				<CurrencyInput id="writeOffAmount" :currency-value="form.writeOffAmount"
+					:label="$t('OWN.FORM.WRITE_OFF_AMOUNT', { currency: $t(writeOffCurrency) })"
+					:invalid="!!ownStore.errors.writeOffAmount"
+					:helper-text="ownStore.errors.writeOffAmount ? $t(ownStore.errors.writeOffAmount) : ''"
+					@input="handleWriteOffAmountChange"
+					@onChange="(val) => { form.amount = val; ownStore.clearErrors('writeOffAmount') }" />
+				<CurrencyInput id="enrollmentAmount" :currency-value="form.enrollmentAmount"
+					:label="$t('OWN.FORM.ENROLLMENT_AMOUNT', { currency: $t(enrollmentCurrency) })"
+					:helper-text="$t('OWN.FORM.RATE', rateHelperArgs)" @input="handleEnrollmentAmountChange" />
 			</template>
-		</AppNavbar>
-	</template>
 
-	<form class="form" @submit="handleSubmit">
-		<AccountDropdown id="from" v-model="form.from" :accounts-groups="accountsGroups" :label="$t('OWN.FORM.FROM')"
-			:disabled="form.to" :error-invalid="!!ownStore.errors.from"
-			:helper-text="!!ownStore.errors.from ? $t(ownStore.errors.from) : ''"
-			:update-field="() => handleSelectsUpdate('from')" />
-		<AccountDropdown id="to" v-model="form.to" :accounts-groups="accountsGroups" :label="$t('OWN.FORM.TO')"
-			:disabled="form.from" :error-invalid="!!ownStore.errors.to"
-			:helper-text="!!ownStore.errors.to ? $t(ownStore.errors.to) : ''"
-			:update-field="() => handleSelectsUpdate('to')" />
+			<template v-else>
+				<CurrencyInput id="amount" :currency-value="form.amount" :label="$t('OWN.FORM.AMOUNT')"
+					:invalid="!!ownStore.errors.amount"
+					:helper-text="ownStore.errors.amount ? $t(ownStore.errors.amount) : ''"
+					@onChange="(val) => { form.amount = val; ownStore.clearErrors('amount') }" />
+			</template>
 
-		<template v-if="hasDifferentCurrencies">
-			<CurrencyInput id="writeOffAmount" v-model="form.writeOffAmount"
-				:label="$t('OWN.FORM.WRITE_OFF_AMOUNT', { currency: $t(writeOffCurrency) })"
-				:invalid="!!ownStore.errors.writeOffAmount"
-				:helper-text="ownStore.errors.writeOffAmount ? $t(ownStore.errors.writeOffAmount) : ''"
-				@input="handleWriteOffAmountChange" @update:model-value="ownStore.clearErrors('writeOffAmount')" />
-			<CurrencyInput id="enrollmentAmount" v-model="form.enrollmentAmount"
-				:label="$t('OWN.FORM.ENROLLMENT_AMOUNT', { currency: $t(enrollmentCurrency) })"
-				:helper-text="$t('OWN.FORM.RATE', rateHelperArgs)" @input="handleEnrollmentAmountChange" />
-		</template>
+			<Button id="ownSubmit" class="form__submit" type="primary" attr-type="submit">
+				{{ $t('OWN.FORM.SUBMIT') }}
+			</Button>
+		</form>
 
-		<template v-else>
-			<CurrencyInput id="amount" v-model="form.amount" :label="$t('OWN.FORM.AMOUNT')"
-				:invalid="!!ownStore.errors.amount"
-				:helper-text="ownStore.errors.amount ? $t(ownStore.errors.amount) : ''"
-				@update:model-value="ownStore.clearErrors('amount')" />
-		</template>
-
-		<Button id="ownSubmit" class="form__submit" type="primary" attr-type="submit">
-			{{ $t('OWN.FORM.SUBMIT') }}
-		</Button>
-	</form>
-
-	<Guard :form="form" />
-</PageTemplate>
+		<Guard :form="form" />
+	</PageTemplate>
 </template>
 
 <style scoped>

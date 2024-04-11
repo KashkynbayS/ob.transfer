@@ -5,5 +5,5 @@ export interface PhoneForm {
 	phoneNumber: string
 	receiverName: string
 	recIban: string
-	amount: string | null
+	amount: number | null | undefined
 }
