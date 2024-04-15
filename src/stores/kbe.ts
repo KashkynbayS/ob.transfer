@@ -18,7 +18,7 @@ export const useKbeStore = defineStore('kbe', {
 		fetchList() {
 			this.loading = true
 			KbeService.getList().then(({ data }) => {
-				this.fetched = data
+				this.fetched = data.sort((a, b) => parseInt(a.code) - parseInt(b.code));
 			})
 		},
 		searchKbe(search: string = '') {
