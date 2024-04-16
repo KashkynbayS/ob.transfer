@@ -36,7 +36,7 @@ const form = ref<PhoneForm>({
 	phoneNumber: '',
 	receiverName: '',
 	recIban: '',
-	amount: ''
+	amount: null
 })
 
 const myAccounts = ref<Account[]>([])
@@ -136,10 +136,10 @@ onMounted(async () => {
 			:helper-text="!!phoneStore.errors.phoneNumber ? $t(phoneStore.errors.phoneNumber) : form.receiverName"
 			@update:model-value="phoneStore.clearErrors('phoneNumber')" />
 
-		<CurrencyInput id="123" v-model="form.amount" class="form-field" :label="$t('INTERNAL.PHONE.FORM.SUM')"
+		<CurrencyInput id="123" :currency-value="form.amount" class="form-field" :label="$t('INTERNAL.PHONE.FORM.SUM')"
 			:invalid="!!phoneStore.errors.amount"
 			:helper-text="phoneStore.errors.amount ? $t(phoneStore.errors.amount) : ''"
-			@update:model-value="phoneStore.clearErrors('amount')" />
+			@onChange="(val) => { form.amount = val; phoneStore.clearErrors('amount') }" />
 		<Button id="externalSubmit" class="form__submit" type="primary" @click="handleSubmit"> {{
 			$t('INTERNAL.PHONE.FORM.SUBMIT') }} </Button>
 	</form>

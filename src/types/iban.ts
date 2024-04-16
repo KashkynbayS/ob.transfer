@@ -7,5 +7,5 @@ export interface IbanForm {
 	receiverName: string
 	knp: Knp | string | null,
 	paymentPurposes: string,
-	amount: string | null
+	amount: number | null | undefined
 }

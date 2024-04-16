@@ -18,7 +18,7 @@ export const useKnpStore = defineStore('knp', {
 		fetchList() {
 			this.loading = true
 			KnpService.getList().then(({ data }) => {
-				this.fetched = data
+				this.fetched = data.sort((a, b) => parseInt(a.code) - parseInt(b.code));
 			})
 		},
 		searchKnp(search: string = '') {

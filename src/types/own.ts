@@ -8,7 +8,7 @@ export enum LAST_UPDATED {
 export interface OwnForm {
 	from: Account | undefined
 	to: Account | undefined
-	amount: string | null
+	amount: number | null | undefined
 	writeOffAmount: string
 	enrollmentAmount: string
 	lastUpdated: LAST_UPDATED | undefined,

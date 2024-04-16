@@ -44,7 +44,7 @@ const form = ref<ExternalForm>({
 	knp: null,
 	iin: formData.value?.recIin || '',
 	receiverName: formData.value?.recFio || '',
-	amount: formData.value?.amount || '',
+	amount: null,
 	paymentPurposes: formData.value?.paymentPurposes || ''
 })
 
@@ -176,10 +176,10 @@ onMounted(async () => {
 				:invalid="!!externalStore.errors.paymentPurposes"
 				:helper-text="!!externalStore.errors.paymentPurposes ? $t(externalStore.errors.paymentPurposes) : ''"
 				@update:model-value="externalStore.clearErrors('paymentPurposes')" />
-			<CurrencyInput id="amount" v-model="form.amount" :label="$t('EXTERNAL.FORM.AMOUNT')"
+			<CurrencyInput id="amount" :currency-value="form.amount" :label="$t('EXTERNAL.FORM.AMOUNT')"
 				:invalid="!!externalStore.errors.amount"
 				:helper-text="!!externalStore.errors.amount ? $t(externalStore.errors.amount) : ''"
-				@update:model-value="externalStore.clearErrors('amount')" />
+				@onChange="(val) => { form.amount = val; externalStore.clearErrors('amount') }" />
 
 			<Button id="externalSubmit" class="form__submit" type="primary" attr-type="submit">
 				{{ $t('EXTERNAL.SUBMIT') }}
