@@ -15,7 +15,7 @@ const EXPIRED_ALERT: AlertType = {
         {
             mode: 'primary',
             title: 'Авторизоваться',
-            autoClose: false,
+            autoClose: true,
             disabled: false,
             action: () => tokenExpired()
         }
