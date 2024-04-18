@@ -28,6 +28,25 @@ export const validateToFuncAccNotFound = async (value: string | undefined) => {
 // Functions of validation Phone
 export const validatePhoneEmpty = (value: string | undefined) => !value
 
+export const validatePhoneOwnerAccount = async (value: string | undefined) => {
+	if (!value) return true;
+
+	try {
+		const result = await getDataByPhone.get(value.split(' ').join(''));
+		const deals = await TransferService.fetchDealsList()
+		console.log('deals.accounts[0].accNumber: ' + deals.accounts[0].accNumber);
+
+		console.log(result.iban !== deals.accounts[0].accNumber);
+
+
+		return result.iban !== deals.accounts[0].accNumber;
+
+	} catch (error) {
+		console.error('Произошла ошибка при проверке поля Phone:', error);
+		return true;
+	}
+}
+
 export const validatePhoneAccNotFound = async (value: string | undefined) => {
 	if (!value) return true;
 
@@ -43,21 +62,6 @@ export const validatePhoneAccNotFound = async (value: string | undefined) => {
 	}
 }
 
-export const validatePhoneOwnerAccount = async (value: string | undefined) => {
-	if (!value) return true;
-
-	try {
-		const result = await getDataByPhone.get(value.split(' ').join(''));
-		const deals = await TransferService.fetchDealsList()
-		console.log('deals.accounts[0].accNumber: ' + deals.accounts[0].accNumber);
-
-		return result.iban !== deals.accounts[0].accNumber;
-
-	} catch (error) {
-		console.error('Произошла ошибка при проверке поля Phone:', error);
-		return false;
-	}
-}
 // Functions of validation IBAN
 export const validateIbanFunc = (value: string | undefined) => !value
 
@@ -142,6 +146,15 @@ export const validatePhone = (field: string, errorText1: string, errorText2: str
 			return validatePhoneOwnerAccount(value);
 		})
 		.test(field, errorText3, function (value) {
+			return validatePhoneAccNotFound(value);
+		})
+
+export const validatePhoneNumber = (field: string, errorText1: string, errorText2: string) =>
+	string()
+		.test(field, errorText1, function (value) {
+			return validatePhoneOwnerAccount(value);
+		})
+		.test(field, errorText2, function (value) {
 			return validatePhoneAccNotFound(value);
 		})
 

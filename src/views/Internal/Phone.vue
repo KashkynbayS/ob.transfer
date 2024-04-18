@@ -12,7 +12,6 @@ import { useLoadingStore } from '@/stores/loading';
 import { usePhoneStore } from '@/stores/phone.ts';
 import { useApplicationIDStore } from '@/stores/useApplicationIDStore';
 
-import { getDataByPhone } from '@/services/phone.service';
 import { handleTransferSSEResponse } from '@/services/sse.service';
 import { TransferService } from '@/services/transfer.service';
 
@@ -21,7 +20,7 @@ import { FORM_STATE } from '@/types/form';
 import { PhoneForm } from '@/types/phone';
 import { TypeOfTransfer } from '@/types/transfer';
 
-import { validateInternalPhone } from '@/helpers/internal-form.helper';
+import { handleDataUpdate, handleSelectsUpdate, handleValidatePhone, validateInternalPhone } from '@/helpers/internal-form.helper';
 
 const phoneStore = usePhoneStore()
 const applicationIDStore = useApplicationIDStore()
@@ -61,7 +60,6 @@ const handleSubmit = async (e: Event | null = null) => {
 
 		TransferService.initWithSSE(
 			{
-				// iban: myAccounts.value[0]?.iban,
 				iban: form.value.from!.iban,
 				recIban: form.value.recIban,
 				recMobileNumber: form.value.phoneNumber.split(' ').join(''),
@@ -72,13 +70,11 @@ const handleSubmit = async (e: Event | null = null) => {
 			(event) => {
 				handleTransferSSEResponse(form.value, event, router)
 				setLoading(false)
-				// phoneStore.setState(FORM_STATE.SUCCESS)
 			}
 		)
 			.then((e) => {
 				phoneStore.applicationId = e.applicationID
 				sessionStorage.setItem('uuid', e.applicationID)
-				// phoneStore.setState(FORM_STATE.SUCCESS)
 				applicationIDStore.setApplicationID(e.applicationID)
 			})
 			.catch(() => {
@@ -88,25 +84,6 @@ const handleSubmit = async (e: Event | null = null) => {
 		phoneStore.setState(FORM_STATE.INITIAL)
 		phoneStore.setValidationError(err)
 	}
-}
-
-const handleDataUpdate = async () => {
-	form.value.receiverName = '';
-	try {
-		if (form.value.phoneNumber.length === 16) {
-			const response = await getDataByPhone.get(form.value.phoneNumber.split(' ').join(''))
-			const receiverName = response.name.RU;
-			const recIban = response.iban;
-			form.value.receiverName = receiverName;
-			form.value.recIban = recIban;
-		}
-	} catch (error) {
-		console.error('Ошибка при получении данных о получателе:', error)
-	}
-}
-
-const handleSelectsUpdate = (value: string) => {
-	phoneStore.clearErrors(value)
 }
 
 onMounted(async () => {
@@ -131,7 +108,7 @@ onMounted(async () => {
 			:helper-text="!!phoneStore.errors.from ? $t(phoneStore.errors.from) : ''"
 			:update-field="() => handleSelectsUpdate('from')" />
 
-		<SelectContactInput v-model="form.phoneNumber" @input="handleDataUpdate()"
+		<SelectContactInput v-model="form.phoneNumber" @input="handleDataUpdate(form)" @blur="handleValidatePhone(form)"
 			:invalid="!!phoneStore.errors.phoneNumber"
 			:helper-text="!!phoneStore.errors.phoneNumber ? $t(phoneStore.errors.phoneNumber) : form.receiverName"
 			@update:model-value="phoneStore.clearErrors('phoneNumber')" />
