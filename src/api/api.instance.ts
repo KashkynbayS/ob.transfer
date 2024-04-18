@@ -6,7 +6,7 @@ import { useLoadingStore } from '@/stores/loading';
 
 import { requestTokenExpiredInterceptor } from './interceptors/request-token-expired';
 
-const BASE_URL = import.meta.env.VITE_BASE_URL || 'https://dev-api.kmf.kz'
+const BASE_URL = import.meta.env.VITE_BASE_URL
 const LS_TOKEN_KEY = 'accessToken'
 
 // if (import.meta.env.VITE_ENVIRONMENT === 'local') {
