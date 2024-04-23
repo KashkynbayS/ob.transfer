@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
 
-import { Button, CurrencyInput, IbanInput, Input } from '@ui-kit/ui-kit'
+import { Button, CurrencyInput, IbanInput, Input, InputBottomCard } from '@ui-kit/ui-kit'
 
 import PageTemplate from '@/layouts/PageTemplate.vue'
 
@@ -131,6 +131,10 @@ const handleIINUpdate = async () => {
 	}
 };
 
+const toggleShowCard = () => {
+	return form.value.receiverName !== '';
+}
+
 onMounted(async () => {
 	const deals = await TransferService.fetchDealsList()
 
@@ -159,23 +163,35 @@ onMounted(async () => {
 				:label="$t('EXTERNAL.FORM.FROM')" :error-invalid="!!externalStore.errors.from"
 				:helper-text="!!externalStore.errors.from ? $t(externalStore.errors.from) : ''"
 				:update-field="() => handleSelectsUpdate('from')" />
+
 			<IbanInput id="iban" v-model="form.iban" :label="$t('EXTERNAL.FORM.IBAN')"
 				:invalid="!!externalStore.errors.iban"
 				:helper-text="!!externalStore.errors.iban ? $t(externalStore.errors.iban) : ''"
 				@update:model-value="externalStore.clearErrors('iban')" />
-			<Input id="iin" v-model="form.iin" :label="$t('EXTERNAL.FORM.IIN')" :invalid="!!externalStore.errors.iin"
-				:helper-text="!!externalStore.errors.iin ? $t(externalStore.errors.iin) : form.receiverName"
-				@update:model-value="externalStore.clearErrors('iin')" @input="handleIINUpdate" />
+
+			<InputBottomCard :show="toggleShowCard()">
+				<Input id="iin" v-model="form.iin" :label="$t('EXTERNAL.FORM.IIN')" :invalid="!!externalStore.errors.iin"
+					:helper-text="!!externalStore.errors.iin ? $t(externalStore.errors.iin) : ''"
+					@update:model-value="externalStore.clearErrors('iin')" @input="handleIINUpdate" />
+
+				<template #title>
+					<p class="inputCard-title"> {{ form.receiverName }} </p>
+				</template>
+			</InputBottomCard>
+
 			<KbeDropdown id="kbe" v-model="form.kbe as Kbe | null" :error-invalid="!!externalStore.errors.kbe"
 				:helper-text="!!externalStore.errors.kbe ? $t(externalStore.errors.kbe) : ''"
 				:update-field="handleKbeUpdate" />
+
 			<KnpDropdown id="knp" v-model="form.knp as Knp | null" :error-invalid="!!externalStore.errors.knp"
 				:helper-text="!!externalStore.errors.knp ? $t(externalStore.errors.knp) : ''"
 				:update-field="handleKnpUpdate" />
+
 			<Input id="name" v-model="form.paymentPurposes" :label="$t('EXTERNAL.FORM.PAYMENT_PURPOSES')"
 				:invalid="!!externalStore.errors.paymentPurposes"
 				:helper-text="!!externalStore.errors.paymentPurposes ? $t(externalStore.errors.paymentPurposes) : ''"
 				@update:model-value="externalStore.clearErrors('paymentPurposes')" />
+
 			<CurrencyInput id="amount" :currency-value="form.amount" :label="$t('EXTERNAL.FORM.AMOUNT')"
 				:invalid="!!externalStore.errors.amount"
 				:helper-text="!!externalStore.errors.amount ? $t(externalStore.errors.amount) : ''"
@@ -198,6 +214,10 @@ onMounted(async () => {
 	display: flex;
 	gap: var(--space-3);
 	padding: var(--space-4) 0;
+
+	.inputCard-title {
+		color: var(--text-white);
+	}
 }
 
 .form__submit {

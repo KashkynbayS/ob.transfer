@@ -2,7 +2,7 @@
 import { computed, onMounted, ref } from 'vue';
 import { useRouter } from "vue-router";
 
-import { Button, CurrencyInput, SelectContactInput } from '@ui-kit/ui-kit';
+import { Button, CurrencyInput, InputBottomCard, SelectContactInput } from '@ui-kit/ui-kit';
 
 import AccountDropdown from '@/components/AccountDropdown.vue';
 import Guard from '@/components/Guard.vue';
@@ -20,7 +20,7 @@ import { FORM_STATE } from '@/types/form';
 import { PhoneForm } from '@/types/phone';
 import { TypeOfTransfer } from '@/types/transfer';
 
-import { handleDataUpdate, handleSelectsUpdate, handleValidatePhone, validateInternalPhone } from '@/helpers/internal-form.helper';
+import { handleDataUpdate, handleSelectsUpdate, handleValidatePhone, toggleShowCard, validateInternalPhone } from '@/helpers/internal-form.helper';
 
 const phoneStore = usePhoneStore()
 const applicationIDStore = useApplicationIDStore()
@@ -108,10 +108,16 @@ onMounted(async () => {
 			:helper-text="!!phoneStore.errors.from ? $t(phoneStore.errors.from) : ''"
 			:update-field="() => handleSelectsUpdate('from')" />
 
-		<SelectContactInput v-model="form.phoneNumber" @input="handleDataUpdate(form)" @blur="handleValidatePhone(form)"
-			:invalid="!!phoneStore.errors.phoneNumber"
-			:helper-text="!!phoneStore.errors.phoneNumber ? $t(phoneStore.errors.phoneNumber) : form.receiverName"
-			@update:model-value="phoneStore.clearErrors('phoneNumber')" />
+		<InputBottomCard :show="toggleShowCard(form)">
+			<SelectContactInput v-model="form.phoneNumber" @input="handleDataUpdate(form)" @blur="handleValidatePhone(form)"
+				:invalid="!!phoneStore.errors.phoneNumber"
+				:helper-text="!!phoneStore.errors.phoneNumber ? $t(phoneStore.errors.phoneNumber) : ''"
+				@update:model-value="phoneStore.clearErrors('phoneNumber')" />
+
+			<template #title>
+				<p class="inputCard-title"> {{ form.receiverName }} </p>
+			</template>
+		</InputBottomCard>
 
 		<CurrencyInput id="123" :currency-value="form.amount" class="form-field" :label="$t('INTERNAL.PHONE.FORM.SUM')"
 			:invalid="!!phoneStore.errors.amount"
@@ -132,6 +138,10 @@ onMounted(async () => {
 	display: flex;
 	gap: var(--space-3);
 	padding: var(--space-3) 0 var(--space-4) 0;
+
+	.inputCard-title {
+		color: var(--text-white);
+	}
 
 	.form__submit {
 		margin-top: auto;

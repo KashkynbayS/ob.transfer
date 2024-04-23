@@ -3,7 +3,7 @@ import { computed, onMounted, ref } from 'vue';
 import { useRouter } from "vue-router";
 
 import Guard from '@/components/Guard.vue';
-import { Button, CurrencyInput, IbanInput, Input } from '@ui-kit/ui-kit';
+import { Button, CurrencyInput, IbanInput, Input, InputBottomCard } from '@ui-kit/ui-kit';
 
 import AccountDropdown from '@/components/AccountDropdown.vue';
 import KnpDropdown from '@/components/KnpDropdown.vue';
@@ -23,7 +23,7 @@ import { IbanForm } from '@/types/iban';
 import { Knp } from '@/types/knp';
 import { TypeOfTransfer } from '@/types/transfer';
 
-import { validateInternalIban } from '@/helpers/internal-form-helper';
+import { toggleShowCard, validateInternalIban } from '@/helpers/internal-form-helper';
 
 const IbanStore = useIbanStore()
 const applicationIDStore = useApplicationIDStore()
@@ -137,10 +137,15 @@ onMounted(async () => {
 			:error-invalid="!!IbanStore.errors.from" :helper-text="!!IbanStore.errors.from ? $t(IbanStore.errors.from) : ''"
 			:update-field="() => handleSelectsUpdate('from')" />
 
-		<IbanInput id="recieverNameModel" v-model:model-value="form.to" :label="$t('INTERNAL.IBAN.FORM.ACCOUNT_TO')"
-			:invalid="!!IbanStore.errors.to"
-			:helper-text="IbanStore.errors.to ? $t(IbanStore.errors.to) : form.receiverName"
-			@update:model-value="IbanStore.clearErrors('to')" @input="handleNameUpdate()" />
+		<InputBottomCard :show="toggleShowCard(form)">
+			<IbanInput id="recieverNameModel" v-model:model-value="form.to" :label="$t('INTERNAL.IBAN.FORM.ACCOUNT_TO')"
+				:invalid="!!IbanStore.errors.to" :helper-text="IbanStore.errors.to ? $t(IbanStore.errors.to) : ''"
+				@update:model-value="IbanStore.clearErrors('to')" @input="handleNameUpdate()" />
+
+			<template #title>
+				<p class="inputCard-title"> {{ form.receiverName }} </p>
+			</template>
+		</InputBottomCard>
 
 		<KnpDropdown v-if="form.to == 'KZ1111' && form.to !== null" id="knp" v-model="form.knp as Knp | null"
 			:error-invalid="!!IbanStore.errors.knp" :helper-text="!!IbanStore.errors.knp ? $t(IbanStore.errors.knp) : ''"
@@ -171,6 +176,10 @@ onMounted(async () => {
 	display: flex;
 	gap: var(--space-3);
 	padding: var(--space-3) 0 var(--space-4) 0;
+
+	.inputCard-title {
+		color: var(--text-white);
+	}
 
 	.form__submit {
 		margin-top: auto;

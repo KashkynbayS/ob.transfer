@@ -67,3 +67,7 @@ export const handleDataUpdate = async (form: PhoneForm) => {
 export const handleSelectsUpdate = (value: string) => {
 	phoneStore.clearErrors(value)
 }
+
+export const toggleShowCard = (form: PhoneForm) => {
+	return form.receiverName !== '';
+}

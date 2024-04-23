@@ -29,3 +29,7 @@ export const validateInternalIban = (form: IbanForm) => {
 		}
 	})
 }
+
+export const toggleShowCard = (form: IbanForm) => {
+	return form.receiverName !== '';
+}
