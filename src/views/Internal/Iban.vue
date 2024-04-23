@@ -13,7 +13,6 @@ import { useIbanStore } from '@/stores/iban.ts';
 import { useLoadingStore } from '@/stores/loading';
 import { useApplicationIDStore } from '@/stores/useApplicationIDStore';
 
-import { getFIOByIban } from '@/services/iban.service';
 import { handleTransferSSEResponse } from '@/services/sse.service';
 import { TransferService } from '@/services/transfer.service';
 
@@ -23,7 +22,7 @@ import { IbanForm } from '@/types/iban';
 import { Knp } from '@/types/knp';
 import { TypeOfTransfer } from '@/types/transfer';
 
-import { toggleShowCard, validateInternalIban } from '@/helpers/internal-form-helper';
+import { handleKnpUpdate, handleNameUpdate, handleSelectsUpdate, toggleShowCard, validateInternalIban } from '@/helpers/internal-form-helper';
 
 const IbanStore = useIbanStore()
 const applicationIDStore = useApplicationIDStore()
@@ -96,27 +95,6 @@ const handleSubmit = async (e: Event | null = null) => {
 	}
 }
 
-const handleKnpUpdate = () => {
-	IbanStore.clearErrors('knp')
-}
-
-const handleSelectsUpdate = (value: string) => {
-	IbanStore.clearErrors(value)
-}
-
-const handleNameUpdate = async () => {
-	form.value.receiverName = '';
-	try {
-		if (form.value.to.length === 20) {
-			const response = await getFIOByIban.get(form.value.to.split(' ').join(''))
-			const receiverName = response.name.RU;
-			form.value.receiverName = receiverName;
-		}
-	} catch (error) {
-		console.error('Ошибка при получении данных о получателе:', error)
-	}
-}
-
 onMounted(async () => {
 	const deals = await TransferService.fetchDealsList()
 
@@ -138,9 +116,9 @@ onMounted(async () => {
 			:update-field="() => handleSelectsUpdate('from')" />
 
 		<InputBottomCard :show="toggleShowCard(form)">
-			<IbanInput id="recieverNameModel" v-model:model-value="form.to" :label="$t('INTERNAL.IBAN.FORM.ACCOUNT_TO')"
+			<IbanInput id="recieverNameModel" v-model="form.to" :label="$t('INTERNAL.IBAN.FORM.ACCOUNT_TO')"
 				:invalid="!!IbanStore.errors.to" :helper-text="IbanStore.errors.to ? $t(IbanStore.errors.to) : ''"
-				@update:model-value="IbanStore.clearErrors('to')" @input="handleNameUpdate()" />
+				@update:model-value="IbanStore.clearErrors('to')" @input="handleNameUpdate(form);" />
 
 			<template #title>
 				<p class="inputCard-title"> {{ form.receiverName }} </p>

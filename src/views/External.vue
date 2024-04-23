@@ -120,6 +120,8 @@ const handleSelectsUpdate = (value: string) => {
 }
 
 const handleIINUpdate = async () => {
+	form.value.receiverName = '';
+
 	try {
 		if (form.value.iin.length === 12) {
 			const response = await getFioByIin.post(form.value.iin);

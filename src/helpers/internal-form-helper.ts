@@ -1,7 +1,14 @@
-import { IbanForm } from '@/types/iban'
-import { validateAccount, validateAmount, validateTo } from '@/utils'
-import { object } from 'yup'
+import { object } from 'yup';
 
+import { getFIOByIban } from '@/services/iban.service';
+
+import { useIbanStore } from '@/stores/iban.ts';
+
+import { validateAccount, validateAmount, validateTo } from '@/utils';
+
+import { IbanForm } from '@/types/iban';
+
+const IbanStore = useIbanStore()
 
 export const formSchema = object({
 	from: validateAccount('from', 'OWN.FORM.ERRORS.SELECT_ACCOUNT'),
@@ -20,6 +27,14 @@ export const formSchema = object({
 	)
 })
 
+export const handleKnpUpdate = () => {
+	IbanStore.clearErrors('knp')
+}
+
+export const handleSelectsUpdate = (value: string) => {
+	IbanStore.clearErrors(value)
+}
+
 export const validateInternalIban = (form: IbanForm) => {
 	return formSchema.validate(form, {
 		abortEarly: false,
@@ -28,6 +43,23 @@ export const validateInternalIban = (form: IbanForm) => {
 			toAccount: form.to,
 		}
 	})
+}
+
+export const handleNameUpdate = async (form: IbanForm) => {
+
+	console.log('form.receiverName: ', form.receiverName);
+
+	form.receiverName = '';
+
+	try {
+		if (form.to.length === 20) {
+			const response = await getFIOByIban.get(form.to.split(' ').join(''))
+			const receiverName = response.name.RU;
+			form.receiverName = receiverName;
+		}
+	} catch (error) {
+		console.error('Ошибка при получении данных о получателе:', error)
+	}
 }
 
 export const toggleShowCard = (form: IbanForm) => {

@@ -36,9 +36,6 @@ export const validatePhoneOwnerAccount = async (value: string | undefined) => {
 		const deals = await TransferService.fetchDealsList()
 		console.log('deals.accounts[0].accNumber: ' + deals.accounts[0].accNumber);
 
-		console.log(result.iban !== deals.accounts[0].accNumber);
-
-
 		return result.iban !== deals.accounts[0].accNumber;
 
 	} catch (error) {
@@ -52,8 +49,6 @@ export const validatePhoneAccNotFound = async (value: string | undefined) => {
 
 	try {
 		const result = await getDataByPhone.get(value.split(' ').join(''));
-		console.log('result.iban: ' + result.iban);
-
 		return !!result.iban;
 
 	} catch (error) {
